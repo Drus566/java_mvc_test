@@ -1,0 +1,14 @@
+out/
+temp/
+logs/
+.idea/
+.idea/*
+JSoftwareDB.s3db
+База данных.db
+*.db
+
+installer/jsoftwaredb/*
+installer/*.jar
+installer/*.lnk
+installer/Launch4j*
+installer/*.s3db

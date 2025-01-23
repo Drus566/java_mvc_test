@@ -1,0 +1,33 @@
+PropertyChangeSupport в Swing - это служебный класс, который обеспечивает механизм уведомления об изменениях свойств объекта.
+Основные характеристики
+Позволяет регистрировать и удалять слушателей изменений свойств
+Используется для реализации паттерна Observer в JavaBeans
+Входит в пакет java.beans
+Ключевые методы
+addPropertyChangeListener(): Добавление слушателя изменений
+removePropertyChangeListener(): Удаление слушателя
+firePropertyChange(): Уведомление слушателей о изменении свойства
+Пример использования
+java
+public class MyBean {
+    private PropertyChangeSupport propertySupport;
+    private String sampleProperty;
+
+    public MyBean() {
+        propertySupport = new PropertyChangeSupport(this);
+    }
+
+    public void setSampleProperty(String value) {
+        String oldValue = sampleProperty;
+        sampleProperty = value;
+        propertySupport.firePropertyChange("sampleProperty", oldValue, sampleProperty);
+    }
+}
+Важность
+Позволяет создавать гибкие компоненты с возможностью отслеживания изменений
+Обеспечивает слабую связанность между компонентами
+
+
+https://stackoverflow.com/questions/5217611/the-mvc-pattern-and-swing
+
+https://www.youtube.com/watch?v=icf5S9fzRXE
