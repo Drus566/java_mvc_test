@@ -1,15 +1,17 @@
 package iplm;
 
 import iplm.controllers.TaskController;
+import iplm.managers.WindowManager;
 import iplm.views.TaskView;
 
 public class Application {
+    WindowManager window_manager;
+
     public static void main(String[] args) {
         new Application();
     }
 
     Application() {
-        TaskView view = new TaskView();
-        new TaskController(view);
+        window_manager = new WindowManager();
     }
 }
