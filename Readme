@@ -33,3 +33,75 @@ https://stackoverflow.com/questions/5217611/the-mvc-pattern-and-swing
 https://www.youtube.com/watch?v=icf5S9fzRXE
 
 https://www.youtube.com/watch?v=aGOWweeAfcw - jdbc
+
+
+public enum ComponentType {
+    VIEW(1, "UserView"),
+    MODEL(2, "DataModel"),
+    CONTROLLER(3, "MainController");
+
+    private final int id;
+    private final String name;
+
+    ComponentType(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+Singleton-подход с инициализацией
+java
+public enum ComponentRegistry {
+    INSTANCE;
+
+    private Map<ComponentType, Object> components = new HashMap<>();
+
+    public void register(ComponentType type, Object component) {
+        components.put(type, component);
+    }
+
+    public <T> T getComponent(ComponentType type) {
+        return (T) components.get(type);
+    }
+}
+Преимущества подхода
+Уникальная идентификация компонентов
+Возможность регистрации и получения компонентов
+Типобезопасность
+Centralized management
+Пример использования
+java
+public class Application {
+    public static void main(String[] args) {
+        // Регистрация компонентов
+        ComponentRegistry.INSTANCE.register(
+            ComponentType.VIEW,
+            new UserView()
+        );
+
+        ComponentRegistry.INSTANCE.register(
+            ComponentType.MODEL,
+            new UserModel()
+        );
+
+        // Получение компонентов
+        UserView view = ComponentRegistry.INSTANCE
+            .getComponent(ComponentType.VIEW);
+
+        UserModel model = ComponentRegistry.INSTANCE
+            .getComponent(ComponentType.MODEL);
+    }
+}
+Дополнительные возможности
+Поддержка lazy-инициализации
+Автоматическая регистрация компонентов
+Безопасный доступ к компонентам
+Ключевая особенность: Enum позволяет создать потокобезопасный, простой и расширяемый механизм управления компонентами.
+

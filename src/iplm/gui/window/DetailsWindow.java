@@ -1,6 +1,7 @@
 package iplm.gui.window;
 
 import iplm.gui.table.DefaultTable;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +20,12 @@ public class DetailsWindow extends AWindow {
 
     @Override
     public void build() {
-        m_panel = new JPanel(new BorderLayout());
+        m_panel = new JPanel(new MigLayout("insets 10"));
 
         buildTable();
 
         m_panel.add(m_table.getScrollPane());
+        m_panel.setMinimumSize(new Dimension(300, 400));
     }
 
     private void buildTable() {

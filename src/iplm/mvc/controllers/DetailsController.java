@@ -8,8 +8,13 @@ import iplm.mvc.views.IView;
 import javax.swing.*;
 
 public class DetailsController implements IController {
-    private DetailsView m_view;
     private DetailModel m_model;
+    private DetailsView m_view;
+
+    public DetailsController(DetailModel model, DetailsView view) {
+        m_model = model;
+        m_view = view;
+    }
 
     private void initActions() {
         initTableActions();
@@ -20,9 +25,7 @@ public class DetailsController implements IController {
     }
 
     @Override
-    public void init(IModel model, IView view) {
-        m_view = (DetailsView) view;
-        m_model = (DetailModel) model;
-        m_model.addObserver(m_view);
+    public void init() {
+        initActions();
     }
 }

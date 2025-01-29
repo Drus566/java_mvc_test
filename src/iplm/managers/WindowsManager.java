@@ -2,6 +2,7 @@ package iplm.managers;
 
 import iplm.gui.window.AWindow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WindowsManager {
@@ -9,6 +10,15 @@ public class WindowsManager {
 
     private List<AWindow> windows;
 
+    private WindowsManager() {
+        windows = new ArrayList<>();
+    }
+
+    public void showWindow(String window_name) {
+        for (AWindow window : windows) {
+            if (window.getName().equals(window_name)) window.show();
+        }
+    }
     public void addWindow(AWindow window) {
         windows.add(window);
     }

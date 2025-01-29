@@ -1,5 +1,7 @@
 package iplm.gui.window;
 
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 
@@ -14,8 +16,10 @@ public abstract class AWindow {
 
     public abstract void build();
 
-    public void afterBuild() {
+    protected void afterBuild() {
+        setName(this.getClass().getSimpleName());
         m_frame.setContentPane(m_panel);
+        m_frame.pack();
         hide();
     }
 
@@ -28,8 +32,8 @@ public abstract class AWindow {
     public void hide() {
         m_frame.setVisible(false);
     }
-    public void show() {
-        m_frame.setVisible(true);
-    }
+    public void show() { m_frame.setVisible(true); }
     public void close() { m_frame.dispatchEvent(new WindowEvent(m_frame, WindowEvent.WINDOW_CLOSING)); }
+    public String getTitle() { return m_frame.getTitle(); }
+    public void setTitle(String title) { m_frame.setTitle(title); }
 }

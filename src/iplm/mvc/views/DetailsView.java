@@ -8,6 +8,8 @@ import iplm.managers.WindowsManager;
 public class DetailsView implements IView, IObserver<Detail> {
     private DetailsWindow m_window;
 
+    public DetailsWindow getWindow() { return m_window; }
+
     @Override
     public void init() {
         if (m_window == null) {
@@ -15,8 +17,6 @@ public class DetailsView implements IView, IObserver<Detail> {
             WindowsManager.getInstance().addWindow(m_window);
         }
     }
-
-    public DetailsWindow getWindow() { return m_window; }
 
     @Override
     public void update(Detail subject) {
