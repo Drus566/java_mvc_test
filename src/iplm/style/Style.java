@@ -1,11 +1,9 @@
 package iplm.style;
 
-import com.formdev.flatlaf.util.SystemInfo;
-
-import javax.swing.*;
 import java.util.prefs.Preferences;
 
 public class Style {
+    public static final int FONT_SIZE = 14;
     public static final String KEY_SYSTEM_SCALE_FACTOR = "systemScaleFactor";
     private static Style INSTANCE;
 

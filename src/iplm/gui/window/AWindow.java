@@ -8,6 +8,8 @@ import java.awt.event.WindowEvent;
 public abstract class AWindow {
     protected JFrame m_frame;
     protected JPanel m_panel;
+    protected JMenuBar m_menu_bar;
+    protected JMenu m_menu;
 
     public AWindow() { m_frame = new JFrame(); }
 
@@ -29,10 +31,8 @@ public abstract class AWindow {
     public boolean isClosed() {
         return m_frame.isVisible() == false;
     }
-    public void hide() {
-        m_frame.setVisible(false);
-    }
-    public void show() { m_frame.setVisible(true); }
+    public void hide() { SwingUtilities.invokeLater(() -> m_frame.setVisible(false)); }
+    public void show() { SwingUtilities.invokeLater(() -> m_frame.setVisible(true)); }
     public void close() { m_frame.dispatchEvent(new WindowEvent(m_frame, WindowEvent.WINDOW_CLOSING)); }
     public String getTitle() { return m_frame.getTitle(); }
     public void setTitle(String title) { m_frame.setTitle(title); }

@@ -5,6 +5,8 @@ import iplm.gui.window.DetailsWindow;
 import iplm.interfaces.observer.IObserver;
 import iplm.managers.WindowsManager;
 
+import javax.swing.*;
+
 public class DetailsView implements IView, IObserver<Detail> {
     private DetailsWindow m_window;
 

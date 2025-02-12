@@ -26,7 +26,7 @@ public class ViewsManager {
         for (Map.Entry<ViewComponent, IView> entry : m_views.entrySet()) {
             ViewComponent key = entry.getKey();
             if (key.getName().equals(view_name)) {
-                WindowsManager.getInstance().showWindow(key.getWindowName());
+                result = entry.getValue();
                 break;
             }
         }

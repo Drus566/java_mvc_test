@@ -1,11 +1,11 @@
 package iplm.style;
 
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.extras.FlatInspector;
-import com.formdev.flatlaf.extras.FlatUIDefaultsInspector;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.util.SystemInfo;
+import iplm.utility.FontUtility;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class FlatLaf {
     public static final String KEY_LAF = "laf";
@@ -37,16 +37,16 @@ public class FlatLaf {
             JDialog.setDefaultLookAndFeelDecorated( true );
         }
 
-        SwingUtilities.invokeLater(()->{
-            FlatLaf.setupLaf();
-            FlatInspector.install( "ctrl shift alt X" );
-            FlatUIDefaultsInspector.install( "ctrl shift alt Y" );
-        });
+        FlatLaf.setupLaf();
+//        FlatInspector.install( "ctrl shift alt X" );
+//        FlatUIDefaultsInspector.install( "ctrl shift alt Y" );
     }
 
     public static void setupLaf() {
         // set look and feel
-        FlatLightLaf.setup();
+        // FlatLightLaf.setup();
+        FlatIntelliJLaf.setup();
+        UIManager.put("defaultFont", new Font(FontUtility.getDefaultFontName(), Font.PLAIN, Style.FONT_SIZE));
         // remember active look and feel
         UIManager.addPropertyChangeListener( e -> {
             if( "lookAndFeel".equals( e.getPropertyName() ) )

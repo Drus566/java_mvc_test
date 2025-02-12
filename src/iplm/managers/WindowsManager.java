@@ -19,6 +19,11 @@ public class WindowsManager {
             if (window.getName().equals(window_name)) window.show();
         }
     }
+    public void hideWindow(String window_name) {
+        for (AWindow window : windows) {
+            if (window.getName().equals(window_name)) window.hide();
+        }
+    }
     public void addWindow(AWindow window) {
         windows.add(window);
     }

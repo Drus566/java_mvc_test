@@ -18,7 +18,7 @@ public class ApplicationManager {
         m_views_manager.buildViews();
         m_controllers_manager.buildControllers(m_models_manager, m_views_manager);
 
-        m_views_manager.showStartWindow();
+//        m_views_manager.showStartWindow();
         WindowsManager.getInstance().showWindow("DetailsWindow");
     }
 

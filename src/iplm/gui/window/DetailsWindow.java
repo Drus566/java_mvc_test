@@ -1,6 +1,10 @@
 package iplm.gui.window;
 
+import iplm.Resources;
+import iplm.gui.button.AddDetail;
 import iplm.gui.table.DefaultTable;
+import iplm.gui.textfield.SearchBar;
+import iplm.utility.FontUtility;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -10,22 +14,25 @@ import java.util.Arrays;
 
 public class DetailsWindow extends AWindow {
     private DefaultTable m_table;
+    private SearchBar m_search_bar;
+    private AddDetail m_add_detail_button;
 
     public DetailsWindow() {
         build();
         afterBuild();
     }
 
-    public DefaultTable getTable() { return m_table; };
+    public DefaultTable getTable() { return m_table; }
+    public SearchBar getSearchBar() { return m_search_bar; }
+    public AddDetail getAddDetailButton() { return m_add_detail_button; }
 
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("insets 10"));
-
+        m_panel = new JPanel(new MigLayout("inset 10"));
         buildTable();
-
-        m_panel.add(m_table.getScrollPane());
-        m_panel.setMinimumSize(new Dimension(300, 400));
+        buildSearchBar();
+        buildAddDetailButton();
+        arrangeComponents();
     }
 
     private void buildTable() {
@@ -36,6 +43,20 @@ public class DetailsWindow extends AWindow {
         m_table.addLine(new ArrayList<>(Arrays.asList("Spreadsheet.xlsx", "Excel", "500 KB")));
     }
 
+    private void buildSearchBar() {
+        m_search_bar = new SearchBar();
+    }
+
+    private void buildAddDetailButton() {
+        m_add_detail_button = new AddDetail();
+    }
+
+    private void arrangeComponents() {
+        m_panel.add(m_search_bar, "cell 0 0, height 40:pref:max, growx, pushx");
+        m_panel.add(m_add_detail_button, "cell 1 0");
+        m_panel.add(m_table.getScrollPane(), "cell 0 1 2, grow, push");
+        m_panel.setMinimumSize(new Dimension(300, 400));
+    }
 
 //    String[] columnNames = {"Name", "Type", "Size"};
 //
