@@ -1,5 +1,7 @@
 package iplm.gui.table;
 
+import com.formdev.flatlaf.FlatClientProperties;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -14,6 +16,7 @@ public class DefaultTable {
         m_model = new DefaultTableModel();
         m_table.setModel(m_model);
         m_scroll_pane = new JScrollPane(m_table);
+        m_scroll_pane.putClientProperty(FlatClientProperties.STYLE, "arc: 30");
     }
 
     public JTable getTable() { return m_table; }

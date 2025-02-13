@@ -1,9 +1,11 @@
 package iplm.gui.window;
 
-import net.miginfocom.swing.MigLayout;
-
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AWindow {
     protected JFrame m_frame;
@@ -11,7 +13,21 @@ public abstract class AWindow {
     protected JMenuBar m_menu_bar;
     protected JMenu m_menu;
 
-    public AWindow() { m_frame = new JFrame(); }
+    protected ArrayList<Runnable> m_component_resized_callbacks;
+
+    public AWindow() {
+        m_frame = new JFrame();
+
+        m_component_resized_callbacks = new ArrayList<>();
+        m_frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                for (Runnable r : m_component_resized_callbacks) {
+                    SwingUtilities.invokeLater(r);
+                }
+            }
+        });
+    }
 
     public JPanel getPanel() { return m_panel; }
     public JFrame getFrame() { return m_frame; }
