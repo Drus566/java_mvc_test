@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FileUtils {
+public class FileUtility {
     public static int read_file(String path, byte[] buffer)
     {
         int total_read = 0;

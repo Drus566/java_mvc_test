@@ -1,13 +1,12 @@
 package iplm.gui.window;
 
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.ui.FlatLineBorder;
-import iplm.Resources;
 import iplm.gui.button.AddDetail;
-import iplm.gui.panel.SearchPanel;
+import iplm.gui.panel.search_panel.ASearchPanelStr;
+import iplm.gui.panel.search_panel.SearchPanel;
+import iplm.gui.panel.search_panel.components.ActualLink;
+import iplm.gui.panel.search_panel.components.UsedLink;
 import iplm.gui.table.DefaultTable;
 import iplm.gui.textfield.SearchBar;
-import iplm.utility.FontUtility;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -53,17 +52,19 @@ public class DetailsWindow extends AWindow {
 
         m_component_resized_callbacks.add(() -> {
             int h = m_search_panel.getHeight();
-            m_search_panel.setSize(m_search_bar.getWidth(), h);
-            m_search_panel.setMinimumSize(new Dimension(m_search_bar.getWidth(), h));
-            m_search_panel.setMaximumSize(new Dimension(m_search_bar.getWidth(), h));
-            m_search_panel.setPreferredSize(new Dimension(m_search_bar.getWidth(), h));
-
-            m_search_panel.repaint();
-            m_search_panel.revalidate();
+            m_search_panel.updateSize(new Dimension(m_search_bar.getWidth(), h));
         });
 
-        m_search_bar.addFocusAction(() -> m_search_panel.setVisible(true));
-        m_search_bar.addUnfocusAction(() -> m_search_panel.setVisible(false));
+        ArrayList<ASearchPanelStr> list_strings = new ArrayList<>();
+        list_strings.add(new UsedLink("UsedLink"));
+        list_strings.add(new ActualLink("ActualLink"));
+
+        m_search_bar.addFocusAction(() -> {
+            m_search_panel.updateInfo(list_strings);
+            int h = m_search_panel.getHeight();
+            m_search_panel.updateSize(new Dimension(m_search_bar.getWidth(), h));
+        });
+        m_search_bar.addUnfocusAction(() -> m_search_panel.updateInfo());
     }
 
     private void buildSearchBar() {
