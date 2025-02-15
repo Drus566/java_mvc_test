@@ -23,6 +23,7 @@ import java.util.ArrayList;
  */
 
 public class SearchPanel extends JPanel {
+    private int current_height;
     private Color border_color = new Color(147, 179, 255);
 
     public SearchPanel() {
@@ -42,8 +43,9 @@ public class SearchPanel extends JPanel {
         });
     }
 
-    public void updateSize(Dimension size) {
+    public void updateSize(int width) {
         SwingUtilities.invokeLater(() -> {
+            Dimension size = new Dimension(width, current_height);
             setSize(size);
             setMinimumSize(size);
             setMaximumSize(size);
@@ -58,15 +60,20 @@ public class SearchPanel extends JPanel {
     public void updateInfo(ArrayList<ASearchPanelStr> fields) {
         SwingUtilities.invokeLater(() -> {
             removeAll();
-            if (fields == null || fields.isEmpty()) {
-                setVisible(false);
-            }
+            current_height = 0;
+            if (fields == null || fields.isEmpty()) setVisible(false);
             else {
                 for (ASearchPanelStr str : fields) {
-                    if (str.type == SearchPanelStrType.INFO) add(str, "width 100%, gap 30 10 0 0, wrap");
-                    else add(str, "width 100%, height 44!, gap 5 5, wrap");
+                    if (str.type == SearchPanelStrType.DESCRIBE) {
+                        add(str, "width 100%, gap 30 10 0 0, wrap");
+                        current_height += str.getHeight() + str.getInsets().bottom;
+                    }
+                    else if (str.type == SearchPanelStrType.INFO) {
+                        add(str, "width 100%, height 44!, gap 5 5, wrap");
+                        current_height += str.getHeight() + str.getInsets().bottom;
+                    }
                 }
-                setVisible(true);
+                if (current_height > 10) setVisible(true);
             }
             revalidate();
             repaint();

@@ -1,7 +1,9 @@
 package iplm.gui.panel.search_panel.components;
 
 import iplm.gui.panel.search_panel.ASearchPanelStr;
+import iplm.utility.FontUtility;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,16 +15,11 @@ public abstract class AInfoStr extends ASearchPanelStr {
     private List<Runnable> actions;
 
     public AInfoStr() {
+        FontUtility.multResize(this, 1.2f);
+        setMargin(new Insets(0, 10, 0, 0));
+
         actions = new ArrayList<>();
         addActionListener(e -> handleActionListener());
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) { setBackground(hover_color); }
-
-            @Override
-            public void mouseExited(MouseEvent e) { setBackground(background_color); }
-        });
     }
 
     public void addAction(Runnable action) { actions.add(action); }

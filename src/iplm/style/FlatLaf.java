@@ -47,6 +47,11 @@ public class FlatLaf {
         // FlatLightLaf.setup();
         FlatIntelliJLaf.setup();
         UIManager.put("defaultFont", new Font(FontUtility.getDefaultFontName(), Font.PLAIN, Style.FONT_SIZE));
+        UIManager.put("OptionPane.yesButtonText", "Да");
+        UIManager.put("OptionPane.noButtonText", "Нет");
+        UIManager.put("OptionPane.cancelButtonText", "Отмена");
+        UIManager.put("OptionPane.okButtonText", "Готово");
+
         // remember active look and feel
         UIManager.addPropertyChangeListener( e -> {
             if( "lookAndFeel".equals( e.getPropertyName() ) )

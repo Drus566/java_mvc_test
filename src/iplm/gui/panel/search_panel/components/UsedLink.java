@@ -3,16 +3,19 @@ package iplm.gui.panel.search_panel.components;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
+import iplm.gui.panel.IconContainer;
 import iplm.gui.panel.search_panel.ASearchPanelStr;
 import iplm.gui.panel.search_panel.SearchPanelStrType;
+import iplm.gui.panel.search_panel.components.button.CloseButton;
+import org.w3c.dom.css.Rect;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
 
 /*
     Иконка сущности БД (например иконка детали)
@@ -20,31 +23,46 @@ import java.util.List;
     Можно удалить из истории
  */
 public class UsedLink extends AInfoStr {
-    private static FlatSVGIcon close_svg_icon = Resources.getSVGIcon("close.svg").derive(24,24);
-    private FlatSVGIcon entity_svg_icon = Resources.getSVGIcon("detail.svg").derive(24,24);
-    private JButton close_btn;
+    private FlatSVGIcon entity_svg_icon = Resources.getSVGIcon("empty.svg").derive(16,16);
+    private CloseButton close_btn;
+    private IconContainer close_btn_container;
     private JLabel entity_icon;
 
-    public UsedLink(String string) {
+    public UsedLink(String string, Runnable close_btn_action) {
         setText(string);
         type = SearchPanelStrType.INFO;
 
-        close_btn = new JButton(close_svg_icon);
-        close_btn.setOpaque(false);
+        close_btn = new CloseButton();
+        close_btn.addAction(close_btn_action);
+        close_btn_container = new IconContainer(close_btn);
         close_btn.setVisible(false);
 
         entity_icon = new JLabel(entity_svg_icon);
         entity_icon.setVisible(true);
 
-        putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, close_btn);
-        putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, entity_icon);
+        putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, close_btn_container);
+        putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_COMPONENT, new IconContainer(entity_icon));
 
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) { close_btn.setVisible(true); }
+            public void mouseEntered(MouseEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    setBackground(hover_color);
+                    close_btn.setVisible(true);
+                });
+            }
 
             @Override
-            public void mouseExited(MouseEvent e) { close_btn.setVisible(false); }
+            public void mouseExited(MouseEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    if (!close_btn_container.pointInner(e.getPoint())) {
+                        setBackground(background_color);
+                        close_btn.setVisible(false);
+                    }
+                });
+            }
         });
     }
+
+    public void setIcon(FlatSVGIcon icon) { entity_icon.setIcon(icon); }
 }

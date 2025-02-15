@@ -1,6 +1,6 @@
 package iplm.gui.window;
 
-import iplm.gui.button.AddDetail;
+import iplm.gui.button.AddButton;
 import iplm.gui.panel.search_panel.ASearchPanelStr;
 import iplm.gui.panel.search_panel.SearchPanel;
 import iplm.gui.panel.search_panel.components.ActualLink;
@@ -18,7 +18,9 @@ public class DetailsWindow extends AWindow {
     private DefaultTable m_table;
     private SearchBar m_search_bar;
     private SearchPanel m_search_panel;
-    private AddDetail m_add_detail_button;
+    private AddButton m_add_detail_button;
+    private Runnable m_update_search_panel_action;
+    ArrayList<ASearchPanelStr> list_strings;
 
     public DetailsWindow() {
         build();
@@ -27,7 +29,7 @@ public class DetailsWindow extends AWindow {
 
     public DefaultTable getTable() { return m_table; }
     public SearchBar getSearchBar() { return m_search_bar; }
-    public AddDetail getAddDetailButton() { return m_add_detail_button; }
+    public AddButton getAddDetailButton() { return m_add_detail_button; }
 
     @Override
     public void build() {
@@ -48,22 +50,26 @@ public class DetailsWindow extends AWindow {
     }
 
     private void buildSearchPanel() {
+        list_strings = new ArrayList<>();
+
         m_search_panel = new SearchPanel();
+        m_update_search_panel_action = () -> {
+            list_strings.remove(this);
+            m_search_panel.updateInfo(list_strings);
+            m_search_panel.updateSize(m_search_bar.getWidth());
+        };
 
-        m_component_resized_callbacks.add(() -> {
-            int h = m_search_panel.getHeight();
-            m_search_panel.updateSize(new Dimension(m_search_bar.getWidth(), h));
-        });
-
-        ArrayList<ASearchPanelStr> list_strings = new ArrayList<>();
-        list_strings.add(new UsedLink("UsedLink"));
+        list_strings.add(new UsedLink("UsedLink", m_update_search_panel_action));
         list_strings.add(new ActualLink("ActualLink"));
 
-        m_search_bar.addFocusAction(() -> {
-            m_search_panel.updateInfo(list_strings);
-            int h = m_search_panel.getHeight();
-            m_search_panel.updateSize(new Dimension(m_search_bar.getWidth(), h));
-        });
+        m_component_resized_callbacks.add(() -> m_search_panel.updateSize(m_search_bar.getWidth()));
+
+
+        ArrayList<ASearchPanelStr> list_strings = new ArrayList<>();
+        list_strings.add(new UsedLink("UsedLink", m_update_search_panel_action));
+        list_strings.add(new ActualLink("ActualLink"));
+
+        m_search_bar.addFocusAction(m_update_search_panel_action);
         m_search_bar.addUnfocusAction(() -> m_search_panel.updateInfo());
     }
 
@@ -72,7 +78,8 @@ public class DetailsWindow extends AWindow {
     }
 
     private void buildAddDetailButton() {
-        m_add_detail_button = new AddDetail();
+        m_add_detail_button = new AddButton();
+        m_add_detail_button.setToolTipText("Добавить деталь");
     }
 
     private void arrangeComponents() {

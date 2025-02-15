@@ -3,7 +3,9 @@ package iplm.gui.textfield;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
+import iplm.gui.panel.IconContainer;
 import iplm.utility.FontUtility;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,8 +37,9 @@ public class SearchBar extends JTextField {
 
         FontUtility.multResize(this, 1.5f);
 
-        search_icon = new JLabel(Resources.getSVGIcon("search.svg").derive(30,20));
-        putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_COMPONENT, search_icon);
+        search_icon = new JLabel(Resources.getSVGIcon("search.svg").derive(16,16));
+
+        putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_COMPONENT, new IconContainer(search_icon));
         putClientProperty(FlatClientProperties.STYLE, "arc: 35");
 
 //        putClientProperty("FlatLaf.style", "arc: 45; iconTextGap: 5");
