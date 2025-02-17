@@ -1,5 +1,6 @@
 package iplm.gui.window;
 
+import iplm.data.history.StorageHistory;
 import iplm.gui.button.AddButton;
 import iplm.gui.panel.search_panel.ASearchPanelStr;
 import iplm.gui.panel.search_panel.SearchPanel;
@@ -63,7 +64,6 @@ public class DetailsWindow extends AWindow {
         list_strings.add(new ActualLink("ActualLink"));
 
         m_component_resized_callbacks.add(() -> m_search_panel.updateSize(m_search_bar.getWidth()));
-
 
         ArrayList<ASearchPanelStr> list_strings = new ArrayList<>();
         list_strings.add(new UsedLink("UsedLink", m_update_search_panel_action));

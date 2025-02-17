@@ -1,13 +1,13 @@
 package iplm.gui.textfield;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
 import iplm.utility.FontUtility;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -19,12 +19,13 @@ public class SearchBar extends JTextField {
     private JLabel search_icon;
     private Color default_back_color;
     private Color hover_background_color = new Color(250, 255, 250);
-    private List<Runnable> actions;
+    private List<Runnable> enter_actions;
     private List<Runnable> focus_actions;
     private List<Runnable> unfocus_actions;
+    private List<Runnable> insert_actions;
 
     public SearchBar() {
-        actions = new ArrayList<>();
+        enter_actions = new ArrayList<>();
         focus_actions = new ArrayList<>();
         unfocus_actions = new ArrayList<>();
 
@@ -84,15 +85,33 @@ public class SearchBar extends JTextField {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     super.keyPressed(e);
-                    for (Runnable function : actions) {
-                        function.run();
+                    for (Runnable function : enter_actions) {
+                        SwingUtilities.invokeLater(function);
                     }
+                }
+            }
+        });
+
+        getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { reactOnChange(); }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { reactOnChange(); }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { }
+
+            private void reactOnChange() {
+                for (Runnable function : enter_actions) {
+                    SwingUtilities.invokeLater(function);
                 }
             }
         });
     }
 
-    public void addKeyboardEnterAction(Runnable function) { actions.add(function); }
+    public void addInsertAction(Runnable function) { insert_actions.add(function); }
+    public void addKeyboardEnterAction(Runnable function) { enter_actions.add(function); }
     public void addFocusAction(Runnable function) { focus_actions.add(function); }
     public void addUnfocusAction(Runnable function) { unfocus_actions.add(function); }
 

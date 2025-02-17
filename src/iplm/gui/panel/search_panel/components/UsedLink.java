@@ -4,18 +4,12 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
-import iplm.gui.panel.search_panel.ASearchPanelStr;
 import iplm.gui.panel.search_panel.SearchPanelStrType;
 import iplm.gui.panel.search_panel.components.button.CloseButton;
-import org.w3c.dom.css.Rect;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 /*
     Иконка сущности БД (например иконка детали)
