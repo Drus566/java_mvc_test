@@ -4,8 +4,9 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
-import iplm.gui.panel.search_panel.SearchPanelStrType;
+import iplm.gui.panel.search_panel.SearchPanelLineType;
 import iplm.gui.panel.search_panel.components.button.CloseButton;
+import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -16,19 +17,20 @@ import java.awt.event.MouseEvent;
     Ссылки (запросы) к конкретным объектам БД по которым уже проходил.
     Можно удалить из истории
  */
-public class UsedLink extends AInfoStr {
+public class UsedLink extends AInfoLine {
     private FlatSVGIcon entity_svg_icon = Resources.getSVGIcon("empty.svg").derive(16,16);
     private CloseButton close_btn;
     private IconContainer close_btn_container;
     private JLabel entity_icon;
 
-    public UsedLink(String string, Runnable close_btn_action) {
+    public UsedLink(int id, String string, ICloseSearchPanelLineListener close_btn_listener) {
+        ID = id;
         setText(string);
-        type = SearchPanelStrType.INFO;
+        type = SearchPanelLineType.INFO;
 
         close_btn = new CloseButton();
-        close_btn.addAction(close_btn_action);
         close_btn_container = new IconContainer(close_btn);
+        close_btn.addAction(() -> close_btn_listener.updateSearchPanel(this));
         close_btn.setVisible(false);
 
         entity_icon = new JLabel(entity_svg_icon);

@@ -1,11 +1,13 @@
 package iplm.gui.window;
 
+import iplm.data.history.RequestHistory;
+import iplm.data.history.RequestHistoryType;
 import iplm.data.history.StorageHistory;
+import iplm.data.history.StorageHistoryType;
 import iplm.gui.button.AddButton;
-import iplm.gui.panel.search_panel.ASearchPanelStr;
+import iplm.gui.panel.search_panel.ASearchPanelLine;
 import iplm.gui.panel.search_panel.SearchPanel;
-import iplm.gui.panel.search_panel.components.ActualLink;
-import iplm.gui.panel.search_panel.components.UsedLink;
+import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 import iplm.gui.table.DefaultTable;
 import iplm.gui.textfield.SearchBar;
 import net.miginfocom.swing.MigLayout;
@@ -14,14 +16,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
-public class DetailsWindow extends AWindow {
+public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListener {
     private DefaultTable m_table;
     private SearchBar m_search_bar;
     private SearchPanel m_search_panel;
     private AddButton m_add_detail_button;
     private Runnable m_update_search_panel_action;
-    ArrayList<ASearchPanelStr> list_strings;
+    private Runnable m_enter_btn_action;
+    private Runnable m_tap_action;
 
     public DetailsWindow() {
         build();
@@ -51,30 +55,51 @@ public class DetailsWindow extends AWindow {
     }
 
     private void buildSearchPanel() {
-        list_strings = new ArrayList<>();
-
         m_search_panel = new SearchPanel();
+
         m_update_search_panel_action = () -> {
-            list_strings.remove(this);
-            m_search_panel.updateInfo(list_strings);
+            m_search_panel.updateLines();
             m_search_panel.updateSize(m_search_bar.getWidth());
         };
 
-        list_strings.add(new UsedLink("UsedLink", m_update_search_panel_action));
-        list_strings.add(new ActualLink("ActualLink"));
-
         m_component_resized_callbacks.add(() -> m_search_panel.updateSize(m_search_bar.getWidth()));
 
-        ArrayList<ASearchPanelStr> list_strings = new ArrayList<>();
-        list_strings.add(new UsedLink("UsedLink", m_update_search_panel_action));
-        list_strings.add(new ActualLink("ActualLink"));
-
         m_search_bar.addFocusAction(m_update_search_panel_action);
-        m_search_bar.addUnfocusAction(() -> m_search_panel.updateInfo());
+        m_search_bar.addUnfocusAction(() -> m_search_panel.setVisible(false));
     }
 
     private void buildSearchBar() {
         m_search_bar = new SearchBar();
+
+        m_enter_btn_action = () -> {
+            String search_text = m_search_bar.getSearchText();
+            if (search_text.isEmpty()) return;
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("Query", search_text);
+            StorageHistory.getInstance().add(StorageHistoryType.DETAILS, RequestHistoryType.RECENT_REQUEST, params);
+            m_search_panel.setVisible(false);
+//            StorageHistory.getInstance().saveHistory();
+        };
+
+        m_tap_action = () -> {
+            ArrayList<RequestHistory> request_history = StorageHistory.getInstance().search(StorageHistoryType.DETAILS, m_search_bar.getSearchText());
+            m_search_panel.removeLines();
+
+            if (request_history != null) {
+                for (int i = 0; i < request_history.size(); i++) {
+                    RequestHistory rh = request_history.get(i);
+                    m_search_panel.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, this);
+                }
+            }
+
+            // add action link
+
+            m_search_panel.updateLines();
+            m_search_panel.updateSize(m_search_bar.getWidth());
+        };
+
+        m_search_bar.addTapAction(m_tap_action);
+        m_search_bar.addEnterButtonAction(m_enter_btn_action);
     }
 
     private void buildAddDetailButton() {
@@ -88,6 +113,14 @@ public class DetailsWindow extends AWindow {
         m_panel.add(m_add_detail_button, "cell 1 0");
         m_panel.add(m_table.getScrollPane(), "cell 0 1 2, grow, push");
         m_panel.setMinimumSize(new Dimension(300, 0));
+    }
+
+    @Override
+    public void updateSearchPanel(ASearchPanelLine line) {
+        StorageHistory.getInstance().remove(StorageHistoryType.DETAILS, line.ID);
+        m_search_panel.removeLine(line.ID);
+        m_search_panel.updateLines();
+        m_search_panel.updateSize(m_search_bar.getWidth());
     }
 
 //    String[] columnNames = {"Name", "Type", "Size"};

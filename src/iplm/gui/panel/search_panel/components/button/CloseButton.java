@@ -19,6 +19,7 @@ public class CloseButton extends JButton {
         setVisible(false);
         setContentAreaFilled(false);
         setFocusable(false);
+        setToolTipText("Удалить из истории");
 
         addMouseListener(new MouseAdapter() {
             @Override

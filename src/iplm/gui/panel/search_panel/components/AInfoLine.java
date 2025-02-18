@@ -1,20 +1,17 @@
 package iplm.gui.panel.search_panel.components;
 
-import iplm.gui.panel.search_panel.ASearchPanelStr;
+import iplm.gui.panel.search_panel.ASearchPanelLine;
 import iplm.utility.FontUtility;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AInfoStr extends ASearchPanelStr {
+public abstract class AInfoLine extends ASearchPanelLine {
     protected Color hover_color = new Color(238, 238, 238);
     private List<Runnable> actions;
 
-    public AInfoStr() {
+    public AInfoLine() {
         FontUtility.multResize(this, 1.2f);
         setMargin(new Insets(0, 10, 0, 0));
 

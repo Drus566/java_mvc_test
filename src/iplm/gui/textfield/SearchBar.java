@@ -19,15 +19,16 @@ public class SearchBar extends JTextField {
     private JLabel search_icon;
     private Color default_back_color;
     private Color hover_background_color = new Color(250, 255, 250);
-    private List<Runnable> enter_actions;
+    private List<Runnable> enter_btn_actions;
     private List<Runnable> focus_actions;
     private List<Runnable> unfocus_actions;
-    private List<Runnable> insert_actions;
+    private List<Runnable> tap_actions;
 
     public SearchBar() {
-        enter_actions = new ArrayList<>();
+        enter_btn_actions = new ArrayList<>();
         focus_actions = new ArrayList<>();
         unfocus_actions = new ArrayList<>();
+        tap_actions = new ArrayList<>();
 
         setText(SEARCH_STRING_PLACEHOLDER);
 
@@ -85,7 +86,7 @@ public class SearchBar extends JTextField {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     super.keyPressed(e);
-                    for (Runnable function : enter_actions) {
+                    for (Runnable function : enter_btn_actions) {
                         SwingUtilities.invokeLater(function);
                     }
                 }
@@ -103,15 +104,15 @@ public class SearchBar extends JTextField {
             public void changedUpdate(DocumentEvent e) { }
 
             private void reactOnChange() {
-                for (Runnable function : enter_actions) {
+                for (Runnable function : tap_actions) {
                     SwingUtilities.invokeLater(function);
                 }
             }
         });
     }
 
-    public void addInsertAction(Runnable function) { insert_actions.add(function); }
-    public void addKeyboardEnterAction(Runnable function) { enter_actions.add(function); }
+    public void addTapAction(Runnable function) { tap_actions.add(function); }
+    public void addEnterButtonAction(Runnable function) { enter_btn_actions.add(function); }
     public void addFocusAction(Runnable function) { focus_actions.add(function); }
     public void addUnfocusAction(Runnable function) { unfocus_actions.add(function); }
 

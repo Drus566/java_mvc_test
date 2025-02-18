@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileUtility {
-    public static int read_file(String path, byte[] buffer)
-    {
+    public static boolean isFileExists(String filepath) {
+        Path path = Paths.get(filepath);
+        return Files.exists(path);
+    }
+
+    public static int readFile(String path, byte[] buffer)  {
         int total_read = 0;
         try {
             File file = new File(path);
@@ -20,15 +24,17 @@ public class FileUtility {
                 total_read += bytes_read;
             }
             input_stream.close();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
 //            Log4j2.LOGGER.error(e.getMessage());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
 //            Log4j2.LOGGER.error(e.getMessage());
         }
         return total_read;
     }
 
-    public static byte[] read_file(String file) {
+    public static byte[] readFile(String file) {
         ByteArrayOutputStream result = null;
         try {
             File f = new File(file);
@@ -39,40 +45,43 @@ public class FileUtility {
                 result.write(buffer, 0, len);
             }
             fis.close();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
 //            System.err.println(e.getMessage());
-        } catch (IOException e2) {
+        }
+        catch (IOException e2) {
 //            System.err.println(e2.getMessage());
         }
         return result != null ? result.toByteArray() : null;
     }
 
-    public static void write_file(String path, byte[] buffer) {
+    public static void writeFile(String path, byte[] buffer) {
         try {
             File file = new File(path);
             FileOutputStream output_stream = new FileOutputStream(file);
             output_stream.write(buffer);
             output_stream.close();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
 //            Log4j2.LOGGER.error(e.getMessage());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
 //            Log4j2.LOGGER.error(e.getMessage());
         }
     }
 
-    public static List<Path> get_files_paths(String folder_path) {
+    public static List<Path> getFilesPaths(String folder_path) {
         List<Path> result = new ArrayList<>();
         try {
             result = Files.walk(Paths.get(folder_path))
                     .filter(Files::isRegularFile)
                     .collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        catch (IOException e) { e.printStackTrace(); }
         return result;
     }
 
-    public static void delete_all_files(String path) {
+    public static void deleteAllFiles(String path) {
         File directory = new File(path);
         for (File file : directory.listFiles()) {
             if (file.isFile()) { file.delete(); }

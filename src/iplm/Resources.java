@@ -31,7 +31,7 @@ public class Resources {
     }
 
     private void loadIcons() {
-        List<Path> result = FileUtility.get_files_paths(Application.RESOURCES_ICONS);
+        List<Path> result = FileUtility.getFilesPaths(Application.RESOURCES_ICONS);
         if (result != null && result.size() > 0) {
             for (int i = 0; i < result.size(); i++) {
                 Path path = result.get(i);

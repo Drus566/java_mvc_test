@@ -18,7 +18,7 @@ public class Application {
     }
 
     public Application() {
-        StorageHistory.loadHistory();
+        StorageHistory.getInstance().init();
         Resources.getInstance().init();
         Style.getInstance().init();
         ApplicationManager.getInstance().start();

@@ -24,13 +24,18 @@ public class JsonUtility {
 
     public static <T> T fromJson(String file_path, Type type) {
         T result = null;
+        if (!FileUtility.isFileExists(file_path)) {
+            System.out.println("File not found " + file_path);
+            return result;
+        }
+
         try (FileReader reader = new FileReader(file_path)) { result = GSON.fromJson(reader, type); }
         catch (FileNotFoundException e) {
-            e.printStackTrace();
             System.out.println("File not found " + file_path);
-        } catch (IOException e) {
             e.printStackTrace();
+        } catch (IOException e) {
             System.out.println("Error load json " + file_path);
+            e.printStackTrace();
         }
         return result;
     }

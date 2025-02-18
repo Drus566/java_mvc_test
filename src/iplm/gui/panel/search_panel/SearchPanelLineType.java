@@ -1,6 +1,6 @@
 package iplm.gui.panel.search_panel;
 
-public enum SearchPanelStrType {
+public enum SearchPanelLineType {
     DESCRIBE,
     INFO
 }

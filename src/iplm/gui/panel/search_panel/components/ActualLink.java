@@ -4,11 +4,9 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
-import iplm.gui.panel.search_panel.ASearchPanelStr;
-import iplm.gui.panel.search_panel.SearchPanelStrType;
+import iplm.gui.panel.search_panel.SearchPanelLineType;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -16,14 +14,15 @@ import java.awt.event.MouseEvent;
     Иконка поиск.
     Запросы, предлагаемые первые 10 вариантов по индексу, которые соответствую введенным символам.
  */
-public class ActualLink extends AInfoStr {
+public class ActualLink extends AInfoLine {
     private static FlatSVGIcon search_svg_icon = Resources.getSVGIcon("search.svg").derive(16,16);
     private JLabel search_icon;
 
     public ActualLink(String string) {
+        ID = -1;
         setText(string);
 
-        type = SearchPanelStrType.INFO;
+        type = SearchPanelLineType.INFO;
         search_icon = new JLabel(search_svg_icon);
         search_icon.setVisible(true);
 

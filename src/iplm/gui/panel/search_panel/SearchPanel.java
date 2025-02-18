@@ -2,7 +2,9 @@ package iplm.gui.panel.search_panel;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatLineBorder;
-import iplm.utility.ColorUtility;
+import iplm.data.history.RequestHistoryType;
+import iplm.gui.panel.search_panel.components.*;
+import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -25,11 +27,13 @@ import java.util.ArrayList;
 public class SearchPanel extends JPanel {
     private int current_height;
     private Color border_color = new Color(147, 179, 255);
+    private ArrayList<ASearchPanelLine> search_panel_lines;
 
     public SearchPanel() {
         setLayout(new MigLayout("inset 8 0 8 0, gap rel -2"));
         setBackground(Color.white);
         putClientProperty(FlatClientProperties.STYLE, "arc: 30");
+        search_panel_lines = new ArrayList<>();
         setBorder(new FlatLineBorder(new Insets(0,0,0,0), border_color, 1, 30));
         setOpaque(false);
         setVisible(false);
@@ -41,6 +45,40 @@ public class SearchPanel extends JPanel {
                 e.consume();
             }
         });
+    }
+
+    public int getLinesCount() { return search_panel_lines.size(); }
+
+    public void addHistoryLine(int id, String text, RequestHistoryType rh_type, ICloseSearchPanelLineListener listener) {
+        switch (rh_type) {
+            case RECENT_REQUEST:
+                search_panel_lines.add(new RecentRequest(id, text, listener));
+                break;
+            case USED_LINK:
+                search_panel_lines.add(new UsedLink(id, text, listener));
+                break;
+        }
+    }
+
+    public void addActualLine(DescriptionLineType type) {
+        search_panel_lines.add(new DescriptionLine(type.getDescription()));
+    }
+
+    public void addDescribeLine(String text) {
+        search_panel_lines.add(new ActualLink(text));
+    }
+
+    public void removeLine(int id) {
+        for (int i = 0; i < search_panel_lines.size(); i++) {
+            if (search_panel_lines.get(i).ID == id) {
+                search_panel_lines.remove(i);
+                break;
+            }
+        }
+    }
+
+    public void removeLines() {
+        search_panel_lines.clear();
     }
 
     public void updateSize(int width) {
@@ -55,20 +93,19 @@ public class SearchPanel extends JPanel {
         });
     }
 
-    public void updateInfo() { updateInfo(null); }
-
-    public void updateInfo(ArrayList<ASearchPanelStr> fields) {
+    public void updateLines() {
         SwingUtilities.invokeLater(() -> {
             removeAll();
             current_height = 0;
-            if (fields == null || fields.isEmpty()) setVisible(false);
+
+            if (search_panel_lines == null || search_panel_lines.isEmpty()) setVisible(false);
             else {
-                for (ASearchPanelStr str : fields) {
-                    if (str.type == SearchPanelStrType.DESCRIBE) {
+                for (ASearchPanelLine str : search_panel_lines) {
+                    if (str.type == SearchPanelLineType.DESCRIBE) {
                         add(str, "width 100%, gap 30 10 0 0, wrap");
                         current_height += str.getHeight() + str.getInsets().bottom;
                     }
-                    else if (str.type == SearchPanelStrType.INFO) {
+                    else if (str.type == SearchPanelLineType.INFO) {
                         add(str, "width 100%, height 44!, gap 5 5, wrap");
                         current_height += str.getHeight() + str.getInsets().bottom;
                     }
