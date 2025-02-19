@@ -116,6 +116,10 @@ public class SearchBar extends JTextField {
     public void addFocusAction(Runnable function) { focus_actions.add(function); }
     public void addUnfocusAction(Runnable function) { unfocus_actions.add(function); }
 
+    public void addTrailingComponent(JComponent component) {
+        putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, new IconContainer(component));
+    }
+
     public String getSearchText() {
         String result = getText().trim();
         if (result.equalsIgnoreCase(SEARCH_STRING_PLACEHOLDER)) result = "";

@@ -34,11 +34,11 @@ public class StorageHistory {
         RequestHistory result = null;
 
         for (int i = 0; i < r.size(); i++) {
-            RequestHistory temp = r.get(i);
-            if (temp.type != RequestHistoryType.EMPTY) {
+            RequestHistory storage_rh = r.get(i);
+            if (storage_rh.type != RequestHistoryType.EMPTY) {
                 String query = (String)params.get("Query");
-                String new_query = (String)params.get("Query");
-                if (query.equalsIgnoreCase(new_query)) return result;
+                String storage_query = (String)storage_rh.params.get("Query");
+                if (query.equalsIgnoreCase(storage_query)) return result;
             }
         }
 

@@ -1,10 +1,11 @@
-package iplm.gui.panel.search_panel.components;
+package iplm.gui.panel.search_panel.components.types;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
-import iplm.gui.panel.search_panel.SearchPanelLineType;
+import iplm.gui.panel.search_panel.components.AInfoLine;
+import iplm.gui.panel.search_panel.components.ASearchPanelLine;
 import iplm.gui.panel.search_panel.components.button.CloseButton;
 import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 
@@ -26,7 +27,7 @@ public class RecentRequest extends AInfoLine {
     public RecentRequest(int id, String string, ICloseSearchPanelLineListener close_btn_listener) {
         ID = id;
         setText(string);
-        type = SearchPanelLineType.INFO;
+        type = ASearchPanelLine.Type.INFO;
 
         close_btn = new CloseButton();
         close_btn_container = new IconContainer(close_btn);
@@ -59,6 +60,7 @@ public class RecentRequest extends AInfoLine {
                     }
                 });
             }
+
         });
     }
 }

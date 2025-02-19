@@ -5,7 +5,9 @@ import iplm.data.history.RequestHistoryType;
 import iplm.data.history.StorageHistory;
 import iplm.data.history.StorageHistoryType;
 import iplm.gui.button.AddButton;
-import iplm.gui.panel.search_panel.ASearchPanelLine;
+import iplm.gui.button.FilterButton;
+import iplm.gui.panel.details_filter.DetailsFilter;
+import iplm.gui.panel.search_panel.components.ASearchPanelLine;
 import iplm.gui.panel.search_panel.SearchPanel;
 import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 import iplm.gui.table.DefaultTable;
@@ -14,6 +16,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +27,9 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     private SearchBar m_search_bar;
     private SearchPanel m_search_panel;
     private AddButton m_add_detail_button;
+    private FilterButton m_filter_button;
+    private DetailsFilter m_details_filter_panel;
+
     private Runnable m_update_search_panel_action;
     private Runnable m_enter_btn_action;
     private Runnable m_tap_action;
@@ -39,19 +46,30 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
+        m_panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                m_panel.requestFocus();
+            }
+        });
         buildTable();
         buildSearchBar();
         buildSearchPanel();
         buildAddDetailButton();
+        buildDetailsFilter();
         arrangeComponents();
     }
 
     private void buildTable() {
         m_table = new DefaultTable();
+        m_table.addMouseClickAction(() -> m_details_filter_panel.setVisible(false));
+
         m_table.addColumns(new ArrayList<>(Arrays.asList("Name", "Type", "Size")));
-        m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
-        m_table.addLine(new ArrayList<>(Arrays.asList("Image.jpg", "Image", "2 MB")));
-        m_table.addLine(new ArrayList<>(Arrays.asList("Spreadsheet.xlsx", "Excel", "500 KB")));
+        for (int i = 0; i < 100; i++) {
+            m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
+            m_table.addLine(new ArrayList<>(Arrays.asList("Image.jpg", "Image", "2 MB")));
+            m_table.addLine(new ArrayList<>(Arrays.asList("Spreadsheet.xlsx", "Excel", "500 KB")));
+        }
     }
 
     private void buildSearchPanel() {
@@ -70,6 +88,9 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     private void buildSearchBar() {
         m_search_bar = new SearchBar();
+
+        m_filter_button = new FilterButton();
+        m_search_bar.addTrailingComponent(m_filter_button);
 
         m_enter_btn_action = () -> {
             String search_text = m_search_bar.getSearchText();
@@ -91,9 +112,6 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
                     m_search_panel.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, this);
                 }
             }
-
-            // add action link
-
             m_search_panel.updateLines();
             m_search_panel.updateSize(m_search_bar.getWidth());
         };
@@ -107,11 +125,23 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_add_detail_button.setToolTipText("Добавить деталь");
     }
 
+    private void buildDetailsFilter() {
+        m_details_filter_panel = new DetailsFilter();
+        m_filter_button.addAction(() -> {
+            if (m_details_filter_panel.isVisible()) m_details_filter_panel.setVisible(false);
+            else m_details_filter_panel.setVisible(true);
+        });
+    }
+
     private void arrangeComponents() {
-        m_panel.add(m_search_bar, "cell 0 0, height 40:pref:max, growx, pushx");
-        m_panel.add(m_search_panel, "pos 0al " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
-        m_panel.add(m_add_detail_button, "cell 1 0");
-        m_panel.add(m_table.getScrollPane(), "cell 0 1 2, grow, push");
+        int width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        width = width - width / 4;
+        m_panel.add(m_details_filter_panel, "pos (search_bar.x+search_bar.w-" + m_details_filter_panel.getPreferredSize().getWidth() + "px) " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
+        m_panel.add(m_search_panel, "pos search_bar.x " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
+
+        m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:" + width + ", growx, split 2, al center");
+        m_panel.add(m_add_detail_button, "al left, wrap");
+        m_panel.add(m_table.getScrollPane(), "grow, push");
         m_panel.setMinimumSize(new Dimension(300, 0));
     }
 
@@ -122,24 +152,4 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_search_panel.updateLines();
         m_search_panel.updateSize(m_search_bar.getWidth());
     }
-
-//    String[] columnNames = {"Name", "Type", "Size"};
-//
-//    // Данные для таблицы
-//    Object[][] data = {
-//            {"Document.txt", "Text File", "15 KB"},
-//            {"Image.jpg", "Image", "2 MB"},
-//            {"Spreadsheet.xlsx", "Excel", "500 KB"}
-//    };
-//
-//    // Создание таблицы
-//    JTable table = new JTable(data, columnNames);
-//
-//    // Добавление таблицы в ScrollPane
-//    JScrollPane scrollPane = new JScrollPane(table);
-//
-//    // Настройка окна
-//    setTitle("Simple JTable Example");
-//    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    setSize(400, 300);
 }

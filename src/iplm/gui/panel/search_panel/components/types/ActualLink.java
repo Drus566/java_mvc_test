@@ -1,10 +1,11 @@
-package iplm.gui.panel.search_panel.components;
+package iplm.gui.panel.search_panel.components.types;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
-import iplm.gui.panel.search_panel.SearchPanelLineType;
+import iplm.gui.panel.search_panel.components.AInfoLine;
+import iplm.gui.panel.search_panel.components.ASearchPanelLine;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -22,7 +23,7 @@ public class ActualLink extends AInfoLine {
         ID = -1;
         setText(string);
 
-        type = SearchPanelLineType.INFO;
+        type = ASearchPanelLine.Type.INFO;
         search_icon = new JLabel(search_svg_icon);
         search_icon.setVisible(true);
 

@@ -5,6 +5,7 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 import iplm.data.history.RequestHistoryType;
 import iplm.gui.panel.search_panel.components.*;
 import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
+import iplm.gui.panel.search_panel.components.types.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -60,7 +61,7 @@ public class SearchPanel extends JPanel {
         }
     }
 
-    public void addActualLine(DescriptionLineType type) {
+    public void addActualLine(DescriptionLine.Type type) {
         search_panel_lines.add(new DescriptionLine(type.getDescription()));
     }
 
@@ -82,38 +83,39 @@ public class SearchPanel extends JPanel {
     }
 
     public void updateSize(int width) {
-        SwingUtilities.invokeLater(() -> {
-            Dimension size = new Dimension(width, current_height);
-            setSize(size);
-            setMinimumSize(size);
-            setMaximumSize(size);
-            setPreferredSize(size);
-            revalidate();
-            repaint();
-        });
+        Dimension size = new Dimension(width, current_height);
+        setSize(size);
+        setMinimumSize(size);
+        setMaximumSize(size);
+        setPreferredSize(size);
+        revalidate();
+        repaint();
     }
 
     public void updateLines() {
-        SwingUtilities.invokeLater(() -> {
-            removeAll();
-            current_height = 0;
+        removeAll();
+        current_height = 0;
+        int line_info_height = 44;
+        int line_info_offset = 4;
+        int panel_insets = 16;
 
-            if (search_panel_lines == null || search_panel_lines.isEmpty()) setVisible(false);
-            else {
-                for (ASearchPanelLine str : search_panel_lines) {
-                    if (str.type == SearchPanelLineType.DESCRIBE) {
-                        add(str, "width 100%, gap 30 10 0 0, wrap");
-                        current_height += str.getHeight() + str.getInsets().bottom;
-                    }
-                    else if (str.type == SearchPanelLineType.INFO) {
-                        add(str, "width 100%, height 44!, gap 5 5, wrap");
-                        current_height += str.getHeight() + str.getInsets().bottom;
-                    }
+        if (search_panel_lines == null || search_panel_lines.isEmpty()) setVisible(false);
+        else {
+            for (ASearchPanelLine line : search_panel_lines) {
+                if (line.type == ASearchPanelLine.Type.DESCRIBE) {
+                    add(line, "width 100%, gap 30 10 0 0, wrap");
+                    current_height += line.getHeight() + line.getInsets().bottom;
                 }
-                if (current_height > 10) setVisible(true);
+                else if (line.type == ASearchPanelLine.Type.INFO) {
+                    add(line, "width 100%, height " + line_info_height + "!, gap 5 5, wrap");
+                    current_height += line.getPreferredSize().getHeight() + line.getInsets().bottom + line.getInsets().top + line_info_offset;
+                }
             }
+            current_height += panel_insets;
             revalidate();
             repaint();
-        });
+
+            setVisible(true);
+        }
     }
 }

@@ -17,6 +17,7 @@ public class AddButton extends JButton {
     private FlatSVGIcon.ColorFilter color_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 182, 40));
     private FlatSVGIcon.ColorFilter hover_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 229, 42));
     private FlatSVGIcon.ColorFilter press_filter = new FlatSVGIcon.ColorFilter(c -> new Color(58, 147, 65));
+    private boolean in = false;
 
     public AddButton() {
         actions = new ArrayList<>();
@@ -27,7 +28,7 @@ public class AddButton extends JButton {
         icon.setColorFilter(color_filter);
 
         putClientProperty(FlatClientProperties.STYLE, "arc: 100");
-        
+
         addActionListener(e -> {
             for (Runnable function : actions) {
                 function.run();
@@ -37,12 +38,14 @@ public class AddButton extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
+                in = true;
                 icon.setColorFilter(hover_filter);
                 repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
+                in = false;
                 icon.setColorFilter(color_filter);
                 repaint();
             }
@@ -55,7 +58,8 @@ public class AddButton extends JButton {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                icon.setColorFilter(color_filter);
+                if (in) icon.setColorFilter(hover_filter);
+                else icon.setColorFilter(color_filter);
                 repaint();
             }
         });
