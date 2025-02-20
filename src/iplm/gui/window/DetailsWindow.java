@@ -62,8 +62,10 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     private void buildTable() {
         m_table = new DefaultTable();
-        m_table.addMouseClickAction(() -> m_details_filter_panel.setVisible(false));
-
+//        m_table.addTableValueChangeAction(() -> {
+//            m_details_filter_panel.revalidate();
+//            m_details_filter_panel.repaint();
+//        });
         m_table.addColumns(new ArrayList<>(Arrays.asList("Name", "Type", "Size")));
         for (int i = 0; i < 100; i++) {
             m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
@@ -80,7 +82,9 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
             m_search_panel.updateSize(m_search_bar.getWidth());
         };
 
-        m_component_resized_callbacks.add(() -> m_search_panel.updateSize(m_search_bar.getWidth()));
+        m_component_resized_callbacks.add(() -> {
+            m_search_panel.updateSize(m_search_bar.getWidth());
+        });
 
         m_search_bar.addFocusAction(m_update_search_panel_action);
         m_search_bar.addUnfocusAction(() -> m_search_panel.setVisible(false));
@@ -139,10 +143,10 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_panel.add(m_details_filter_panel, "pos (search_bar.x+search_bar.w-" + m_details_filter_panel.getPreferredSize().getWidth() + "px) " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
         m_panel.add(m_search_panel, "pos search_bar.x " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
 
+//        m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:max, growx, split 2");
         m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:" + width + ", growx, split 2, al center");
         m_panel.add(m_add_detail_button, "al left, wrap");
         m_panel.add(m_table.getScrollPane(), "grow, push");
-        m_panel.setMinimumSize(new Dimension(300, 0));
     }
 
     @Override

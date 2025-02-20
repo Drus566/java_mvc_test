@@ -1,4 +1,9 @@
 https://habr.com/ru/articles/137347/
+https://objectcomputing.com/resources/publications/sett/may-2009-miglayout-the-one-java-layout-manager-that-does-it-all
+https://docs.oracle.com/javase/8/docs/api/javax/swing/JLayer.html
+https://youtu.be/W3wkSboz9CA
+https://youtu.be/bfn56kAsq4I
+http://weblookandfeel.com
 
 PropertyChangeSupport в Swing - это служебный класс, который обеспечивает механизм уведомления об изменениях свойств объекта.
 Основные характеристики
