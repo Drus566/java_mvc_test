@@ -1,7 +1,10 @@
 package iplm.mvc.builder.component;
 
+import java.util.ArrayList;
+
 public enum ViewComponent {
-    DetailsView(true, "DetailsView", "DetailsWindow", true, false);
+    DetailsView(true, "DetailsView", "DetailsWindow", true, false),
+    DetailСontrolView(true, "DetailСontrolView", "DetailСontrolWindow", true, false);
 
     private boolean m_active;
     private String m_name;

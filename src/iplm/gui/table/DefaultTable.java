@@ -4,7 +4,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultTable {
@@ -47,8 +46,5 @@ public class DefaultTable {
         for (List<String> line : many_lines) {
             addLine(line);
         }
-    }
-
-    public void addMouseClickAction(Runnable action) {
     }
 }

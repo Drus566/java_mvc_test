@@ -8,11 +8,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 public class DetailsFilter extends JPanel {
     LabelField l_opt_width, l_opt_depth, l_opt_height, l_opt_weight;

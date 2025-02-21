@@ -31,6 +31,7 @@ public abstract class AWindow {
     }
 
     public JPanel getPanel() { return m_panel; }
+    public JLayer getLayer() { return m_layer; }
     public JFrame getFrame() { return m_frame; }
 
     public abstract void build();

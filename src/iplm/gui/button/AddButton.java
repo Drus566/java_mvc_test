@@ -4,68 +4,36 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import iplm.Resources;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
-public class AddButton extends JButton {
-    private List<Runnable> actions;
-    private FlatSVGIcon icon;
-    private FlatSVGIcon.ColorFilter color_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 182, 40));
-    private FlatSVGIcon.ColorFilter hover_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 229, 42));
-    private FlatSVGIcon.ColorFilter press_filter = new FlatSVGIcon.ColorFilter(c -> new Color(58, 147, 65));
-    private boolean in = false;
+public class AddButton extends ASVGButton {
+    private static final String ICON_NAME = "add.svg";
+    private static final String TOOLTIP = "Добавить";
+    private static final int WIDTH = 24;
+    private static final int HEIGHT = 24;
 
-    public AddButton() {
-        actions = new ArrayList<>();
-
-        icon = Resources.getSVGIcon("add.svg").derive(24,24);
-        setIcon(icon);
-        setContentAreaFilled(false);
-        icon.setColorFilter(color_filter);
-
-        putClientProperty(FlatClientProperties.STYLE, "arc: 100");
-
-        addActionListener(e -> {
-            for (Runnable function : actions) {
-                function.run();
-            }
-        });
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                in = true;
-                icon.setColorFilter(hover_filter);
-                repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                in = false;
-                icon.setColorFilter(color_filter);
-                repaint();
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                icon.setColorFilter(press_filter);
-                repaint();
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (in) icon.setColorFilter(hover_filter);
-                else icon.setColorFilter(color_filter);
-                repaint();
-            }
-        });
+    public AddButton(int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
     }
 
-    public void addAction(Runnable function) {
-        actions.add(function);
+    public AddButton() {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+    }
+
+    private void init(int w, int h) {
+        color_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 182, 40));
+        hover_filter = new FlatSVGIcon.ColorFilter(c -> new Color(14, 229, 42));
+        press_filter = new FlatSVGIcon.ColorFilter(c -> new Color(58, 147, 65));
+
+        icon = Resources.getSVGIcon(ICON_NAME).derive(w, h);
+
+        putClientProperty(FlatClientProperties.STYLE, "arc: 100");
+        setContentAreaFilled(false);
+        setToolTipText(TOOLTIP);
+
     }
 }
