@@ -26,7 +26,7 @@ public class DefaultTable {
         m_scroll_pane.putClientProperty(FlatClientProperties.STYLE, "arc: 30");
         m_table.getTableHeader().setReorderingAllowed(false);
         m_table.getTableHeader().setFocusable(false);
-        m_table.setFocusable(false);
+//        m_table.setFocusable(false);
     }
 
     public JTable getTable() { return m_table; }

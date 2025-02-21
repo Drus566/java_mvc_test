@@ -12,6 +12,7 @@ public abstract class AWindow {
     protected JPanel m_panel;
     protected JMenuBar m_menu_bar;
     protected JMenu m_menu;
+    protected JLayer m_layer;
 
     protected ArrayList<Runnable> m_component_resized_callbacks;
 
@@ -36,7 +37,8 @@ public abstract class AWindow {
 
     protected void afterBuild() {
         setName(this.getClass().getSimpleName());
-        m_frame.setContentPane(m_panel);
+        if (m_layer != null) m_frame.add(m_layer);
+        else m_frame.setContentPane(m_panel);
         m_frame.pack();
         hide();
     }

@@ -6,6 +6,9 @@ import iplm.data.history.StorageHistory;
 import iplm.data.history.StorageHistoryType;
 import iplm.gui.button.AddButton;
 import iplm.gui.button.FilterButton;
+import iplm.gui.layer.intercept.IInterceptDispatchAction;
+import iplm.gui.layer.intercept.IInterceptPaintAction;
+import iplm.gui.layer.intercept.InterceptLayer;
 import iplm.gui.panel.details_filter.DetailsFilter;
 import iplm.gui.panel.search_panel.components.ASearchPanelLine;
 import iplm.gui.panel.search_panel.SearchPanel;
@@ -57,15 +60,57 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         buildSearchPanel();
         buildAddDetailButton();
         buildDetailsFilter();
+        buildInterceptLayer();
         arrangeComponents();
+    }
+
+    public void buildInterceptLayer() {
+        long all_events_mask = AWTEvent.MOUSE_EVENT_MASK |
+                AWTEvent.MOUSE_MOTION_EVENT_MASK |
+                AWTEvent.MOUSE_WHEEL_EVENT_MASK |
+                AWTEvent.KEY_EVENT_MASK |
+                AWTEvent.FOCUS_EVENT_MASK |
+                AWTEvent.ACTION_EVENT_MASK |
+                AWTEvent.INPUT_METHOD_EVENT_MASK |
+                AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK |
+                AWTEvent.ADJUSTMENT_EVENT_MASK |
+                AWTEvent.COMPONENT_EVENT_MASK |
+                AWTEvent.CONTAINER_EVENT_MASK |
+                AWTEvent.INVOCATION_EVENT_MASK |
+                AWTEvent.PAINT_EVENT_MASK |
+                AWTEvent.HIERARCHY_EVENT_MASK |
+                AWTEvent.ITEM_EVENT_MASK |
+                AWTEvent.TEXT_EVENT_MASK |
+                AWTEvent.WINDOW_EVENT_MASK |
+                AWTEvent.WINDOW_FOCUS_EVENT_MASK |
+                AWTEvent.WINDOW_STATE_EVENT_MASK;
+
+        InterceptLayer il = new InterceptLayer();
+//        il.addPaintAction((g, c) -> {
+////            System.out.println("C1: " + c.getClass().getSimpleName());
+////            System.out.println("C2: " + c.getComponent(0).getClass().getSimpleName());
+//
+//            Rectangle local_table_rect = SwingUtilities.convertRectangle(m_table.getTable(), m_table.getTable().getVisibleRect(), m_details_filter_panel);
+////            System.out.println("Local table rect: " + local_table_rect);
+//
+//            if (m_details_filter_panel.getVisibleRect().intersects(local_table_rect)) {
+////                Rectangle intersection = m_details_filter_panel.getVisibleRect().intersection(local_table_rect);
+////                System.out.println("Intersection: " + intersection);
+//            }
+//
+//            c.paint(g);
+//        });
+
+//        il.addDispatchAction((e, l) -> {
+//        });
+
+        m_layer = new JLayer<>(m_panel, il);
     }
 
     private void buildTable() {
         m_table = new DefaultTable();
-//        m_table.addTableValueChangeAction(() -> {
-//            m_details_filter_panel.revalidate();
-//            m_details_filter_panel.repaint();
-//        });
+
+        // EXAMPLE DATA FILLs
         m_table.addColumns(new ArrayList<>(Arrays.asList("Name", "Type", "Size")));
         for (int i = 0; i < 100; i++) {
             m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
