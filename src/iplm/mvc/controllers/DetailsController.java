@@ -1,18 +1,21 @@
 package iplm.mvc.controllers;
 
+import iplm.managers.WindowsManager;
 import iplm.mvc.models.DetailModel;
-import iplm.mvc.views.detail.DetailsView;
-
-import javax.swing.*;
+import iplm.mvc.views.DetailControlView;
+import iplm.mvc.views.DetailsView;
 
 public class DetailsController implements IController {
     private DetailModel m_model;
-    private DetailsView m_view;
-    private DetailsView
+    private DetailsView m_details_view;
+    private DetailControlView m_detail_control_view;
 
-    public DetailsController(DetailModel model, DetailsView view) {
+    public DetailsController(DetailModel model, DetailsView detail_view, DetailControlView detail_control_view) {
         m_model = model;
-        m_view = view;
+        m_details_view = detail_view;
+        m_detail_control_view = detail_control_view;
+
+        bindActions();
     }
 
     public void getAll() {
@@ -22,6 +25,10 @@ public class DetailsController implements IController {
             m_table.fill(data);
         )
          */
+    }
+
+    public void bindActions() {
+        m_details_view.getDetailsWindow().getAddDetailButton().addAction(() -> WindowsManager.getInstance().showWindow(m_detail_control_view.getDetailControlWindow().getName()));
     }
 
     public void show() {

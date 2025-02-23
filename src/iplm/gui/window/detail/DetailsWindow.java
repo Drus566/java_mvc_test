@@ -15,6 +15,8 @@ import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListen
 import iplm.gui.table.DefaultTable;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.AWindow;
+import iplm.managers.WindowsManager;
+import iplm.mvc.views.DetailControlView;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -56,6 +58,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
                 m_panel.requestFocus();
             }
         });
+
         buildTable();
         buildSearchBar();
         buildSearchPanel();
