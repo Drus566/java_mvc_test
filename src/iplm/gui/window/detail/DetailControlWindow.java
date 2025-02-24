@@ -6,8 +6,6 @@ import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
@@ -27,9 +25,12 @@ public class DetailControlWindow extends AWindow {
 //    public SearchBar getSearchBar() { return m_search_bar; }
 //    public AddButton getAddDetailButton() { return m_add_detail_button; }
 
+    private boolean edit = false;
+    private boolean create = false;
+
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10, debug"));
+        m_panel = new JPanel(new MigLayout("inset 10"));
 
         m_name = new InputField("Наименование", "", 160);
         m_decimal_name = new InputField("Децимальный номер", "", 160);
@@ -56,6 +57,7 @@ public class DetailControlWindow extends AWindow {
                 m_panel.remove(d);
                 m_panel.revalidate();
                 m_panel.repaint();
+                m_detail_parameters.remove(d);
             });
             d.setEditable(false);
         }
@@ -68,7 +70,22 @@ public class DetailControlWindow extends AWindow {
         m_add_parameter.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 m_panel.remove(m_add_parameter);
-                m_panel.add(new DetailParameter(160), "wrap");
+                DetailParameter dp = new DetailParameter(160);
+                m_detail_parameters.add(dp);
+                dp.setVisibleDeleteButton(false);
+                dp.setEditable(false);
+                if (edit || create) {
+                    dp.setVisibleDeleteButton(true);
+                    dp.setEditable(true);
+                }
+                dp.addDeleteAction(() -> {
+                    m_panel.remove(dp);
+                    m_panel.revalidate();
+                    m_panel.repaint();
+                    m_detail_parameters.remove(dp);
+                });
+                m_panel.add(dp, "wrap");
+
                 m_panel.add(m_add_parameter);
                 m_panel.revalidate();
                 m_panel.repaint();
@@ -76,19 +93,106 @@ public class DetailControlWindow extends AWindow {
             });
         });
 
-        delete_parameter_action = () -> {
-            m_panel.remove(d);
-            m_panel.revalidate();
-            m_panel.repaint();
-        }
-//        m_describe = new JTextArea();
+        m_edit.addActionListener(e -> {
+            if (m_id.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Чтобы редактировать, выберите деталь или создайте деталь");
+                return;
+            }
+            editMode();
+        });
+        m_add.addActionListener(e -> createMode());
+        m_remove.addActionListener(e -> {
+            int result = JOptionPane.showConfirmDialog(null, "Вы уверены?", "Удалить", JOptionPane.YES_NO_OPTION);
+            if (result == 0) {
+                // TODO action
+                JOptionPane.showMessageDialog(null, "Успешно");
+                m_id = "";
+            }
+        });
 
-//        buildTable();
-//        buildSearchBar();
-//        buildSearchPanel();
-//        buildAddDetailButton();
-//        buildDetailsFilter();
-//        buildInterceptLayer();
-//        arrangeComponents();
+        if (create) createMode();
+        else if (edit) editMode();
+        else {
+            m_add_parameter.setVisible(false);
+            for (DetailParameter dp : m_detail_parameters) {
+                dp.setVisibleDeleteButton(false);
+            }
+        }
+    }
+
+    public void doCreateMode() {
+        if (edit) {
+            JOptionPane.showMessageDialog(null, "Деталь в режиме редактирования");
+            return;
+        }
+        else if (!create) createMode();
+    }
+    public void doEditMode() {
+        if (create) {
+            JOptionPane.showMessageDialog(null, "Деталь в режиме создания");
+            return;
+        }
+        if (!edit) editMode();
+    }
+
+    private void createMode() {
+        if (!create) {
+            toChangeMode();
+            m_edit.setVisible(false);
+            m_remove.setVisible(false);
+            m_add.setText("Готово");
+            create = true;
+        }
+        else {
+            toViewMode();
+            m_edit.setVisible(true);
+            m_remove.setVisible(true);
+            m_add.setText("Создать");
+            create = false;
+            JOptionPane.showMessageDialog(null, "Успешно");
+        }
+    }
+
+    private void editMode() {
+        if (!edit) {
+            toChangeMode();
+            m_add.setVisible(false);
+            m_remove.setVisible(false);
+            m_edit.setText("Сохранить");
+            edit = true;
+        }
+        else {
+            toViewMode();
+            m_add.setVisible(true);
+            m_remove.setVisible(true);
+            m_edit.setText("Редактировать");
+            edit = false;
+            JOptionPane.showMessageDialog(null, "Успешно");
+        }
+    }
+
+
+    private void toViewMode() {
+        m_add_parameter.setVisible(false);
+
+        m_name.setEditable(false);
+        m_decimal_name.setEditable(false);
+
+        for (DetailParameter dp : m_detail_parameters) {
+            dp.setEditable(false);
+            dp.setVisibleDeleteButton(false);
+        }
+    }
+
+    private void toChangeMode() {
+        m_add_parameter.setVisible(true);
+
+        m_name.setEditable(true);
+        m_decimal_name.setEditable(true);
+
+        for (DetailParameter dp : m_detail_parameters) {
+            dp.setEditable(true);
+            dp.setVisibleDeleteButton(true);
+        }
     }
 }

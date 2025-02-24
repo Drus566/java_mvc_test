@@ -1,15 +1,39 @@
 package iplm.data.service;
 
-import iplm.data.repository.IDetailRepository;
+import iplm.data.repository.RepositoryType;
+import iplm.data.repository.detail.DetailRepository;
+import iplm.data.types.Detail;
 
 public class DetailService {
-    private IDetailRepository m_detail_repository;
+    DetailRepository m_repository;
+    RepositoryType m_repository_type;
 
-    public DetailService(IDetailRepository detail_repository) {
-        m_detail_repository = detail_repository;
+    public void setRepositoryType(RepositoryType type) {
+        m_repository_type = type;
+    }
+
+    public DetailService(RepositoryType type) {
+        m_repository_type = type;
     }
 
     public DetailService() {
         // Заголовки столбцов
+    }
+
+    /* return id */
+    public String add(Detail d) {
+        m_repository.add(d);
+        return "";
+    }
+
+    /* return id */
+    public String remove(String id) {
+        m_repository.remove(id);
+        return "";
+    }
+
+    /* return id */
+    public String update(Detail d) {
+        return "";
     }
 }

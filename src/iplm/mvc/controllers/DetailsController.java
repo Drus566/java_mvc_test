@@ -1,5 +1,6 @@
 package iplm.mvc.controllers;
 
+import iplm.gui.window.detail.DetailControlWindow;
 import iplm.managers.WindowsManager;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.DetailControlView;
@@ -28,7 +29,12 @@ public class DetailsController implements IController {
     }
 
     public void bindActions() {
-        m_details_view.getDetailsWindow().getAddDetailButton().addAction(() -> WindowsManager.getInstance().showWindow(m_detail_control_view.getDetailControlWindow().getName()));
+        m_details_view.getDetailsWindow().getAddDetailButton().addAction(() -> {
+//            WindowsManager.getInstance().showWindow(m_detail_control_view.getDetailControlWindow().getName());
+            DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
+            dcw.doCreateMode();
+            dcw.show();
+        });
     }
 
     public void show() {

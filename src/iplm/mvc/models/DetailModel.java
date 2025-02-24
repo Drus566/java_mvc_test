@@ -16,6 +16,21 @@ public class DetailModel implements IModel, IObservable<Detail> {
         m_service = new DetailService();
     }
 
+    /* return id */
+    public String add(Detail d) {
+        return m_service.add(d);
+    }
+
+    /* return id */
+    public String remove(String id) {
+        return m_service.remove(id);
+    }
+
+    /* return id */
+    public String update(Detail d) {
+        return m_service.update(d);
+    }
+
     @Override
     public void addObserver(IObserver<Detail> observer) { m_observers.add(observer); }
 

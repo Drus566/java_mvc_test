@@ -6,8 +6,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class DetailParameter extends JPanel {
@@ -46,14 +44,15 @@ public class DetailParameter extends JPanel {
         add(m_value, "width " + width_name + "pref:" + width_name*2);
         add(m_delete_btn);
 
-        m_delete_btn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (Runnable a : m_delete_actions) {
-                    SwingUtilities.invokeLater(a);
-                }
+        m_delete_btn.addActionListener(e -> {
+            for (Runnable a : m_delete_actions) {
+                SwingUtilities.invokeLater(a);
             }
         });
+    }
+
+    public void setVisibleDeleteButton(boolean flag) {
+        m_delete_btn.setVisible(flag);
     }
 
     public void addDeleteAction(Runnable action) { m_delete_actions.add(action); }
