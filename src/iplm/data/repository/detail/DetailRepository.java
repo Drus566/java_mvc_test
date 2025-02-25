@@ -8,13 +8,23 @@ import java.util.List;
 
 public class DetailRepository {
     List<Detail> m_details;
+    OrientDBDetailHandler m_orient_db_handler;
 
     public DetailRepository() {
+        m_orient_db_handler = new OrientDBDetailHandler();
         m_details = new ArrayList<>();
     }
 
-    public String add(Detail detail) {
-        return "";
+    public String add(Detail detail, RepositoryType type) {
+        String result = "";
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.add(detail);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
     }
 
     public String remove(String id) {

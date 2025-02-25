@@ -13,18 +13,14 @@ public class DetailService {
     }
 
     public DetailService(RepositoryType type) {
+        m_repository = new DetailRepository();
         m_repository_type = type;
     }
 
-    public DetailService() {
-        // Заголовки столбцов
-    }
+    public DetailService() {}
 
     /* return id */
-    public String add(Detail d) {
-        m_repository.add(d);
-        return "";
-    }
+    public String add(Detail d) { return m_repository.add(d, m_repository_type); }
 
     /* return id */
     public String remove(String id) {

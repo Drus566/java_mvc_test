@@ -1,5 +1,6 @@
 package iplm;
 
+import iplm.data.db.OrientDBDriver;
 import iplm.data.history.StorageHistory;
 import iplm.managers.ApplicationManager;
 import iplm.style.Style;
@@ -18,6 +19,7 @@ public class Application {
     }
 
     public Application() {
+        OrientDBDriver.getInstance().init("remote:doc.sbp-invertor.ru", "root", "root", "test", "root", "root");
         StorageHistory.getInstance().init();
         Resources.getInstance().init();
         Style.getInstance().init();

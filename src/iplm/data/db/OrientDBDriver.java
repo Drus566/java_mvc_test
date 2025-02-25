@@ -15,6 +15,9 @@ public class OrientDBDriver {
     private OrientDB m_db;
     private ODatabaseSession m_session;
 
+    public OrientDB getDB() { return m_db; }
+    public ODatabaseSession getSession() { return m_session; }
+
     public OrientDBDriver() {}
 
     public void connect() { connect(DEFAULT_ADDRESS, DEFAULT_USERNAME, DEFAULT_PASSWORD); }

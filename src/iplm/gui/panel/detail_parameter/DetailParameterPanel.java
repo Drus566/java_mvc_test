@@ -8,19 +8,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class DetailParameter extends JPanel {
+public class DetailParameterPanel extends JPanel {
     private JButton m_delete_btn;
     private JComboBox<String> m_name;
     private JTextField m_value;
 
     private ArrayList<Runnable> m_delete_actions;
 
+    public String getKey() { return (String)m_name.getSelectedItem(); }
+    public String getValue() { return m_value.getText(); }
+
     public void setEditable(boolean flag) {
         m_name.setEnabled(flag);
         m_value.setEditable(flag);
     }
 
-    public DetailParameter(int width_name) {
+    public DetailParameterPanel(int width_name) {
         Color disabled_background = new Color(255, 255, 255, 255);
         Color disabled_text = new Color(0, 0, 0, 255);
 

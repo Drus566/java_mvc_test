@@ -4,15 +4,28 @@ import java.util.ArrayList;
 
 public class Detail {
     /* Уникальный айди (для БД) */
-    private int id;
-    /* Уникальное наименование (например molotok) */
-    private String uniq_name;
+    public int id;
     /* Имя (например Молоток) */
-    private String name;
+    public String name;
     /* Децимальный номер */
-    private String decimal_number;
+    public String decimal_number;
     /* Описание */
-    private String description;
+    public String description;
     /* Список параметров */
-    private ArrayList<DetailParameter> params;
+    public ArrayList<DetailParameter> params;
+
+    /* Занят ли */
+    public boolean busy;
+    /* Удален ли */
+    public boolean deleted;
+    /* Пользователь, кем занят */
+    public User user_busy;
+    /* Таймастамп создания */
+    public String created_at;
+    /* Таймстамп обновления */
+    public String updated_at;
+
+    public Detail() {
+        params = new ArrayList<>();
+    }
 }

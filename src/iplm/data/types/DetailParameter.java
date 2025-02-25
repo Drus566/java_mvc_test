@@ -1,38 +1,36 @@
 package iplm.data.types;
 
-import java.util.ArrayList;
-
 public class DetailParameter {
     /* Тип данных параметра */
-    enum Type {
-        INT,
-        FLOAT,
-        STRING,
-        RANGE,
-        BOOL,
+    public enum Type {
+        INT("Целое"),
+        FLOAT("С плавающей точкой"),
+        STRING("Строка"),
+        RANGE("Диапазон"),
+        BOOL("Булеан");
+
+        private String m_string;
+        Type(String string) { m_string = string; }
+        public String s() { return m_string; }
     }
 
-    /* Уникальное имя (например material) */
-    String uniq_name;
     /* Имя (например Материал) */
-    String name;
+    public String name;
     /* Тип данных */
-    Type type;
+    public String type;
     /* Сам объект */
-    Object value;
+    public Object value;
     /* Перечисление вариантов значения параметра */
-    ArrayList<Object> vals_enum;
+//    public ArrayList<Object> vals_enum;
 
     /* Доступно ли кастомное значение */
-    boolean custom_val;
+    public boolean custom_val;
     /* Хранится ли вместо единичного значения перечисление значений */
-    boolean enumeration;
+    public boolean enumeration;
     /* Удален (скрыт) ли параметр */
-    boolean deleted;
-    /* Редактируемый ли параметр */
-    boolean edited;
+    public boolean deleted;
     /* Занят ли параметр (например редактируется другим) */
-    boolean busy;
+    public boolean busy;
     /* Кем занят параметр */
-    String user_busy;
+    public String user_busy;
 }

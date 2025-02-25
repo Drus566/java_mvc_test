@@ -1,7 +1,7 @@
 package iplm.gui.window.detail;
 
 import iplm.gui.textfield.InputField;
-import iplm.gui.panel.detail_parameter.DetailParameter;
+import iplm.gui.panel.detail_parameter.DetailParameterPanel;
 import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
@@ -11,10 +11,10 @@ import java.util.ArrayList;
 public class DetailControlWindow extends AWindow {
     private String m_id;
     private JButton m_add, m_edit, m_remove, m_add_parameter;
-    private InputField m_name, m_decimal_name;
-    private ArrayList<DetailParameter> m_detail_parameters;
+    public InputField m_name, m_decimal_name;
+    public ArrayList<DetailParameterPanel> m_detail_parameters;
 
-    private Runnable delete_parameter_action;
+    public JButton getCreateButton() { return m_add; }
 
     public DetailControlWindow() {
         build();
@@ -35,9 +35,9 @@ public class DetailControlWindow extends AWindow {
         m_name = new InputField("Наименование", "", 160);
         m_decimal_name = new InputField("Децимальный номер", "", 160);
         m_detail_parameters = new ArrayList<>();
-        m_detail_parameters.add(new DetailParameter(160));
-        m_detail_parameters.add(new DetailParameter(160));
-        m_detail_parameters.add(new DetailParameter(160));
+        m_detail_parameters.add(new DetailParameterPanel(160));
+        m_detail_parameters.add(new DetailParameterPanel(160));
+        m_detail_parameters.add(new DetailParameterPanel(160));
 
         m_id = new String();
         m_add = new JButton("Создать");
@@ -51,7 +51,7 @@ public class DetailControlWindow extends AWindow {
         m_panel.add(m_name, "al center, pushx, growx, wrap");
         m_panel.add(m_decimal_name, "al center, pushx, growx, wrap");
 
-        for (DetailParameter d : m_detail_parameters) {
+        for (DetailParameterPanel d : m_detail_parameters) {
             m_panel.add(d, "pushx, growx, wrap");
             d.addDeleteAction(() -> {
                 m_panel.remove(d);
@@ -70,7 +70,7 @@ public class DetailControlWindow extends AWindow {
         m_add_parameter.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 m_panel.remove(m_add_parameter);
-                DetailParameter dp = new DetailParameter(160);
+                DetailParameterPanel dp = new DetailParameterPanel(160);
                 m_detail_parameters.add(dp);
                 dp.setVisibleDeleteButton(false);
                 dp.setEditable(false);
@@ -114,7 +114,7 @@ public class DetailControlWindow extends AWindow {
         else if (edit) editMode();
         else {
             m_add_parameter.setVisible(false);
-            for (DetailParameter dp : m_detail_parameters) {
+            for (DetailParameterPanel dp : m_detail_parameters) {
                 dp.setVisibleDeleteButton(false);
             }
         }
@@ -149,7 +149,6 @@ public class DetailControlWindow extends AWindow {
             m_remove.setVisible(true);
             m_add.setText("Создать");
             create = false;
-            JOptionPane.showMessageDialog(null, "Успешно");
         }
     }
 
@@ -178,7 +177,7 @@ public class DetailControlWindow extends AWindow {
         m_name.setEditable(false);
         m_decimal_name.setEditable(false);
 
-        for (DetailParameter dp : m_detail_parameters) {
+        for (DetailParameterPanel dp : m_detail_parameters) {
             dp.setEditable(false);
             dp.setVisibleDeleteButton(false);
         }
@@ -190,7 +189,7 @@ public class DetailControlWindow extends AWindow {
         m_name.setEditable(true);
         m_decimal_name.setEditable(true);
 
-        for (DetailParameter dp : m_detail_parameters) {
+        for (DetailParameterPanel dp : m_detail_parameters) {
             dp.setEditable(true);
             dp.setVisibleDeleteButton(true);
         }

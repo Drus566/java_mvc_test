@@ -1,5 +1,6 @@
 package iplm.mvc.models;
 
+import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
@@ -12,9 +13,7 @@ public class DetailModel implements IModel, IObservable<Detail> {
     private List<IObserver<Detail>> m_observers = new ArrayList<>();
     private DetailService m_service;
 
-    public DetailModel() {
-        m_service = new DetailService();
-    }
+    public DetailModel() { m_service = new DetailService(RepositoryType.ORIENTDB); }
 
     /* return id */
     public String add(Detail d) {
