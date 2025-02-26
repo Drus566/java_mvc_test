@@ -38,7 +38,6 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     private Runnable m_update_search_panel_action;
     private Runnable m_enter_btn_action;
-    private Runnable m_tap_action;
 
     public DetailsWindow() {
         build();
@@ -48,6 +47,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     public DefaultTable getTable() { return m_table; }
     public SearchBar getSearchBar() { return m_search_bar; }
     public AddButton getAddDetailButton() { return m_add_detail_button; }
+    public SearchPanel getSearchPanel() { return m_search_panel; }
 
     @Override
     public void build() {
@@ -112,21 +112,6 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 //            StorageHistory.getInstance().saveHistory();
         };
 
-        m_tap_action = () -> {
-            ArrayList<RequestHistory> request_history = StorageHistory.getInstance().search(StorageHistoryType.DETAILS, m_search_bar.getSearchText());
-            m_search_panel.removeLines();
-
-            if (request_history != null) {
-                for (int i = 0; i < request_history.size(); i++) {
-                    RequestHistory rh = request_history.get(i);
-                    m_search_panel.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, this);
-                }
-            }
-            m_search_panel.updateLines();
-            m_search_panel.updateSize(m_search_bar.getWidth());
-        };
-
-        m_search_bar.addTapAction(m_tap_action);
         m_search_bar.addEnterButtonAction(m_enter_btn_action);
     }
 

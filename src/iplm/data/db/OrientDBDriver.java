@@ -18,6 +18,10 @@ public class OrientDBDriver {
     public OrientDB getDB() { return m_db; }
     public ODatabaseSession getSession() { return m_session; }
 
+    private String m_last_error;
+    public String getLastError() { return m_last_error; }
+    public void setLastError(String last_error) { m_last_error = last_error; }
+
     public OrientDBDriver() {}
 
     public void connect() { connect(DEFAULT_ADDRESS, DEFAULT_USERNAME, DEFAULT_PASSWORD); }

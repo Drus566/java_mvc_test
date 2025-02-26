@@ -15,6 +15,18 @@ public class DetailRepository {
         m_details = new ArrayList<>();
     }
 
+    public ArrayList<Detail> get(String request, RepositoryType type) {
+        ArrayList<Detail> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.get(request);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
     public String add(Detail detail, RepositoryType type) {
         String result = "";
         switch (type) {

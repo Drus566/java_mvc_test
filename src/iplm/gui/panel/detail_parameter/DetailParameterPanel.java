@@ -15,8 +15,8 @@ public class DetailParameterPanel extends JPanel {
 
     private ArrayList<Runnable> m_delete_actions;
 
-    public String getKey() { return (String)m_name.getSelectedItem(); }
-    public String getValue() { return m_value.getText(); }
+    public String getKey() { return m_name.getSelectedItem().toString().trim(); }
+    public String getValue() { return m_value.getText().trim(); }
 
     public void setEditable(boolean flag) {
         m_name.setEnabled(flag);
@@ -37,7 +37,7 @@ public class DetailParameterPanel extends JPanel {
         m_name.putClientProperty(FlatClientProperties.STYLE, "disabledBackground: " + ColorUtility.colourToString(disabled_background) + "; disabledForeground: " + ColorUtility.colourToString(disabled_text));
         m_value.putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
 
-        m_value.setText("EXAMPLE");
+//        m_value.setText("");
 
         m_name.addItem("Материал");
         m_name.addItem("Толщина");

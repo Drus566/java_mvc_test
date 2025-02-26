@@ -5,6 +5,10 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResult;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import com.orientechnologies.orient.core.sql.query.OSQLQuery;
 import iplm.data.db.OrientDBDriver;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailParameter;
@@ -12,6 +16,11 @@ import iplm.utility.DateTimeUtility;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//SELECT name
+//        FROM Detail
+//        WHERE name LIKE '%ш%%и%'
+//        LIMIT 5;
 
 public class OrientDBDetailHandler {
     enum C {
@@ -24,6 +33,7 @@ public class OrientDBDetailHandler {
     }
 
     enum P {
+        rid("@rid"),
         name("name"),
         decimal_number("decimal_number"),
         busy("busy"),
@@ -49,6 +59,56 @@ public class OrientDBDetailHandler {
     OrientDBDetailHandler() {
         m_db = OrientDBDriver.getInstance().getDB();
         m_session = OrientDBDriver.getInstance().getSession();
+    }
+
+
+//    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "-.", "separatorChars": " ",
+//            "minWordLength": 1}
+
+//    SELECT name, decimal_number, @rid
+//    FROM Detail
+//    WHERE @rid IN (
+//            SELECT rid
+//    FROM INDEX:Detail.name_decimal_number_description
+//            WHERE key = '\\500** || 500~'
+//    )
+
+
+//    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer"}
+    //        String query = "select from index:Detail.name_decimal_number_description where key = ?";
+
+    public ArrayList<Detail> get(String request) {
+        ArrayList<Detail> result = null;
+        String query = "SELECT name, decimal_number, @rid\n" +
+                "FROM Detail \n" +
+                "WHERE @rid IN (\n" +
+                "    SELECT rid\n" +
+                "    FROM INDEX:Detail.name_decimal_number_description \n" +
+                "    WHERE key = ?\n" +
+                ")\n";
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(".*").append(request).append("* || ");
+            sb.append(request).append("~").append(" || ");
+            sb.append(request).append("*");
+
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query, sb.toString()); //            doc.save();
+
+            while (rs.hasNext()) {
+                if (result == null) result = new ArrayList<>();
+                Detail d = new Detail();
+                OResult item = rs.next();
+                d.name = item.getProperty(P.name.s());
+                d.decimal_number = item.getProperty(P.decimal_number.s());
+                d.id = item.getProperty(P.rid.s()).toString();
+                result.add(d);
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
     }
 
     public String add(Detail detail) {
@@ -80,13 +140,11 @@ public class OrientDBDetailHandler {
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
-            System.out.println(parameters.get(0).getPropertyNames());
             doc.save();
             result = doc.getIdentity().toString();
-            System.out.println(result);
         }
         catch (OException e) {
-            System.out.println(e.getMessage());
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
             result = "";
         }
         return result;

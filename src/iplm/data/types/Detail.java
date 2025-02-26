@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Detail {
     /* Уникальный айди (для БД) */
-    public int id;
+    public String id;
     /* Имя (например Молоток) */
     public String name;
     /* Децимальный номер */

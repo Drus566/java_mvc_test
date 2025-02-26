@@ -4,6 +4,8 @@ import iplm.data.repository.RepositoryType;
 import iplm.data.repository.detail.DetailRepository;
 import iplm.data.types.Detail;
 
+import java.util.ArrayList;
+
 public class DetailService {
     DetailRepository m_repository;
     RepositoryType m_repository_type;
@@ -18,6 +20,8 @@ public class DetailService {
     }
 
     public DetailService() {}
+
+    public ArrayList<Detail> get(String request) { return m_repository.get(request, m_repository_type); }
 
     /* return id */
     public String add(Detail d) { return m_repository.add(d, m_repository_type); }

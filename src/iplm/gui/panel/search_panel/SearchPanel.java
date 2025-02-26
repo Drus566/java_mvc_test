@@ -61,11 +61,11 @@ public class SearchPanel extends JPanel {
         }
     }
 
-    public void addActualLine(DescriptionLine.Type type) {
+    public void addDescribeLine(DescriptionLine.Type type) {
         search_panel_lines.add(new DescriptionLine(type.getDescription()));
     }
 
-    public void addDescribeLine(String text) {
+    public void addActualLine(String text) {
         search_panel_lines.add(new ActualLink(text));
     }
 

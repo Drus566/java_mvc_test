@@ -28,6 +28,8 @@ public class DetailControlWindow extends AWindow {
     private boolean edit = false;
     private boolean create = false;
 
+    public boolean isCreateMode() { return create; }
+
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
@@ -35,8 +37,6 @@ public class DetailControlWindow extends AWindow {
         m_name = new InputField("Наименование", "", 160);
         m_decimal_name = new InputField("Децимальный номер", "", 160);
         m_detail_parameters = new ArrayList<>();
-        m_detail_parameters.add(new DetailParameterPanel(160));
-        m_detail_parameters.add(new DetailParameterPanel(160));
         m_detail_parameters.add(new DetailParameterPanel(160));
 
         m_id = new String();
