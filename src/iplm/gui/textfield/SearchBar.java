@@ -24,6 +24,12 @@ public class SearchBar extends JTextField {
     private List<Runnable> unfocus_actions;
     private List<Runnable> tap_actions;
 
+//    private long start_press_time;
+//    private boolean pressed = false;
+
+    private long char_interval;
+    private boolean fast_enter;
+
     public SearchBar() {
         enter_btn_actions = new ArrayList<>();
         focus_actions = new ArrayList<>();
@@ -102,10 +108,24 @@ public class SearchBar extends JTextField {
 
             @Override
             public void changedUpdate(DocumentEvent e) { }
+        });
 
-            private void reactOnChange() {
-                for (Runnable function : tap_actions) {
-                    SwingUtilities.invokeLater(function);
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyReleased(e);
+                if ((System.currentTimeMillis() - char_interval) < 90) fast_enter = true;
+                else fast_enter = false;
+                System.out.println("fast: " + fast_enter);
+                char_interval = System.currentTimeMillis();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                if (fast_enter) {
+                    fast_enter = false;
+                    reactOnChange();
                 }
             }
         });
@@ -115,6 +135,12 @@ public class SearchBar extends JTextField {
     public void addEnterButtonAction(Runnable function) { enter_btn_actions.add(function); }
     public void addFocusAction(Runnable function) { focus_actions.add(function); }
     public void addUnfocusAction(Runnable function) { unfocus_actions.add(function); }
+    private void reactOnChange() {
+        if (fast_enter) return;
+        for (Runnable function : tap_actions) {
+            SwingUtilities.invokeLater(function);
+        }
+    }
 
     public void addTrailingComponent(JComponent component) {
         putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, new IconContainer(component));

@@ -83,7 +83,7 @@ public class OrientDBDetailHandler {
                 "FROM Detail \n" +
                 "WHERE @rid IN (\n" +
                 "    SELECT rid\n" +
-                "    FROM INDEX:Detail.name_decimal_number_description \n" +
+                "    FROM INDEX:Detail.russian \n" +
                 "    WHERE key = ?\n" +
                 ")\n";
 

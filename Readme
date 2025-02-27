@@ -9,6 +9,23 @@ DB
 http://orientdb.com/docs/3.2.x/indexing/FullTextIndex.html
 http://orientdb.com/docs/3.2.x/indexing/Full-Text-Index.html
 
+            FULLTEXT ENGINE LUCENE METADATA {
+                "default": "org.apache.lucene.analysis.standard.StandardAnalyzer",
+                "index": "org.apache.lucene.analysis.core.KeywordAnalyzer",
+                "query": "org.apache.lucene.analysis.standard.StandardAnalyzer",
+                "name_index": "org.apache.lucene.analysis.standard.StandardAnalyzer",
+                "name_query": "org.apache.lucene.analysis.core.KeywordAnalyzer",
+                "lyrics_index": "org.apache.lucene.analysis.en.EnglishAnalyzer",
+                "title_index": "org.apache.lucene.analysis.en.EnglishAnalyzer",
+                "title_query": "org.apache.lucene.analysis.en.EnglishAnalyzer",
+                "author_query": "org.apache.lucene.analysis.core.KeywordAnalyzer",
+                "description_index": "org.apache.lucene.analysis.standard.StandardAnalyzer",
+                "description_index_stopwords": [
+                  "the",
+                  "is"
+                ]
+            }
+
 1. принадлежность к группе (1-7 групп)
 2. иерархия внутри группы (1-??)
 3.  перфорация для крепления в шкафу(20/25 мм в зав-ти от типа каркаса)

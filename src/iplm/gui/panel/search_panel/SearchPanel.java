@@ -84,12 +84,12 @@ public class SearchPanel extends JPanel {
 
     public void updateSize(int width) {
         Dimension size = new Dimension(width, current_height);
-        setSize(size);
-        setMinimumSize(size);
-        setMaximumSize(size);
-        setPreferredSize(size);
-        revalidate();
-        repaint();
+        this.setSize(size);
+        this.setMinimumSize(size);
+        this.setMaximumSize(size);
+        this.setPreferredSize(size);
+        this.revalidate();
+        this.repaint();
     }
 
     public void updateLines() {
