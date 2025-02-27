@@ -5,8 +5,11 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
+import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.record.impl.ODocumentEmbedded;
 import com.orientechnologies.orient.core.sql.executor.OResult;
+import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLQuery;
 import iplm.data.db.OrientDBDriver;
@@ -14,6 +17,7 @@ import iplm.data.types.Detail;
 import iplm.data.types.DetailParameter;
 import iplm.utility.DateTimeUtility;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +66,11 @@ public class OrientDBDetailHandler {
     }
 
 
+//    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "", "separatorChars": "", "minWordLength": 1, "allowLeadingWildcard":true}
+
 //    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "-.", "separatorChars": " ",
 //            "minWordLength": 1}
+//                    "allowLeadingWildcard": true
 
 //    SELECT name, decimal_number, @rid
 //    FROM Detail
@@ -79,22 +86,31 @@ public class OrientDBDetailHandler {
 
     public ArrayList<Detail> get(String request) {
         ArrayList<Detail> result = null;
-        String query = "SELECT name, decimal_number, @rid\n" +
-                "FROM Detail \n" +
-                "WHERE @rid IN (\n" +
-                "    SELECT rid\n" +
-                "    FROM INDEX:Detail.russian \n" +
-                "    WHERE key = ?\n" +
-                ")\n";
+
+        String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
+
+//        String query = "SELECT name, decimal_number, @rid FROM Detail \n" +
+//        "WHERE decimal_number LIKE '?';\n";
+
+
+
+//        String query = "SELECT name, decimal_number, @rid\n" +
+//                "FROM Detail \n" +
+//                "WHERE @rid IN (\n" +
+//                "    SELECT rid\n" +
+//                "    FROM INDEX:Detail.russian \n" +
+//                "    WHERE key = ?\n" +
+//                ")\n";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(request).append("~").append(" || ");
+        sb.append(request).append("*").append(" || ");
+        sb.append("*").append(request).append("*").append(" || ");
+        sb.append(request);
 
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append(".*").append(request).append("* || ");
-            sb.append(request).append("~").append(" || ");
-            sb.append(request).append("*");
-
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
-            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query, sb.toString()); //            doc.save();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query, sb.toString());
 
             while (rs.hasNext()) {
                 if (result == null) result = new ArrayList<>();
@@ -104,6 +120,72 @@ public class OrientDBDetailHandler {
                 d.decimal_number = item.getProperty(P.decimal_number.s());
                 d.id = item.getProperty(P.rid.s()).toString();
                 result.add(d);
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
+
+    public ArrayList<Detail> getAll() {
+        ArrayList<Detail> result = null;
+        String query = "SELECT * FROM Detail";
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query);
+
+            while (rs.hasNext()) {
+                if (result == null) result = new ArrayList<>();
+                Detail d = new Detail();
+                OResult item = rs.next();
+                d.name = item.getProperty(P.name.s());
+                d.decimal_number = item.getProperty(P.decimal_number.s());
+                d.description = item.getProperty(P.description.s());
+                d.id = item.getProperty(P.rid.s()).toString();
+                result.add(d);
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
+
+    public Detail getById(String id) {
+        Detail result = null;
+        String query = "SELECT * FROM Detail WHERE @rid = " + id;
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query);
+
+            while (rs.hasNext()) {
+                if (result == null) result = new Detail();
+                OResult item = rs.next();
+                result.name = item.getProperty(P.name.s());
+                result.decimal_number = item.getProperty(P.decimal_number.s());
+                result.description = item.getProperty(P.description.s());
+                result.id = item.getProperty(P.rid.s()).toString();
+                List<Object> el = item.getProperty("parameters");
+
+                System.out.println(el);
+                for (Object o : el) {
+                    OResultInternal ri = (OResultInternal) o;
+//                    System.out.println(ri);
+                    ri.getPropertyNames();
+                    DetailParameter dp = new DetailParameter();
+                    dp.name = ri.getProperty(P.name.s());
+                    dp.value = ri.getProperty(P.value.s()).toString();
+                    result.params.add(dp);
+                }
+//                for (ODocument p : pp) {
+//                    System.out.println(p.getPropertyNames());
+//                }
+//                System.out.println(item.getProperty("parameters"));
+//                for (DetailParameter dp : result.params) {
+//                    dp.name = item.getProperty()
+//                }
+                break;
             }
         }
         catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }

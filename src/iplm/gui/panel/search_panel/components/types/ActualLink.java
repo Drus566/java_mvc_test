@@ -16,12 +16,15 @@ import java.awt.event.MouseEvent;
     Запросы, предлагаемые первые 10 вариантов по индексу, которые соответствую введенным символам.
  */
 public class ActualLink extends AInfoLine {
-    private static FlatSVGIcon search_svg_icon = Resources.getSVGIcon("search.svg").derive(16,16);
+    private static FlatSVGIcon search_svg_icon = Resources.getSVGIcon("detail.svg").derive(16,16);
     private JLabel search_icon;
+    private String db_id;
 
-    public ActualLink(String string) {
+    public ActualLink(String db_id, String text, Runnable action) {
         ID = -1;
-        setText(string);
+
+        this.db_id = db_id;
+        setText(text);
 
         type = ASearchPanelLine.Type.INFO;
         search_icon = new JLabel(search_svg_icon);
@@ -40,5 +43,7 @@ public class ActualLink extends AInfoLine {
                 SwingUtilities.invokeLater(() -> setBackground(background_color));
             }
         });
+
+        addAction(action);
     }
 }

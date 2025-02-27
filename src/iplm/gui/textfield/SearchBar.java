@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchBar extends JTextField {
+    private static final int CHAR_INTERVAL_MS = 90;
     private static final String SEARCH_STRING_PLACEHOLDER = "Поиск";
     private Color default_color;
     private JLabel search_icon;
@@ -23,6 +24,9 @@ public class SearchBar extends JTextField {
     private List<Runnable> focus_actions;
     private List<Runnable> unfocus_actions;
     private List<Runnable> tap_actions;
+    private String last_enter_request;
+
+    public String getLastRequest() { return last_enter_request; }
 
 //    private long start_press_time;
 //    private boolean pressed = false;
@@ -91,9 +95,10 @@ public class SearchBar extends JTextField {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    super.keyPressed(e);
+                    if (fast_enter) return;
                     for (Runnable function : enter_btn_actions) {
-                        SwingUtilities.invokeLater(function);
+                        if (!getSearchText().isEmpty()) last_enter_request = getSearchText();
+                        function.run();
                     }
                 }
             }
@@ -114,9 +119,8 @@ public class SearchBar extends JTextField {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyReleased(e);
-                if ((System.currentTimeMillis() - char_interval) < 90) fast_enter = true;
+                if ((System.currentTimeMillis() - char_interval) < CHAR_INTERVAL_MS) fast_enter = true;
                 else fast_enter = false;
-                System.out.println("fast: " + fast_enter);
                 char_interval = System.currentTimeMillis();
             }
 
@@ -138,7 +142,7 @@ public class SearchBar extends JTextField {
     private void reactOnChange() {
         if (fast_enter) return;
         for (Runnable function : tap_actions) {
-            SwingUtilities.invokeLater(function);
+            function.run();
         }
     }
 

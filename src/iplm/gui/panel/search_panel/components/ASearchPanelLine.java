@@ -12,6 +12,7 @@ public abstract class ASearchPanelLine extends JTextField {
         INFO;
     };
 
+    /* используется для history storage */
     public int ID;
     public ASearchPanelLine.Type type;
 

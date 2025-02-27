@@ -8,6 +8,7 @@ import iplm.data.types.Detail;
 import iplm.data.types.DetailParameter;
 import iplm.gui.panel.detail_parameter.DetailParameterPanel;
 import iplm.gui.panel.search_panel.SearchPanel;
+import iplm.gui.table.DefaultTable;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.detail.DetailControlWindow;
 import iplm.mvc.models.DetailModel;
@@ -46,6 +47,8 @@ public class DetailsController implements IController {
             SearchPanel sp = m_details_view.getDetailsWindow().getSearchPanel();
 
             String search_text = sb.getSearchText();
+            int MAX_TEXT_LENGTH = 100;
+            if (search_text.length() > MAX_TEXT_LENGTH) return;
 
             sp.removeLines();
 
@@ -56,8 +59,27 @@ public class DetailsController implements IController {
                 ArrayList<Detail> details = m_model.get(search_text);
                 if (details != null) {
                     for (Detail d : details) {
-                        if (MAX_COUNT <= 0) return;
-                        sp.addActualLine(d.decimal_number + " " + d.name);
+                        if (MAX_COUNT <= 0) break;
+
+                        sp.addActualLine(d.id, d.decimal_number + " " + d.name, () -> {
+                            Detail detail = m_model.getById(d.id);
+                            sp.setVisible(false);
+                            if (detail != null)  {
+                                DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
+                                dcw.m_name.setText(detail.name);
+                                dcw.m_decimal_name.setText(detail.decimal_number);
+
+                                dcw.clear();
+                                dcw.doEditMode();
+
+                                for (DetailParameter dp : detail.params) {
+                                    dcw.addParameter(dp.name,(String)dp.value);
+                                }
+
+                                dcw.show();
+                            }
+                        });
+
                         --MAX_COUNT;
                     }
                 }
@@ -71,9 +93,54 @@ public class DetailsController implements IController {
                     }
                 }
             }
-
             sp.updateLines();
             sp.updateSize(sb.getWidth());
+        });
+
+        m_details_view.getDetailsWindow().getSearchBar().addEnterButtonAction(() -> {
+            SearchBar sb = m_details_view.getDetailsWindow().getSearchBar();
+            DefaultTable t = m_details_view.getDetailsWindow().getTable();
+
+            String search_text = sb.getSearchText();
+
+            ArrayList<Detail> details = null;
+
+            if (!search_text.isEmpty()) details = m_model.get(search_text);
+            else details = m_model.getAll();
+
+            if (details != null) {
+                t.clear();
+                for (Detail d : details) {
+                    ArrayList<String> args = new ArrayList<>();
+                    args.add(d.decimal_number);
+                    args.add(d.name);
+                    args.add(d.description);
+                    t.addLine(args);
+                }
+            }
+        });
+
+        m_details_view.getDetailsWindow().getUpdateButton().addAction(() -> {
+            SearchBar sb = m_details_view.getDetailsWindow().getSearchBar();
+            DefaultTable t = m_details_view.getDetailsWindow().getTable();
+
+            String search_text = sb.getSearchText();
+
+            ArrayList<Detail> details = null;
+
+            if (!search_text.isEmpty()) details = m_model.get(sb.getLastRequest());
+            else details = m_model.getAll();
+
+            if (details != null) {
+                t.clear();
+                for (Detail d : details) {
+                    ArrayList<String> args = new ArrayList<>();
+                    args.add(d.decimal_number);
+                    args.add(d.name);
+                    args.add(d.description);
+                    t.addLine(args);
+                }
+            }
         });
 
         /* Открыть окно создания детали */

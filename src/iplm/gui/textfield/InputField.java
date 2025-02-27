@@ -19,6 +19,7 @@ public class InputField extends JPanel {
     private ArrayList<Runnable> m_press_actions;
 
     public String getText() { return m_input_field.getText(); }
+    public void setText(String text) { m_input_field.setText(text); }
 
     public void setEditable(boolean flag) {
         m_input_field.setEditable(flag);

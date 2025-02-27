@@ -65,8 +65,8 @@ public class SearchPanel extends JPanel {
         search_panel_lines.add(new DescriptionLine(type.getDescription()));
     }
 
-    public void addActualLine(String text) {
-        search_panel_lines.add(new ActualLink(text));
+    public void addActualLine(String db_id, String text, Runnable action) {
+        search_panel_lines.add(new ActualLink(db_id, text, action));
     }
 
     public void removeLine(int id) {
@@ -84,10 +84,10 @@ public class SearchPanel extends JPanel {
 
     public void updateSize(int width) {
         Dimension size = new Dimension(width, current_height);
-        this.setSize(size);
+//        this.setSize(size);
         this.setMinimumSize(size);
         this.setMaximumSize(size);
-        this.setPreferredSize(size);
+//        this.setPreferredSize(size);
         this.revalidate();
         this.repaint();
     }
@@ -112,8 +112,8 @@ public class SearchPanel extends JPanel {
                 }
             }
             current_height += panel_insets;
-            revalidate();
-            repaint();
+//            revalidate();
+//            repaint();
 
             setVisible(true);
         }

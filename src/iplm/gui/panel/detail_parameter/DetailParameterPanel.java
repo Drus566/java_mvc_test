@@ -18,6 +18,17 @@ public class DetailParameterPanel extends JPanel {
     public String getKey() { return m_name.getSelectedItem().toString().trim(); }
     public String getValue() { return m_value.getText().trim(); }
 
+    public void setKey(String key) {
+        for (int i = 0; i < m_name.getItemCount(); i++) {
+            if (m_name.getItemAt(i).equalsIgnoreCase(key)) {
+                m_name.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    public void setValue(String value) { m_value.setText(value); }
+
     public void setEditable(boolean flag) {
         m_name.setEnabled(flag);
         m_value.setEditable(flag);

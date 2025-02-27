@@ -15,6 +15,30 @@ public class DetailRepository {
         m_details = new ArrayList<>();
     }
 
+    public ArrayList<Detail> getAll(RepositoryType type) {
+        ArrayList<Detail> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getAll();
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public Detail getById(String id, RepositoryType type) {
+        Detail result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getById(id);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
     public ArrayList<Detail> get(String request, RepositoryType type) {
         ArrayList<Detail> result = null;
         switch (type) {

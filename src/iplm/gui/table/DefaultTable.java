@@ -32,6 +32,8 @@ public class DefaultTable {
     public JScrollPane getScrollPane() { return m_scroll_pane; }
     public DefaultTableModel getTableModel() { return m_model; }
 
+    public void clear() { m_model.setRowCount(0); }
+
     public void addColumns(List<String> columns) {
         for (String column : columns) {
             m_model.addColumn(column);

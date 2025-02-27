@@ -1,5 +1,6 @@
 package iplm.gui.window.detail;
 
+import iplm.data.types.DetailParameter;
 import iplm.gui.textfield.InputField;
 import iplm.gui.panel.detail_parameter.DetailParameterPanel;
 import iplm.gui.window.AWindow;
@@ -20,6 +21,42 @@ public class DetailControlWindow extends AWindow {
         build();
         afterBuild();
     }
+
+    public void clear() {
+        for (DetailParameterPanel dpp : m_detail_parameters) {
+            m_panel.remove(dpp);
+            m_panel.revalidate();
+            m_panel.repaint();
+        }
+        m_detail_parameters.clear();
+    }
+
+    public void addParameter(String key, String value) {
+        m_panel.remove(m_add_parameter);
+        DetailParameterPanel dp = new DetailParameterPanel(160);
+        dp.setKey(key);
+        dp.setValue(value);
+        m_detail_parameters.add(dp);
+        dp.setVisibleDeleteButton(false);
+        dp.setEditable(false);
+        if (edit || create) {
+            dp.setVisibleDeleteButton(true);
+            dp.setEditable(true);
+        }
+        dp.addDeleteAction(() -> {
+            m_panel.remove(dp);
+            m_panel.revalidate();
+            m_panel.repaint();
+            m_detail_parameters.remove(dp);
+        });
+        m_panel.add(dp, "wrap");
+
+        m_panel.add(m_add_parameter);
+        m_panel.revalidate();
+        m_panel.repaint();
+        m_frame.pack();
+    }
+
 
 //    public DefaultTable getTable() { return m_table; }
 //    public SearchBar getSearchBar() { return m_search_bar; }
@@ -50,6 +87,7 @@ public class DetailControlWindow extends AWindow {
         m_panel.add(m_remove, "wrap");
         m_panel.add(m_name, "al center, pushx, growx, wrap");
         m_panel.add(m_decimal_name, "al center, pushx, growx, wrap");
+
 
         for (DetailParameterPanel d : m_detail_parameters) {
             m_panel.add(d, "pushx, growx, wrap");
@@ -120,6 +158,9 @@ public class DetailControlWindow extends AWindow {
         }
     }
 
+    public void addParamAction() {
+
+    }
     public void doCreateMode() {
         if (edit) {
             JOptionPane.showMessageDialog(null, "Деталь в режиме редактирования");
@@ -127,6 +168,7 @@ public class DetailControlWindow extends AWindow {
         }
         else if (!create) createMode();
     }
+
     public void doEditMode() {
         if (create) {
             JOptionPane.showMessageDialog(null, "Деталь в режиме создания");
@@ -193,5 +235,10 @@ public class DetailControlWindow extends AWindow {
             dp.setEditable(true);
             dp.setVisibleDeleteButton(true);
         }
+    }
+
+    public void updateDisplay() {
+        m_panel.revalidate();
+        m_panel.repaint();
     }
 }

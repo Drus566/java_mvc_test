@@ -15,6 +15,10 @@ public class DetailModel implements IModel, IObservable<Detail> {
 
     public DetailModel() { m_service = new DetailService(RepositoryType.ORIENTDB); }
 
+    public ArrayList<Detail> getAll() { return m_service.getAll(); }
+
+    public Detail getById(String id) { return m_service.getById(id); }
+
     /* get detail list */
     public ArrayList<Detail> get(String request) { return m_service.get(request); }
 

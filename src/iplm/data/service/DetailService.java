@@ -23,6 +23,10 @@ public class DetailService {
 
     public ArrayList<Detail> get(String request) { return m_repository.get(request, m_repository_type); }
 
+    public Detail getById(String id) { return m_repository.getById(id, m_repository_type); }
+
+    public ArrayList<Detail> getAll() { return m_repository.getAll(m_repository_type); }
+
     /* return id */
     public String add(Detail d) { return m_repository.add(d, m_repository_type); }
 

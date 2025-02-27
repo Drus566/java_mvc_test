@@ -48,6 +48,9 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     public SearchBar getSearchBar() { return m_search_bar; }
     public AddButton getAddDetailButton() { return m_add_detail_button; }
     public SearchPanel getSearchPanel() { return m_search_panel; }
+    public UpdateButton getUpdateButton() { return m_update_button; }
+
+    public void clear() { }
 
     @Override
     public void build() {
@@ -72,7 +75,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_table = new DefaultTable();
 
         // EXAMPLE DATA FILLs
-        m_table.addColumns(new ArrayList<>(Arrays.asList("Name", "Type", "Size")));
+        m_table.addColumns(new ArrayList<>(Arrays.asList("Децимальный номер", "Наименование", "Описание")));
         for (int i = 0; i < 100; i++) {
             m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
             m_table.addLine(new ArrayList<>(Arrays.asList("Image.jpg", "Image", "2 MB")));
