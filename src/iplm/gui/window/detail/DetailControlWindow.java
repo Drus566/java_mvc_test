@@ -10,8 +10,8 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
-    private String m_id;
     private JButton m_add, m_edit, m_remove, m_add_parameter;
+    public String m_id;
     public InputField m_name, m_decimal_name;
     public ArrayList<DetailParameterPanel> m_detail_parameters;
 

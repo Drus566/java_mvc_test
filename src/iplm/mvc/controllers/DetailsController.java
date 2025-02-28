@@ -62,22 +62,24 @@ public class DetailsController implements IController {
                         if (MAX_COUNT <= 0) break;
 
                         sp.addActualLine(d.id, d.decimal_number + " " + d.name, () -> {
-                            Detail detail = m_model.getById(d.id);
-                            sp.setVisible(false);
-                            if (detail != null)  {
-                                DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
-                                dcw.m_name.setText(detail.name);
-                                dcw.m_decimal_name.setText(detail.decimal_number);
+                            DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
+                            if (!dcw.isCreateMode()) {
+                                Detail detail = m_model.getById(d.id);
+                                sp.setVisible(false);
+                                if (detail != null)  {
+                                    dcw.m_id = detail.id;
+                                    dcw.m_name.setText(detail.name);
+                                    dcw.m_decimal_name.setText(detail.decimal_number);
 
-                                dcw.clear();
-                                dcw.doEditMode();
+                                    dcw.clear();
 
-                                for (DetailParameter dp : detail.params) {
-                                    dcw.addParameter(dp.name,(String)dp.value);
+                                    for (DetailParameter dp : detail.params) {
+                                        dcw.addParameter(dp.name,(String)dp.value);
+                                    }
                                 }
-
-                                dcw.show();
                             }
+                            dcw.doEditMode();
+                            dcw.show();
                         });
 
                         --MAX_COUNT;

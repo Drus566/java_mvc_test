@@ -14,6 +14,8 @@ public class DetailParameter {
         public String s() { return m_string; }
     }
 
+    /* Айди */
+    public String id;
     /* Имя (например Материал) */
     public String name;
     /* Тип данных */

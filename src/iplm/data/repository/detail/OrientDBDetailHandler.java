@@ -3,21 +3,19 @@ package iplm.data.repository.detail;
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
-import com.orientechnologies.orient.core.record.ORecord;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.record.impl.ODocumentEmbedded;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.query.OSQLQuery;
 import iplm.data.db.OrientDBDriver;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailParameter;
 import iplm.utility.DateTimeUtility;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +64,8 @@ public class OrientDBDetailHandler {
     }
 
 
-//    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "", "separatorChars": "", "minWordLength": 1, "allowLeadingWildcard":true}
+//    insert into animal set name = 'dog', children = [<rid>]
+    //    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "", "separatorChars": "", "minWordLength": 1, "allowLeadingWildcard":true}
 
 //    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer", "indexRadix": true, "ignoreChars": "-.", "separatorChars": " ",
 //            "minWordLength": 1}
@@ -83,6 +82,47 @@ public class OrientDBDetailHandler {
 
 //    {"analyzer": "org.apache.lucene.analysis.ru.RussianAnalyzer"}
     //        String query = "select from index:Detail.name_decimal_number_description where key = ?";
+
+
+    // ОБНОВЛЕНИЕ LINK LIST
+//    orientdb {db=test}> insert into ParentDoc CONTENT {"name": "PARENTDOC", "children": [#43:0,#42:0]}
+//    UPDATE ParentDoc MERGE {children:[#12:2, #!12:33]} WHERE @rid = #46:0
+//    UPDATE ParentDoc MERGE {children:[#14:44]} RETURN AFTER @rid WHERE @rid = #48:0
+    public String delete(String id) {
+        StringBuilder query_builder = new StringBuilder();
+        query_builder.append("UPDATE Detail SET deleted = true RETURN AFTER @rid WHERE @rid = ");
+        query_builder.append(id);
+        String result = null;
+        return result;
+    }
+
+    public String update(Detail detail) {
+        OrientDBDriver.getInstance().getSession().begin();
+
+        OElement doc = OrientDBDriver.getInstance().getSession().load(new ORecordId(detail.id));
+
+
+        String result = null;
+        doc.setProperty(P.name.s(), detail.name);
+        doc.setProperty(P.decimal_number.s(), detail.decimal_number);
+        doc.setProperty(P.description.s(), detail.description);
+
+        List<OIdentifiable> prev_link_list = null;
+        List<OIdentifiable> link_list = null;
+        if (detail.params != null && !detail.params.isEmpty()) {
+            if (link_list == null) link_list = new ArrayList<>();
+
+//            OClass params = OrientDBDriver.getInstance().getSession().getMetadata().getSchema().createClass(C.detail_parameter.s());
+//            params.createProperty()
+            for (DetailParameter dp : detail.params) {
+                link_list.add(new ORecordId(dp.id));
+            }
+        }
+
+        OrientDBDriver.getInstance().getSession().commit();
+
+        return result;
+    }
 
     public ArrayList<Detail> get(String request) {
         ArrayList<Detail> result = null;
@@ -230,13 +270,5 @@ public class OrientDBDetailHandler {
             result = "";
         }
         return result;
-    }
-
-    public String remove() {
-        return "";
-    }
-
-    public String update(Detail d) {
-        return "";
     }
 }
