@@ -31,13 +31,10 @@ public class DetailService {
     public String add(Detail d) { return m_repository.add(d, m_repository_type); }
 
     /* return id */
-    public String remove(String id) {
-        m_repository.remove(id);
-        return "";
-    }
+    public String delete(String id) { return m_repository.delete(id, m_repository_type); }
 
     /* return id */
-    public String update(Detail d) {
-        return "";
-    }
+    public String update(Detail detail) { return m_repository.update(detail, m_repository_type); }
+
+    public boolean rebuildIndex() { return m_repository.rebuildIndex(m_repository_type); }
 }

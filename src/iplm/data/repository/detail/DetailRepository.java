@@ -63,8 +63,28 @@ public class DetailRepository {
         return result;
     }
 
-    public String remove(String id) {
-        return "";
+    public String delete(String id, RepositoryType type) {
+        String result = "";
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.delete(id);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public String update(Detail detail, RepositoryType type) {
+        String result = "";
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.update(detail);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
     }
 
     public Detail findById(int id) {
@@ -81,5 +101,17 @@ public class DetailRepository {
 
     public Object getParameter(String name) {
         return null;
+    }
+
+    public boolean rebuildIndex(RepositoryType type) {
+        boolean result = false;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.rebuildIndex();
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
     }
 }

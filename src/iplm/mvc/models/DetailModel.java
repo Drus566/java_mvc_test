@@ -29,14 +29,12 @@ public class DetailModel implements IModel, IObservable<Detail> {
     }
 
     /* return id */
-    public String remove(String id) {
-        return m_service.remove(id);
-    }
+    public String delete(String id) { return m_service.delete(id); }
 
     /* return id */
-    public String update(Detail d) {
-        return m_service.update(d);
-    }
+    public String update(Detail detail) { return m_service.update(detail); }
+
+    public boolean rebuildIndex() { return m_service.rebuildIndex(); }
 
     @Override
     public void addObserver(IObserver<Detail> observer) { m_observers.add(observer); }

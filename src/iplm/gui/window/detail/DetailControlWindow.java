@@ -16,6 +16,8 @@ public class DetailControlWindow extends AWindow {
     public ArrayList<DetailParameterPanel> m_detail_parameters;
 
     public JButton getCreateButton() { return m_add; }
+    public JButton getRemoveButton() { return m_remove; }
+    public JButton getEditButton() { return m_edit; }
 
     public DetailControlWindow() {
         build();
@@ -66,6 +68,7 @@ public class DetailControlWindow extends AWindow {
     private boolean create = false;
 
     public boolean isCreateMode() { return create; }
+    public boolean isEditMode() { return edit; }
 
     @Override
     public void build() {
@@ -139,14 +142,14 @@ public class DetailControlWindow extends AWindow {
             editMode();
         });
         m_add.addActionListener(e -> createMode());
-        m_remove.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(null, "Вы уверены?", "Удалить", JOptionPane.YES_NO_OPTION);
-            if (result == 0) {
-                // TODO action
-                JOptionPane.showMessageDialog(null, "Успешно");
-                m_id = "";
-            }
-        });
+//        m_remove.addActionListener(e -> {
+////            int result = JOptionPane.showConfirmDialog(null, "Вы уверены?", "Удалить", JOptionPane.YES_NO_OPTION);
+////            if (result == 0) {
+////                // TODO action
+////                JOptionPane.showMessageDialog(null, "Успешно");
+////                m_id = "";
+////            }
+//        });
 
         if (create) createMode();
         else if (edit) editMode();

@@ -86,45 +86,97 @@ public class OrientDBDetailHandler {
 
     // ОБНОВЛЕНИЕ LINK LIST
 //    orientdb {db=test}> insert into ParentDoc CONTENT {"name": "PARENTDOC", "children": [#43:0,#42:0]}
+    // insert into DetailParameter CONTENT {created_at: x, custom_val: false, deleted: false, enumeration: false, name: "sample_name", type: "Строка", value: "Sample value"} RETURN AFTER @rid
 //    UPDATE ParentDoc MERGE {children:[#12:2, #!12:33]} WHERE @rid = #46:0
 //    UPDATE ParentDoc MERGE {children:[#14:44]} RETURN AFTER @rid WHERE @rid = #48:0
+
     public String delete(String id) {
-        StringBuilder query_builder = new StringBuilder();
-        query_builder.append("UPDATE Detail SET deleted = true RETURN AFTER @rid WHERE @rid = ");
-        query_builder.append(id);
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
+        }
+
+        String query = "UPDATE Detail SET deleted = true RETURN AFTER @rid WHERE @rid = " + id;
+
         String result = null;
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query, id);
+
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                result = item.getProperty(P.rid.s()).toString();
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
         return result;
     }
 
     public String update(Detail detail) {
-        OrientDBDriver.getInstance().getSession().begin();
-
-        OElement doc = OrientDBDriver.getInstance().getSession().load(new ORecordId(detail.id));
-
-
-        String result = null;
-        doc.setProperty(P.name.s(), detail.name);
-        doc.setProperty(P.decimal_number.s(), detail.decimal_number);
-        doc.setProperty(P.description.s(), detail.description);
-
-        List<OIdentifiable> prev_link_list = null;
-        List<OIdentifiable> link_list = null;
-        if (detail.params != null && !detail.params.isEmpty()) {
-            if (link_list == null) link_list = new ArrayList<>();
-
-//            OClass params = OrientDBDriver.getInstance().getSession().getMetadata().getSchema().createClass(C.detail_parameter.s());
-//            params.createProperty()
-            for (DetailParameter dp : detail.params) {
-                link_list.add(new ORecordId(dp.id));
-            }
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
         }
 
-        OrientDBDriver.getInstance().getSession().commit();
+        String super_rid = null;
 
-        return result;
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OrientDBDriver.getInstance().getSession().begin();
+
+            OElement doc = OrientDBDriver.getInstance().getSession().load(new ORecordId(detail.id));
+            String current_timestamp = DateTimeUtility.timestamp();
+
+            StringBuilder update_detail_query = new StringBuilder();
+            update_detail_query.append("UPDATE Detail MERGE { name: ?, decimal_number: ?, description: ?, params: [");
+
+            /* CREATE NEW PARAMETERS */
+            boolean first = true;
+            for (DetailParameter dp : detail.params) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("insert into DetailParameter CONTENT {created_at: ?, custom_val: ?, deleted: ?, enumeration: ?, name: ?, type: ?, value: ?}");
+                OResultSet rs = OrientDBDriver.getInstance().getSession().command(sb.toString(), current_timestamp, false, false, false, dp.name, "Строка", dp.value);
+                while (rs.hasNext()) {
+                    if (!first) update_detail_query.append(",");
+                    OResult item = rs.next();
+                    String result = item.getProperty(P.rid.s()).toString();
+                    update_detail_query.append(result);
+                    first = false;
+                }
+            }
+            update_detail_query.append("]} RETURN AFTER @rid WHERE @rid = ").append(detail.id);
+
+            /* DELETE OLD PARAMS */
+            String delete_detail_params = "DELETE FROM DetailParameter WHERE @rid in (select params FROM Detail WHERE @rid = " + detail.id + ")";
+            OrientDBDriver.getInstance().getSession().command(delete_detail_params);
+
+            /* ADD NEW PARAMS */
+
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(update_detail_query.toString(), detail.name, detail.decimal_number, detail.description);
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                super_rid = item.getProperty(P.rid.s()).toString();
+            }
+
+            OrientDBDriver.getInstance().getSession().commit();
+        }
+        catch (OException e) {
+            OrientDBDriver.getInstance().getSession().rollback();
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            return null;
+        }
+
+        return super_rid;
     }
 
     public ArrayList<Detail> get(String request) {
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
+        }
+
         ArrayList<Detail> result = null;
 
         String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
@@ -167,7 +219,25 @@ public class OrientDBDetailHandler {
         return result;
     }
 
+    public boolean rebuildIndex() {
+        boolean result = true;
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OrientDBDriver.getInstance().getSession().command("REBUILD INDEX *");
+        }
+        catch (OException e) {
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            result = false;
+        }
+        return result;
+    }
+
     public ArrayList<Detail> getAll() {
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
+        }
+
         ArrayList<Detail> result = null;
         String query = "SELECT * FROM Detail";
 
@@ -192,6 +262,11 @@ public class OrientDBDetailHandler {
     }
 
     public Detail getById(String id) {
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
+        }
+
         Detail result = null;
         String query = "SELECT * FROM Detail WHERE @rid = " + id;
 
@@ -234,6 +309,11 @@ public class OrientDBDetailHandler {
     }
 
     public String add(Detail detail) {
+        if (OrientDBDriver.getInstance().getSession() == null) {
+            OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
+            return null;
+        }
+
         String result;
         String current_timestamp = DateTimeUtility.timestamp();
 

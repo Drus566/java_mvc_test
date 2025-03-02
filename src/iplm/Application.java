@@ -19,7 +19,7 @@ public class Application {
     }
 
     public Application() {
-        OrientDBDriver.getInstance().init("remote:doc.sbp-invertor.ru", "root", "root", "test", "root", "root");
+        OrientDBDriver.getInstance().init("remote:172.25.143.106", "root", "root", "demo", "root", "root");
         StorageHistory.getInstance().init();
         Resources.getInstance().init();
         Style.getInstance().init();

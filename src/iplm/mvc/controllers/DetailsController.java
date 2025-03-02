@@ -17,6 +17,8 @@ import iplm.mvc.views.DetailsView;
 import iplm.utility.DateTimeUtility;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class DetailsController implements IController {
@@ -177,10 +179,72 @@ public class DetailsController implements IController {
                 dp.value = dpp.getValue();
                 detail.params.add(dp);
             }
-            if (m_model.add(detail).isEmpty()) JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            String result = m_model.add(detail);
+            if (result == null || result.isEmpty()) {
+                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                dcw.m_id = result;
+            }
+            else JOptionPane.showMessageDialog(null, "Успешно");
+        });
+
+        dcw.getRemoveButton().addActionListener(e -> {
+            if (dcw.isCreateMode() || dcw.isEditMode()) return;
+            String rid = dcw.m_id;
+            if (rid == null || rid.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Выберите деталь для удаления");
+                return;
+            }
+
+            String result = m_model.delete(rid);
+            if (result != null && !result.isEmpty()) {
+                dcw.m_decimal_name.setText("");
+                dcw.m_name.setText("");
+
+                JPanel dcw_panel = dcw.getPanel();
+                for (DetailParameterPanel dpp : dcw.m_detail_parameters) {
+                    dcw_panel.remove(dpp);
+                    dcw_panel.revalidate();
+                    dcw_panel.repaint();
+                }
+                dcw.m_detail_parameters.clear();
+                JOptionPane.showMessageDialog(null, "Успешно");
+                dcw.m_id = "";
+            }
+            else JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+
+        });
+
+        dcw.getEditButton().addActionListener(e -> {
+            if (!dcw.isEditMode()) return;
+
+            Detail detail = new Detail();
+            detail.id = dcw.m_id;
+            detail.name = dcw.m_name.getText().trim();
+            detail.decimal_number = dcw.m_decimal_name.getText().trim();
+            detail.description = "";
+            detail.created_at = DateTimeUtility.timestamp();
+//            detail.updated_at = DateTimeUtility.timestamp();
+
+            for (DetailParameterPanel dpp : dcw.m_detail_parameters) {
+                DetailParameter dp = new DetailParameter();
+                dp.busy = false;
+                dp.custom_val = false;
+                dp.deleted = false;
+                dp.name = dpp.getKey();
+                dp.enumeration = false;
+                dp.type = DetailParameter.Type.STRING.s();
+                dp.value = dpp.getValue();
+                detail.params.add(dp);
+            }
+            String result = m_model.update(detail);
+            if (result == null || result.isEmpty()) {
+                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                dcw.m_id = result;
+            }
             else JOptionPane.showMessageDialog(null, "Успешно");
         });
     }
+
 
     public void show() {
 

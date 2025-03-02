@@ -3,6 +3,8 @@ package iplm.data.db;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.db.*;
 
+import javax.swing.*;
+
 public class OrientDBDriver {
     private static OrientDBDriver INSTANCE;
 
@@ -27,8 +29,11 @@ public class OrientDBDriver {
     public void connect() { connect(DEFAULT_ADDRESS, DEFAULT_USERNAME, DEFAULT_PASSWORD); }
 
     public void init(String address, String username, String password, String db_name, String db_username, String db_password) {
-        m_db = new OrientDB(address, username, password, OrientDBConfig.defaultConfig());
-        m_session = m_db.open(db_name, db_username, db_password);
+        try {
+            m_db = new OrientDB(address, username, password, OrientDBConfig.defaultConfig());
+            m_session = m_db.open(db_name, db_username, db_password);
+        }
+        catch (Exception e) { JOptionPane.showMessageDialog(null, e.getMessage()); }
     }
 
     public void connect(String address, String username, String password) {
