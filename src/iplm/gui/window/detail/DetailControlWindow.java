@@ -1,5 +1,6 @@
 package iplm.gui.window.detail;
 
+import iplm.Resources;
 import iplm.gui.button.*;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.textarea.InputTextArea;
@@ -10,12 +11,14 @@ import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
     public String m_detail_id;
 
     /* NEW */
+    // TOP
     private JPanel top_panel;
     // Обновить данные детали
     private UpdateButton m_update_btn;
@@ -23,32 +26,79 @@ public class DetailControlWindow extends AWindow {
     private JLabel detail_icon;
     // Панель кнопок
     private JPanel mode_btn_panel;
-
     // Создать деталь
     private AddButton m_add_detail_btn;
-    // Создать параметр детали
-    private AddButton m_add_detail_parameter_btn;
     // Редактировать деталь
     private EditButton m_edit_detail_btn;
     // Удалить деталь
     private DeleteButton m_delete_detail_btn;
     // Скачать деталь
     private DownloadButton m_download_detail_btn;
+    // TODO: Confirm button
+    // TODO: Close button
 
+    // BODY
     // Метка имени детали
     private DefaultLabel detail_name_label;
     // Метка децимального номера детали
     private DefaultLabel detail_decimal_number_label;
-    // Метка описания
-    private DefaultLabel describe_label;
-    // Метка параметров
-    private DefaultLabel parameters_label;
-
     // Ввод децимального номера детали
     private InputText decimal_number_input;
-
+    // Метка описания
+    private DefaultLabel describe_label;
     // Панель описание детали
     private InputTextArea description_input_panel;
+    // Метка параметров
+    private DefaultLabel parameters_label;
+    // Создать параметр детали
+    private AddButton m_add_detail_parameter_btn;
+    // Окно контроля параметров детали
+    private EditButton m_edit_detail_parameter_btn;
+
+    private boolean edit_mode = false;
+    private boolean create_mode = false;
+
+    // TOP
+    public UpdateButton getUpdateButton() { return m_update_btn; }
+    public JLabel getDetailIcon() { return detail_icon; }
+    public AddButton getAddDetailBtn() { return m_add_detail_btn; }
+    public EditButton getEditDetailBtn() { return m_edit_detail_btn; }
+    public DeleteButton getDeleteDetailBtn() { return  m_delete_detail_btn; };
+    public DownloadButton getDownloadDetailBtn() { return m_download_detail_btn; }
+
+    // BODY
+    public InputText decimalNumberInput() { return decimal_number_input; }
+    public InputTextArea descriptionInputPanel() { return description_input_panel; }
+    public AddButton addDetailParameterBtn() { return m_add_detail_btn; }
+    public EditButton editDetailParameterBtn() { return m_edit_detail_parameter_btn; }
+
+
+//    public boolean isCreateMode() { return create_mode; }
+//    public boolean isEditMode() { return edit_mode; }
+
+
+    public void buildTop() {
+        top_panel = new JPanel(new MigLayout("inset 10"));
+        m_update_btn = new UpdateButton();
+        detail_icon = new DefaultLabel(Resources.getSVGIcon("detail.svg"));
+        mode_btn_panel = new JPanel(new CardLayout());
+        m_add_detail_btn = new AddButton();
+        m_edit_detail_btn = new EditButton();
+        m_delete_detail_btn = new DeleteButton();
+        m_download_detail_btn = new DownloadButton();
+    }
+
+    public void buildBody() {
+        detail_name_label = new DefaultLabel("");
+        detail_decimal_number_label = new DefaultLabel("");
+        decimal_number_input = new InputText();
+        describe_label = new DefaultLabel("");
+        description_input_panel = new InputTextArea();
+        parameters_label = new DefaultLabel("");
+        m_add_detail_parameter_btn = new AddButton();
+        m_edit_detail_parameter_btn = new EditButton();
+
+    }
 
     /* OLD */
     private JButton m_add, m_edit, m_remove, m_add_parameter;

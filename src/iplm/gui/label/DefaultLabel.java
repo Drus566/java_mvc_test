@@ -11,11 +11,12 @@ public class DefaultLabel extends JLabel {
         setText(text);
     }
 
-    public DefaultLabel(ImageIcon icon) {
-        setIcon(icon);
+    public DefaultLabel(String text, String size) {
+        setText(text);
+        putClientProperty(FlatClientProperties.STYLE, "font: " + size);
     }
 
-    public DefaultLabel(String size) {
-        putClientProperty(FlatClientProperties.STYLE, "font: " + size);
+    public DefaultLabel(ImageIcon icon) {
+        setIcon(icon);
     }
 }
