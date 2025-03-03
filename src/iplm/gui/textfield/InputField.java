@@ -68,12 +68,9 @@ public class InputField extends JPanel {
             }
         });
 
-        m_input_field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (Runnable r : m_press_actions) {
-                    r.run();
-                }
+        m_input_field.addActionListener(e -> {
+            for (Runnable r : m_press_actions) {
+                r.run();
             }
         });
     }

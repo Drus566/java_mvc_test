@@ -2,7 +2,6 @@ package iplm.gui.window.detail;
 
 import iplm.gui.button.*;
 import iplm.gui.label.DefaultLabel;
-import iplm.gui.panel.InputTextAreaPanel;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputField;
 import iplm.gui.panel.detail_parameter.DetailParameterPanel;
@@ -17,6 +16,14 @@ public class DetailControlWindow extends AWindow {
     public String m_detail_id;
 
     /* NEW */
+    private JPanel top_panel;
+    // Обновить данные детали
+    private UpdateButton m_update_btn;
+    // Иконка детали
+    private JLabel detail_icon;
+    // Панель кнопок
+    private JPanel mode_btn_panel;
+
     // Создать деталь
     private AddButton m_add_detail_btn;
     // Создать параметр детали
@@ -27,15 +34,13 @@ public class DetailControlWindow extends AWindow {
     private DeleteButton m_delete_detail_btn;
     // Скачать деталь
     private DownloadButton m_download_detail_btn;
-    // Обновить деталь
-    private UpdateButton m_update_detail_btn;
 
-    // Иконка детали
-    private DefaultLabel detail_icon;
     // Метка имени детали
-    private DefaultLabel detail_number_label;
+    private DefaultLabel detail_name_label;
     // Метка децимального номера детали
     private DefaultLabel detail_decimal_number_label;
+    // Метка описания
+    private DefaultLabel describe_label;
     // Метка параметров
     private DefaultLabel parameters_label;
 
@@ -43,10 +48,7 @@ public class DetailControlWindow extends AWindow {
     private InputText decimal_number_input;
 
     // Панель описание детали
-    private InputTextAreaPanel description_input_panel;
-
-
-
+    private InputTextArea description_input_panel;
 
     /* OLD */
     private JButton m_add, m_edit, m_remove, m_add_parameter;
@@ -56,6 +58,11 @@ public class DetailControlWindow extends AWindow {
     public JButton getCreateButton() { return m_add; }
     public JButton getRemoveButton() { return m_remove; }
     public JButton getEditButton() { return m_edit; }
+
+    public void buildTopPanel() {
+        m_update_btn = new UpdateButton();
+        detail_icon = new JLabel();
+    }
 
     public DetailControlWindow() {
         build();
@@ -175,7 +182,7 @@ public class DetailControlWindow extends AWindow {
         });
 
         m_edit.addActionListener(e -> {
-            if (m_detail_id.isEmpty()) {
+            if (m_detail_id == null || m_detail_id.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Чтобы редактировать, выберите деталь или создайте деталь");
                 return;
             }
