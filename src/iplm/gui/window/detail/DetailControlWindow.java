@@ -1,8 +1,12 @@
 package iplm.gui.window.detail;
 
-import iplm.data.types.DetailParameter;
+import iplm.gui.button.*;
+import iplm.gui.label.DefaultLabel;
+import iplm.gui.panel.InputTextAreaPanel;
+import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputField;
 import iplm.gui.panel.detail_parameter.DetailParameterPanel;
+import iplm.gui.textfield.InputText;
 import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
@@ -10,8 +14,42 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
+    public String m_detail_id;
+
+    /* NEW */
+    // Создать деталь
+    private AddButton m_add_detail_btn;
+    // Создать параметр детали
+    private AddButton m_add_detail_parameter_btn;
+    // Редактировать деталь
+    private EditButton m_edit_detail_btn;
+    // Удалить деталь
+    private DeleteButton m_delete_detail_btn;
+    // Скачать деталь
+    private DownloadButton m_download_detail_btn;
+    // Обновить деталь
+    private UpdateButton m_update_detail_btn;
+
+    // Иконка детали
+    private DefaultLabel detail_icon;
+    // Метка имени детали
+    private DefaultLabel detail_number_label;
+    // Метка децимального номера детали
+    private DefaultLabel detail_decimal_number_label;
+    // Метка параметров
+    private DefaultLabel parameters_label;
+
+    // Ввод децимального номера детали
+    private InputText decimal_number_input;
+
+    // Панель описание детали
+    private InputTextAreaPanel description_input_panel;
+
+
+
+
+    /* OLD */
     private JButton m_add, m_edit, m_remove, m_add_parameter;
-    public String m_id;
     public InputField m_name, m_decimal_name, m_description;
     public ArrayList<DetailParameterPanel> m_detail_parameters;
 
@@ -72,7 +110,7 @@ public class DetailControlWindow extends AWindow {
 
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10"));
+        m_panel = new JPanel(new MigLayout("inset 10, debug"));
 
         m_name = new InputField("Наименование", "", 160);
         m_decimal_name = new InputField("Децимальный номер", "", 160);
@@ -80,7 +118,7 @@ public class DetailControlWindow extends AWindow {
         m_detail_parameters = new ArrayList<>();
         m_detail_parameters.add(new DetailParameterPanel(160));
 
-        m_id = new String();
+        m_detail_id = new String();
         m_add = new JButton("Создать");
         m_edit = new JButton("Редактировать");
         m_remove = new JButton("Удалить");
@@ -89,12 +127,12 @@ public class DetailControlWindow extends AWindow {
         m_panel.add(m_add, "split 3");
         m_panel.add(m_edit);
         m_panel.add(m_remove, "wrap");
-        m_panel.add(m_name, "al center, pushx, growx, wrap");
-        m_panel.add(m_decimal_name, "al center, pushx, growx, wrap");
-        m_panel.add(m_description, "al center, pushx, growx, wrap");
+        m_panel.add(m_name, "al center, wrap");
+        m_panel.add(m_decimal_name, "al center, wrap");
+        m_panel.add(m_description, "al center, wrap");
 
         for (DetailParameterPanel d : m_detail_parameters) {
-            m_panel.add(d, "pushx, growx, wrap");
+            m_panel.add(d, "al center, pushx, wrap");
             d.addDeleteAction(() -> {
                 m_panel.remove(d);
                 m_panel.revalidate();
@@ -137,7 +175,7 @@ public class DetailControlWindow extends AWindow {
         });
 
         m_edit.addActionListener(e -> {
-            if (m_id.isEmpty()) {
+            if (m_detail_id.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Чтобы редактировать, выберите деталь или создайте деталь");
                 return;
             }

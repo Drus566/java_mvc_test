@@ -66,10 +66,24 @@ public class DetailParameterPanel extends JPanel {
     }
 
     public void setVisibleDeleteButton(boolean flag) {
-        m_delete_btn.setVisible(flag);
+        boolean in = componentIn(m_delete_btn);
+        if (flag && !in) add(m_delete_btn);
+        else if (!flag && in) remove(m_delete_btn);
     }
 
     public void addDeleteAction(Runnable action) { m_delete_actions.add(action); }
+
+    public boolean componentIn(JComponent component) {
+        boolean result = false;
+        Component[] components = getComponents();
+        for (Component c : components) {
+            if (c == component) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
 
 //    class NameModel extends AbstractListModel<String> implements  ComboBoxModel<String> {
 //        private List<String> list;

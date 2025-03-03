@@ -67,7 +67,7 @@ public class DetailsController implements IController {
                                 Detail detail = m_model.getById(d.id);
                                 sp.setVisible(false);
                                 if (detail != null)  {
-                                    dcw.m_id = detail.id;
+                                    dcw.m_detail_id = detail.id;
                                     dcw.m_name.setText(detail.name);
                                     dcw.m_decimal_name.setText(detail.decimal_number);
                                     dcw.m_description.setText(detail.description);
@@ -183,14 +183,14 @@ public class DetailsController implements IController {
             String result = m_model.add(detail);
             if (result == null || result.isEmpty()) {
                 JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-                dcw.m_id = result;
+                dcw.m_detail_id = result;
             }
             else JOptionPane.showMessageDialog(null, "Успешно");
         });
 
         dcw.getRemoveButton().addActionListener(e -> {
             if (dcw.isCreateMode() || dcw.isEditMode()) return;
-            String rid = dcw.m_id;
+            String rid = dcw.m_detail_id;
             if (rid == null || rid.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Выберите деталь для удаления");
                 return;
@@ -209,7 +209,7 @@ public class DetailsController implements IController {
                 }
                 dcw.m_detail_parameters.clear();
                 JOptionPane.showMessageDialog(null, "Успешно");
-                dcw.m_id = "";
+                dcw.m_detail_id = "";
             }
             else JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
 
@@ -219,7 +219,7 @@ public class DetailsController implements IController {
             if (!dcw.isEditMode()) return;
 
             Detail detail = new Detail();
-            detail.id = dcw.m_id;
+            detail.id = dcw.m_detail_id;
             detail.name = dcw.m_name.getText().trim();
             detail.decimal_number = dcw.m_decimal_name.getText().trim();
             detail.description = dcw.m_description.getText().trim();
@@ -240,7 +240,7 @@ public class DetailsController implements IController {
             String result = m_model.update(detail);
             if (result == null || result.isEmpty()) {
                 JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-                dcw.m_id = result;
+                dcw.m_detail_id = result;
             }
             else {
                 JOptionPane.showMessageDialog(null, "Успешно");
@@ -264,7 +264,7 @@ public class DetailsController implements IController {
                 if (!dcw.isCreateMode()) {
                     Detail detail = m_model.getById(m_details_view.getDetailsWindow().getTable().getStringFromSelectedRowColumn(0));
                     if (detail != null)  {
-                        dcw.m_id = detail.id;
+                        dcw.m_detail_id = detail.id;
                         dcw.m_name.setText(detail.name);
                         dcw.m_decimal_name.setText(detail.decimal_number);
                         dcw.m_description.setText(detail.description);

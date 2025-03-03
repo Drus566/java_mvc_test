@@ -59,4 +59,45 @@ public class OrientDBDriver {
         if (INSTANCE == null) INSTANCE = new OrientDBDriver();
         return INSTANCE;
     }
+
+    /* SQL REQUESTS */
+    public void createClass(String class_str) {
+        String query = "CREATE CLASS " + class_str;
+    }
+
+    public void createProperty(String property_str) {
+        String query = "CREATE PROPERTY " + property_str;
+    }
+
+    public void createLink(String link_str) {
+        String query = "CREATE LINK " + link_str;
+    }
+
+
+    // CREATE CLASS Detail
+//    CREATE PROPERTY Detail.description STRING
+//    CREATE PROPERTY Detail.decimal_number STRING
+//    CREATE PROPERTY Detail.busy BOOLEAN (MANDATORY TRUE)
+//    CREATE PROPERTY Detail.created_at DATETIME (MANDATORY TRUE)
+//    CREATE PROPERTY Detail.updated_at DATETIME
+//    CREATE PROPERTY Detail.busy_user LINK OUser
+
+    // CREATE CLASS DetailParameter
+    // CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)
+    //CREATE PROPERTY DetailParameter.detail_id LINK Detail
+
+    // CREATE PROPERTY Detail.params LINKSET DetailParameter
+
+    // CREATE CLASS DetailParameterType
+    // CREATE PROPERTY DetailParameterType.custom_value BOOLEAN
+    // CREATE PROPERTY DetailParameterType.enum BOOLEAN
+    // CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)
+    // CREATE PROPERTY DetailParameterType.value_type STRING
+
+    // CREATE CLASS DetailName
+    // CREATE PROPERTY DetailName.name STRING
+
+    // CREATE PROPERTY Detail.name LINK DetailName
+
+    // CREATE PROPERTY DetailParameter.type LINK DetailParameterType
 }

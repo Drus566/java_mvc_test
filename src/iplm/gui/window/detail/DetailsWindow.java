@@ -138,7 +138,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     public void buildMenuBar() {
         m_menu_bar = new JMenuBar();
         JMenu menu = new JMenu("Меню");
-        JMenuItem params = new JMenuItem("Редактор параметров");
+        JMenuItem params = new JMenuItem("Редактор параметров деталей");
         JMenuItem exit = new JMenuItem("Выход");
         menu.add(params);
         menu.add(exit);
@@ -153,7 +153,6 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_panel.add(m_details_filter_panel, "pos (search_bar.x+search_bar.w-" + m_details_filter_panel.getPreferredSize().getWidth() + "px) " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
         m_panel.add(m_search_panel, "pos search_bar.x " + m_search_bar.getPreferredSize().getHeight() * 1.199 + "px");
 
-//        m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:max, growx, split 2");
         m_panel.add(m_update_button, "split 3, al center");
         m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:" + width + ", growx, al center");
         m_panel.add(m_add_detail_button, "al left, wrap");
