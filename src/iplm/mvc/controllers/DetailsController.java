@@ -17,8 +17,6 @@ import iplm.mvc.views.DetailsView;
 import iplm.utility.DateTimeUtility;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class DetailsController implements IController {
@@ -63,7 +61,7 @@ public class DetailsController implements IController {
                     for (Detail d : details) {
                         if (MAX_COUNT <= 0) break;
 
-                        sp.addActualLine(d.id, d.decimal_number + " " + d.name, () -> {
+                        sp.addActualLine(d.id, d.decimal_number + "  " + d.name + "  " + d.description, () -> {
                             DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
                             if (!dcw.isCreateMode()) {
                                 Detail detail = m_model.getById(d.id);
@@ -72,15 +70,16 @@ public class DetailsController implements IController {
                                     dcw.m_id = detail.id;
                                     dcw.m_name.setText(detail.name);
                                     dcw.m_decimal_name.setText(detail.decimal_number);
+                                    dcw.m_description.setText(detail.description);
 
-                                    dcw.clear();
+                                    dcw.clearParametersPanel();
 
                                     for (DetailParameter dp : detail.params) {
                                         dcw.addParameter(dp.name,(String)dp.value);
                                     }
                                 }
                             }
-                            dcw.doEditMode();
+                            dcw.doNormalMode();
                             dcw.show();
                         });
 
@@ -116,6 +115,7 @@ public class DetailsController implements IController {
                 t.clear();
                 for (Detail d : details) {
                     ArrayList<String> args = new ArrayList<>();
+                    args.add(d.id);
                     args.add(d.decimal_number);
                     args.add(d.name);
                     args.add(d.description);
@@ -139,6 +139,7 @@ public class DetailsController implements IController {
                 t.clear();
                 for (Detail d : details) {
                     ArrayList<String> args = new ArrayList<>();
+                    args.add(d.id);
                     args.add(d.decimal_number);
                     args.add(d.name);
                     args.add(d.description);
@@ -164,7 +165,7 @@ public class DetailsController implements IController {
             Detail detail = new Detail();
             detail.name = dcw.m_name.getText().trim();
             detail.decimal_number = dcw.m_decimal_name.getText().trim();
-//            detail.description = "";
+            detail.description = dcw.m_description.getText().trim();
             detail.created_at = DateTimeUtility.timestamp();
 //            detail.updated_at = DateTimeUtility.timestamp();
 
@@ -221,7 +222,7 @@ public class DetailsController implements IController {
             detail.id = dcw.m_id;
             detail.name = dcw.m_name.getText().trim();
             detail.decimal_number = dcw.m_decimal_name.getText().trim();
-            detail.description = "";
+            detail.description = dcw.m_description.getText().trim();
             detail.created_at = DateTimeUtility.timestamp();
 //            detail.updated_at = DateTimeUtility.timestamp();
 
@@ -241,8 +242,46 @@ public class DetailsController implements IController {
                 JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 dcw.m_id = result;
             }
-            else JOptionPane.showMessageDialog(null, "Успешно");
+            else {
+                JOptionPane.showMessageDialog(null, "Успешно");
+                Runnable rebuild_index_action = () -> {
+                    boolean result1 = m_model.rebuildIndex();
+                    if (result1) JOptionPane.showMessageDialog(null, "Индекс успешно обновлен");
+                    else JOptionPane.showMessageDialog(null, "Ошибка перестроения индекса");
+                };
+                Thread rebuild_index = new Thread(rebuild_index_action);
+                rebuild_index.start();
+            }
         });
+
+
+        m_details_view.getDetailsWindow().getTable().addDoubleClickAction(new Runnable() {
+            @Override
+            public void run() {
+//                System.out.println("DOUBLE CLICK");
+
+                DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
+                if (!dcw.isCreateMode()) {
+                    Detail detail = m_model.getById(m_details_view.getDetailsWindow().getTable().getStringFromSelectedRowColumn(0));
+                    if (detail != null)  {
+                        dcw.m_id = detail.id;
+                        dcw.m_name.setText(detail.name);
+                        dcw.m_decimal_name.setText(detail.decimal_number);
+                        dcw.m_description.setText(detail.description);
+
+                        dcw.clearParametersPanel();
+
+                        for (DetailParameter dp : detail.params) {
+                            dcw.addParameter(dp.name,(String)dp.value);
+                        }
+                    }
+                }
+                dcw.doNormalMode();
+                dcw.show();
+
+            }
+        });
+
     }
 
 

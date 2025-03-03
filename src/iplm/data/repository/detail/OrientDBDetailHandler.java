@@ -210,6 +210,7 @@ public class OrientDBDetailHandler {
                 OResult item = rs.next();
                 d.name = item.getProperty(P.name.s());
                 d.decimal_number = item.getProperty(P.decimal_number.s());
+                d.description = item.getProperty(P.description.s());
                 d.id = item.getProperty(P.rid.s()).toString();
                 result.add(d);
             }
@@ -284,6 +285,9 @@ public class OrientDBDetailHandler {
                 List<Object> el = item.getProperty("parameters");
 
                 System.out.println(el);
+
+                if (el == null || el.isEmpty()) break;
+
                 for (Object o : el) {
                     OResultInternal ri = (OResultInternal) o;
 //                    System.out.println(ri);

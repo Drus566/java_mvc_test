@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DetailControlWindow extends AWindow {
     private JButton m_add, m_edit, m_remove, m_add_parameter;
     public String m_id;
-    public InputField m_name, m_decimal_name;
+    public InputField m_name, m_decimal_name, m_description;
     public ArrayList<DetailParameterPanel> m_detail_parameters;
 
     public JButton getCreateButton() { return m_add; }
@@ -24,7 +24,7 @@ public class DetailControlWindow extends AWindow {
         afterBuild();
     }
 
-    public void clear() {
+    public void clearParametersPanel() {
         for (DetailParameterPanel dpp : m_detail_parameters) {
             m_panel.remove(dpp);
             m_panel.revalidate();
@@ -76,6 +76,7 @@ public class DetailControlWindow extends AWindow {
 
         m_name = new InputField("Наименование", "", 160);
         m_decimal_name = new InputField("Децимальный номер", "", 160);
+        m_description = new InputField("Описание", "", 160);
         m_detail_parameters = new ArrayList<>();
         m_detail_parameters.add(new DetailParameterPanel(160));
 
@@ -90,7 +91,7 @@ public class DetailControlWindow extends AWindow {
         m_panel.add(m_remove, "wrap");
         m_panel.add(m_name, "al center, pushx, growx, wrap");
         m_panel.add(m_decimal_name, "al center, pushx, growx, wrap");
-
+        m_panel.add(m_description, "al center, pushx, growx, wrap");
 
         for (DetailParameterPanel d : m_detail_parameters) {
             m_panel.add(d, "pushx, growx, wrap");
@@ -107,6 +108,7 @@ public class DetailControlWindow extends AWindow {
 
         m_name.setEditable(false);
         m_decimal_name.setEditable(false);
+        m_description.setEditable(false);
 
         m_add_parameter.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
@@ -180,6 +182,19 @@ public class DetailControlWindow extends AWindow {
         if (!edit) editMode();
     }
 
+    public void doNormalMode() { normalMode(); }
+
+    private void normalMode() {
+        toViewMode();
+        m_add.setVisible(true);
+        m_edit.setVisible(true);
+        m_remove.setVisible(true);
+        m_add.setText("Создать");
+        m_edit.setText("Редактировать");
+        create = false;
+        edit = false;
+    }
+
     private void createMode() {
         if (!create) {
             toChangeMode();
@@ -211,7 +226,7 @@ public class DetailControlWindow extends AWindow {
             m_remove.setVisible(true);
             m_edit.setText("Редактировать");
             edit = false;
-            JOptionPane.showMessageDialog(null, "Успешно");
+//            JOptionPane.showMessageDialog(null, "Успешно");
         }
     }
 
@@ -221,6 +236,7 @@ public class DetailControlWindow extends AWindow {
 
         m_name.setEditable(false);
         m_decimal_name.setEditable(false);
+        m_description.setEditable(false);
 
         for (DetailParameterPanel dp : m_detail_parameters) {
             dp.setEditable(false);
@@ -233,6 +249,7 @@ public class DetailControlWindow extends AWindow {
 
         m_name.setEditable(true);
         m_decimal_name.setEditable(true);
+        m_description.setEditable(true);
 
         for (DetailParameterPanel dp : m_detail_parameters) {
             dp.setEditable(true);

@@ -21,6 +21,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
                 m_panel.requestFocus();
             }
         });
+        m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         buildTable();
         buildSearchBar();
@@ -68,19 +71,15 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         buildAddDetailButton();
         buildUpdateButton();
         buildDetailsFilter();
+        buildMenuBar();
         arrangeComponents();
     }
 
     private void buildTable() {
         m_table = new DefaultTable();
-
         // EXAMPLE DATA FILLs
-        m_table.addColumns(new ArrayList<>(Arrays.asList("Децимальный номер", "Наименование", "Описание")));
-        for (int i = 0; i < 100; i++) {
-            m_table.addLine(new ArrayList<>(Arrays.asList("Document.txt", "Text File", "15 KB")));
-            m_table.addLine(new ArrayList<>(Arrays.asList("Image.jpg", "Image", "2 MB")));
-            m_table.addLine(new ArrayList<>(Arrays.asList("Spreadsheet.xlsx", "Excel", "500 KB")));
-        }
+        m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Децимальный номер", "Наименование", "Описание")));
+        m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(0));
     }
 
     private void buildSearchPanel() {
@@ -134,6 +133,18 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
             if (m_details_filter_panel.isVisible()) m_details_filter_panel.setVisible(false);
             else m_details_filter_panel.setVisible(true);
         });
+    }
+
+    public void buildMenuBar() {
+        m_menu_bar = new JMenuBar();
+        JMenu menu = new JMenu("Меню");
+        JMenuItem params = new JMenuItem("Редактор параметров");
+        JMenuItem exit = new JMenuItem("Выход");
+        menu.add(params);
+        menu.add(exit);
+
+        exit.addActionListener(e -> System.exit(0));
+        m_menu_bar.add(menu);
     }
 
     private void arrangeComponents() {
