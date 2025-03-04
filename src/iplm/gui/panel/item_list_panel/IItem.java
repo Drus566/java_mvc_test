@@ -7,4 +7,8 @@ public interface IItem {
     void addItemListener(IItemListener listener);
     String getPayload();
     JComponent getComponent();
+    void toWriteMode();
+    void toReadMode();
+    void rememberLast();
+    void fillLast();
 }

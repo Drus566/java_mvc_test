@@ -1,28 +1,28 @@
 package iplm.gui.window.detail;
 
 import iplm.gui.button.*;
+import iplm.gui.combobox.ComboBoxInputItem;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
 import iplm.gui.panel.SwitcherPanel;
+import iplm.gui.panel.item_list_panel.ItemListPanel;
 import iplm.gui.textarea.InputTextArea;
-import iplm.gui.panel.item_list_panel.ComboBoxInputItem;
 import iplm.gui.textfield.InputText;
 import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
-    enum switch_panels {
+    enum SwitchPanels {
         READ_MODE("read_mode"),
         WRITE_MODE("write_mode");
 
         private String mode;
         public String s() { return mode; }
 
-        switch_panels(String mode) {
+        SwitchPanels(String mode) {
             this.mode = mode;
         }
     }
@@ -72,11 +72,16 @@ public class DetailControlWindow extends AWindow {
     private AddButton m_add_detail_parameter_btn;
     // Окно контроля параметров детали
     private EditButton m_edit_detail_parameter_btn;
+    // Панель параметров
+    private ItemListPanel m_parameters_panel;
 
     private boolean m_edit_mode = false;
     private boolean m_create_mode = false;
 
     private int detail_parameter_panel_width;
+
+    // LAST FIELDS
+    private String last_name, last_decimal_number, last_description;
 
     // TOP
     public UpdateButton getUpdateButton() { return m_update_btn; }
@@ -135,12 +140,17 @@ public class DetailControlWindow extends AWindow {
         write_mode_panel.add(m_confirm_btn, "split 2");
         write_mode_panel.add(m_cancel_btn);
 
-        m_detail_control_btn_panel.addPanel(read_mode_panel, switch_panels.READ_MODE.s());
-        m_detail_control_btn_panel.addPanel(write_mode_panel, switch_panels.WRITE_MODE.s());
+        m_detail_control_btn_panel.addPanel(read_mode_panel, SwitchPanels.READ_MODE.s());
+        m_detail_control_btn_panel.addPanel(write_mode_panel, SwitchPanels.WRITE_MODE.s());
 
         m_add_detail_btn.addAction(() -> doCreateMode());
         m_edit_detail_btn.addAction(() -> doEditMode());
-        m_cancel_btn.addAction(() -> doReadMode());
+        m_cancel_btn.addAction(() -> {
+            m_parameters_panel.fillLastItems();
+            fillLast();
+            doReadMode();
+            m_parameters_panel.updateUI();
+        });
         m_confirm_btn.addAction(() -> doReadMode());
     }
 
@@ -153,101 +163,55 @@ public class DetailControlWindow extends AWindow {
         m_detail_decimal_number_input = new InputText();
         m_detail_describe_label = new DefaultLabel("Примечание");
         m_detail_description_input = new InputTextArea();
-//        m_filepath_label = new DefaultLabel("Загружаемый файл");
-//        m_filepath_input = new JTextField();
         m_detail_parameter_control_panel = new SwitcherPanel();
         m_parameters_label = new DefaultLabel("Параметры");
         m_add_detail_parameter_btn = new AddButton();
         m_edit_detail_parameter_btn = new EditButton();
-
-        m_add_detail_parameter_btn.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                ComboBoxInputItem dpp = new ComboBoxInputItem(detail_parameter_panel_width);
-                m_detail_parameter_panels.add(dpp);
-
-                dpp.setVisibleDeleteButton(false);
-                dpp.setEditable(false);
-
-                if (isEditMode() || isCreateMode()) {
-                    dpp.setVisibleDeleteButton(true);
-                    dpp.setEditable(true);
-                }
-
-                dpp.addDeleteAction(() -> {
-                    m_panel.remove(dpp);
-                    m_panel.revalidate();
-                    m_panel.repaint();
-                    m_detail_parameter_panels.remove(dpp);
-                });
-                m_panel.add(dpp, "al center, wrap");
-
-                m_panel.revalidate();
-                m_panel.repaint();
-//                m_frame.pack();
-            });
-        });
+        m_parameters_panel = new ItemListPanel();
 
         JPanel read_mode_panel = new JPanel(new MigLayout());
         JPanel write_mode_panel = new JPanel(new MigLayout());
 
         read_mode_panel.add(new JLabel("Параметры"), "al center, push");
+
         write_mode_panel.add(m_parameters_label, "al center, split 3");
         write_mode_panel.add(m_add_detail_parameter_btn);
         write_mode_panel.add(m_edit_detail_parameter_btn);
-        m_detail_parameter_control_panel.addPanel(read_mode_panel, switch_panels.READ_MODE.s());
-        m_detail_parameter_control_panel.addPanel(write_mode_panel, switch_panels.WRITE_MODE.s());
+
+        m_detail_parameter_control_panel.addPanel(read_mode_panel, SwitchPanels.READ_MODE.s());
+        m_detail_parameter_control_panel.addPanel(write_mode_panel, SwitchPanels.WRITE_MODE.s());
+
+        detail_parameter_panel_width = 160;
+
+        m_add_detail_parameter_btn.addAction(() -> {
+            m_parameters_panel.addParameter(new ComboBoxInputItem(detail_parameter_panel_width));
+            m_parameters_panel.updateUI();
+        });
+    }
+
+    private void rememberLast() {
+        last_name = m_detail_name_input.getText();
+        last_decimal_number = m_detail_decimal_number_input.getText();
+        last_description = m_detail_description_input.getTextArea().getText();
+    }
+
+    private void fillLast() {
+        m_detail_name_input.setText(last_name);
+        m_detail_decimal_number_input.setText(last_decimal_number);
+        m_detail_description_input.getTextArea().setText(last_description);
     }
 
     public DetailControlWindow() {
         build();
-        detail_parameter_panel_width = 160;
         afterBuild();
-    }
-
-    public void clearDetailParameterPanels() {
-        for (ComboBoxInputItem dpp : m_detail_parameter_panels) {
-            m_panel.remove(dpp);
-            m_panel.revalidate();
-            m_panel.repaint();
-        }
-        m_detail_parameter_panels.clear();
-    }
-
-    public void addParameter(String key, String value) {
-
-
-//        DetailParameterPanel dp = new DetailParameterPanel(160);
-//        dp.setKey(key);
-//        dp.setValue(value);
-//        m_detail_parameters.add(dp);
-//        dp.setVisibleDeleteButton(false);
-//        dp.setEditable(false);
-//        if (edit || create) {
-//            dp.setVisibleDeleteButton(true);
-//            dp.setEditable(true);
-//        }
-//        dp.addDeleteAction(() -> {
-//            m_panel.remove(dp);
-//            m_panel.revalidate();
-//            m_panel.repaint();
-//            m_detail_parameters.remove(dp);
-//        });
-//        m_panel.add(dp, "wrap");
-//
-//        m_panel.add(m_add_parameter);
-
-        m_panel.revalidate();
-        m_panel.repaint();
-        m_frame.pack();
     }
 
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
-        m_detail_parameter_panels = new ArrayList<>();
-        m_detail_parameter_panels_buffer = new ArrayList<>();
         buildTop();
         buildBody();
+        doReadMode();
         arrangeComponents();
     }
 
@@ -264,32 +228,16 @@ public class DetailControlWindow extends AWindow {
         m_panel.add(m_detail_decimal_number_input, "width " +  input_width + ", wrap");
         m_panel.add(m_detail_describe_label, "al center, wrap");
         m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + ", wrap");
-//        m_panel.add(m_filepath_label, "al center, split 2, width " + label_width);
-//        m_panel.add(m_filepath_input, "width " + input_width + ", wrap");
         m_panel.add(m_detail_parameter_control_panel, "al center, wrap");
-//        m_panel.add(m_add_detail_parameter_btn);
-//        m_panel.add(m_edit_detail_parameter_btn, "wrap");
-
-        for (ComboBoxInputItem d : m_detail_parameter_panels) {
-            m_panel.add(d, "al center, pushx, wrap");
-            d.addDeleteAction(() -> {
-                m_panel.remove(d);
-                m_panel.revalidate();
-                m_panel.repaint();
-                m_detail_parameter_panels.remove(d);
-            });
-            d.setEditable(false);
-        }
+        m_panel.add(m_parameters_panel, "al center, wrap");
     }
 
     public void doReadMode() {
-        bufferToOriginParameters();
-        updateDisplay();
         setMode(false);
         m_edit_mode = false;
         m_create_mode = false;
-        m_detail_control_btn_panel.showPanel(switch_panels.READ_MODE.s());
-        m_detail_parameter_control_panel.showPanel(switch_panels.READ_MODE.s());
+        m_detail_control_btn_panel.showPanel(SwitchPanels.READ_MODE.s());
+        m_detail_parameter_control_panel.showPanel(SwitchPanels.READ_MODE.s());
     }
 
     public void doEditMode() {
@@ -298,12 +246,13 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         if (!isEditMode()) {
-            originToBufferParameters();
             setMode(true);
             m_edit_mode = true;
             m_create_mode = false;
-            m_detail_control_btn_panel.showPanel(switch_panels.WRITE_MODE.s());
-            m_detail_parameter_control_panel.showPanel(switch_panels.WRITE_MODE.s());
+            m_detail_control_btn_panel.showPanel(SwitchPanels.WRITE_MODE.s());
+            m_detail_parameter_control_panel.showPanel(SwitchPanels.WRITE_MODE.s());
+            m_parameters_panel.rememberItems();
+            rememberLast();
         }
     }
 
@@ -313,27 +262,12 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         else if (!isCreateMode()) {
-            originToBufferParameters();
             setMode(true);
             m_edit_mode = false;
             m_create_mode = true;
-            m_detail_control_btn_panel.showPanel(switch_panels.WRITE_MODE.s());
-            m_detail_parameter_control_panel.showPanel(switch_panels.WRITE_MODE.s());
-        }
-    }
-
-    private void bufferToOriginParameters() {
-        m_detail_parameter_panels.clear();
-        for (ComboBoxInputItem dpp : m_detail_parameter_panels_buffer) {
-            m_detail_parameter_panels.add(dpp);
-        }
-        m_detail_parameter_panels_buffer.clear();
-    }
-
-    private void originToBufferParameters() {
-        m_detail_parameter_panels_buffer.clear();
-        for (ComboBoxInputItem dpp : m_detail_parameter_panels) {
-            m_detail_parameter_panels_buffer.add(dpp);
+            m_detail_control_btn_panel.showPanel(SwitchPanels.WRITE_MODE.s());
+            m_detail_parameter_control_panel.showPanel(SwitchPanels.WRITE_MODE.s());
+            m_parameters_panel.rememberItems();
         }
     }
 
@@ -345,14 +279,7 @@ public class DetailControlWindow extends AWindow {
         m_detail_decimal_number_input.setEditable(flag);
         m_detail_description_input.setEditable(flag);
 
-        for (ComboBoxInputItem dp : m_detail_parameter_panels) {
-            dp.setEditable(flag);
-            dp.setVisibleDeleteButton(flag);
-        }
-    }
-
-    public void updateDisplay() {
-        m_panel.revalidate();
-        m_panel.repaint();
+        if (flag) m_parameters_panel.toWriteMode();
+        else m_parameters_panel.toReadMode();
     }
 }

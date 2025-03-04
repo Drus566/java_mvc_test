@@ -1,7 +1,9 @@
-package iplm.gui.panel.item_list_panel;
+package iplm.gui.combobox;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import iplm.gui.button.DeleteButton;
+import iplm.gui.panel.item_list_panel.IItem;
+import iplm.gui.panel.item_list_panel.IItemListener;
 import iplm.utility.ColorUtility;
 import net.miginfocom.swing.MigLayout;
 
@@ -11,9 +13,13 @@ import java.util.ArrayList;
 
 public class ComboBoxInputItem extends JPanel implements IItem {
     private IItemListener m_item_listener;
+
     private DeleteButton m_delete_btn;
     private JComboBox<String> m_name;
     private JTextField m_value;
+
+    private String m_last_name;
+    private String m_last_value;
 
     private ArrayList<Runnable> m_delete_actions;
 
@@ -34,6 +40,7 @@ public class ComboBoxInputItem extends JPanel implements IItem {
     public void setEditable(boolean flag) {
         m_name.setEnabled(flag);
         m_value.setEditable(flag);
+        setVisibleDeleteButton(flag);
     }
 
     public ComboBoxInputItem(int width_name) {
@@ -43,7 +50,7 @@ public class ComboBoxInputItem extends JPanel implements IItem {
         setLayout(new MigLayout("inset 5"));
         m_delete_actions = new ArrayList<>();
 
-        m_delete_btn = new DeleteButton();
+        m_delete_btn = new DeleteButton(18, 18);
         m_name = new JComboBox<>();
         m_value = new JTextField();
 
@@ -64,7 +71,7 @@ public class ComboBoxInputItem extends JPanel implements IItem {
             for (Runnable a : m_delete_actions) {
                 SwingUtilities.invokeLater(a);
             }
-            m_item_listener.onDelete(this);
+            SwingUtilities.invokeLater(() -> m_item_listener.onDelete(this));
         });
     }
 
@@ -100,22 +107,21 @@ public class ComboBoxInputItem extends JPanel implements IItem {
     @Override
     public JComponent getComponent() { return this; }
 
-//    class NameModel extends AbstractListModel<String> implements  ComboBoxModel<String> {
-//        private List<String> list;
-//        private String selected;
-//
-//        NameModel() { list = new ArrayList<>(); }
-//
-//        @Override
-//        public void setSelectedItem(Object item) { selected = (String) item; }
-//
-//        @Override
-//        public Object getSelectedItem() { return selected; }
-//
-//        @Override
-//        public int getSize() { return list.size(); }
-//
-//        @Override
-//        public String getElementAt(int index) { return list.get(index); }
-//    }
+    @Override
+    public void toWriteMode() { setEditable(true); }
+
+    @Override
+    public void toReadMode() { setEditable(false); }
+
+    @Override
+    public void rememberLast() {
+        m_last_name = (String)m_name.getSelectedItem();
+        m_last_value = m_value.getText();
+    }
+
+    @Override
+    public void fillLast() {
+        m_name.setSelectedItem(m_last_name);
+        m_value.setText(m_last_value);
+    }
 }

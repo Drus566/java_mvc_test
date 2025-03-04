@@ -6,46 +6,81 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 public class ItemListPanel extends JPanel implements IItemListener {
-    private ArrayList<JComponent> m_items;
-    private ArrayList<JComponent> m_prev_items;
+    private ArrayList<IItem> m_items;
+    private ArrayList<IItem> m_prev_items;
     private boolean write_mode;
-    private boolean with_prev_items;
 
     public boolean isWriteMode() { return write_mode; }
 
     public ItemListPanel() {
         setLayout(new MigLayout());
-        write_mode = false;
         m_items = new ArrayList<>();
         m_prev_items = new ArrayList<>();
+
+        write_mode = false;
     }
 
-    public void addParameter(JComponent component) {
-        m_items.add(component);
+    public void addParameter(IItem item) {
+        item.addItemListener(this);
+        m_items.add(item);
     }
 
-    public void removeParamater(JComponent component) {
-        m_items.remove(component);
+    public void removeParameter(IItem item) {
+        m_items.remove(item);
+    }
+
+    public void rememberItems() {
+        m_prev_items.clear();
+        for (IItem i : m_items) {
+            m_prev_items.add(i);
+            i.rememberLast();
+        }
+    }
+
+    public void fillLastItems() {
+        m_items.clear();
+        for (IItem i : m_prev_items) {
+            m_items.add(i);
+            i.fillLast();
+        }
     }
 
     public void updateUI() {
+        if (m_items == null) return;
+
         removeAll();
-        for (JComponent item : m_items) {
-            add(item, "wrap");
+        for (IItem item : m_items) {
+            add(item.getComponent(), "wrap");
         }
         revalidate();
         repaint();
     }
 
+    public void toWriteMode() {
+        if (isWriteMode()) return;
+        for (IItem i : m_items) {
+            i.toWriteMode();
+        }
+        write_mode = true;
+    }
+
+    public void toReadMode() {
+        if (!isWriteMode()) return;
+        for (IItem i : m_items) {
+            i.toReadMode();
+        }
+        write_mode = false;
+    }
+
     @Override
     public void onDelete(IItem item) {
-        JComponent i = item.getComponent();
-        for (JComponent c : m_items) {
-            if (c == i) {
-                remove(i);
+        for (IItem i : m_items) {
+            if (i == item) {
+                remove(item.getComponent());
                 break;
             }
         }
-        m_items.remove(i);
+        m_items.remove(item);
+        updateUI();
     }
 }
