@@ -1,10 +1,10 @@
 package iplm.gui.window.detail;
 
-import iplm.Resources;
 import iplm.gui.button.*;
 import iplm.gui.label.DefaultLabel;
+import iplm.gui.label.RoundIconLabel;
+import iplm.gui.panel.SwitcherPanel;
 import iplm.gui.textarea.InputTextArea;
-import iplm.gui.textfield.InputField;
 import iplm.gui.panel.detail_parameter.DetailParameterPanel;
 import iplm.gui.textfield.InputText;
 import iplm.gui.window.AWindow;
@@ -15,17 +15,28 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
-    public String m_detail_id;
+    enum switch_panels {
+        READ_MODE("read_mode"),
+        WRITE_MODE("write_mode");
 
-    /* NEW */
+        private String mode;
+        public String s() { return mode; }
+
+        switch_panels(String mode) {
+            this.mode = mode;
+        }
+    }
+
+    private String m_detail_id;
+
     // TOP
-    private JPanel top_panel;
+    private JPanel m_top_panel;
     // Обновить данные детали
     private UpdateButton m_update_btn;
     // Иконка детали
-    private JLabel detail_icon;
-    // Панель кнопок
-    private JPanel mode_btn_panel;
+    private RoundIconLabel m_detail_icon;
+    // Панель переключения набора кнопок
+    private SwitcherPanel m_detail_control_btn_panel;
     // Создать деталь
     private AddButton m_add_detail_btn;
     // Редактировать деталь
@@ -34,321 +45,292 @@ public class DetailControlWindow extends AWindow {
     private DeleteButton m_delete_detail_btn;
     // Скачать деталь
     private DownloadButton m_download_detail_btn;
-    // TODO: Confirm button
-    // TODO: Close button
+    // Confirm button
+    private ConfirmButton m_confirm_btn;
+    // Cancel button
+    private CancelButton m_cancel_btn;
 
     // BODY
+    private JPanel m_body_panel;
     // Метка имени детали
-    private DefaultLabel detail_name_label;
+    private DefaultLabel m_detail_name_label;
+    // Ввод имени детали
+    private JTextField m_detail_name_input;
     // Метка децимального номера детали
-    private DefaultLabel detail_decimal_number_label;
+    private DefaultLabel m_detail_decimal_number_label;
     // Ввод децимального номера детали
-    private InputText decimal_number_input;
+    private InputText m_detail_decimal_number_input;
     // Метка описания
-    private DefaultLabel describe_label;
-    // Панель описание детали
-    private InputTextArea description_input_panel;
+    private DefaultLabel m_detail_describe_label;
+    // Описание детали
+    private InputTextArea m_detail_description_input;
+    // Метка пути файла
+    private DefaultLabel m_filepath_label;
+    // Ввод пути файла
+    private JTextField m_filepath_input;
+    // Панель управления параметарми
+    private SwitcherPanel m_detail_parameter_control_panel;
     // Метка параметров
-    private DefaultLabel parameters_label;
+    private DefaultLabel m_parameters_label;
     // Создать параметр детали
     private AddButton m_add_detail_parameter_btn;
     // Окно контроля параметров детали
     private EditButton m_edit_detail_parameter_btn;
+    // Отображение параметров детали
+    private ArrayList<DetailParameterPanel> m_detail_parameter_panels;
 
-    private boolean edit_mode = false;
-    private boolean create_mode = false;
+    private boolean m_edit_mode = false;
+    private boolean m_create_mode = false;
+
+    private int detail_parameter_panel_width;
 
     // TOP
     public UpdateButton getUpdateButton() { return m_update_btn; }
-    public JLabel getDetailIcon() { return detail_icon; }
+    public RoundIconLabel getDetailIcon() { return m_detail_icon; }
     public AddButton getAddDetailBtn() { return m_add_detail_btn; }
     public EditButton getEditDetailBtn() { return m_edit_detail_btn; }
     public DeleteButton getDeleteDetailBtn() { return  m_delete_detail_btn; };
     public DownloadButton getDownloadDetailBtn() { return m_download_detail_btn; }
 
     // BODY
-    public InputText decimalNumberInput() { return decimal_number_input; }
-    public InputTextArea descriptionInputPanel() { return description_input_panel; }
+    public InputText decimalNumberInput() { return m_detail_decimal_number_input; }
+    public InputTextArea descriptionInput() { return m_detail_description_input; }
     public AddButton addDetailParameterBtn() { return m_add_detail_btn; }
     public EditButton editDetailParameterBtn() { return m_edit_detail_parameter_btn; }
 
+    public boolean isCreateMode() { return m_create_mode; }
+    public boolean isEditMode() { return m_edit_mode; }
 
-//    public boolean isCreateMode() { return create_mode; }
-//    public boolean isEditMode() { return edit_mode; }
+    private void buildTop() {
+        Color background_detail = Color.white;
+        Color border_detail = new Color(217, 217, 217);
+        int size_icon = 64;
 
-
-    public void buildTop() {
-        top_panel = new JPanel(new MigLayout("inset 10"));
+        m_top_panel = new JPanel(new MigLayout("inset 4"));
         m_update_btn = new UpdateButton();
-        detail_icon = new DefaultLabel(Resources.getSVGIcon("detail.svg"));
-        mode_btn_panel = new JPanel(new CardLayout());
+        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
+
+        buildModeBtnPanel();
+
+        m_top_panel.add(m_update_btn, "split 3");
+        m_top_panel.add(m_detail_icon);
+        m_top_panel.add(m_detail_control_btn_panel, "wrap");
+
+        m_scroll_pane = new JScrollPane();
+    }
+
+    private void buildModeBtnPanel() {
+        m_detail_control_btn_panel = new SwitcherPanel();
+
         m_add_detail_btn = new AddButton();
         m_edit_detail_btn = new EditButton();
         m_delete_detail_btn = new DeleteButton();
         m_download_detail_btn = new DownloadButton();
+
+        m_confirm_btn = new ConfirmButton();
+        m_cancel_btn = new CancelButton();
+
+        JPanel read_mode_panel = new JPanel(new MigLayout());
+        JPanel write_mode_panel = new JPanel(new MigLayout());
+
+        read_mode_panel.add(m_add_detail_btn, "split 4");
+        read_mode_panel.add(m_edit_detail_btn);
+        read_mode_panel.add(m_download_detail_btn);
+        read_mode_panel.add(m_delete_detail_btn);
+
+        write_mode_panel.add(m_confirm_btn, "split 2");
+        write_mode_panel.add(m_cancel_btn);
+
+        m_detail_control_btn_panel.addPanel(read_mode_panel, switch_panels.READ_MODE.s());
+        m_detail_control_btn_panel.addPanel(write_mode_panel, switch_panels.WRITE_MODE.s());
+
+        m_add_detail_btn.addAction(() -> doCreateMode());
+        m_edit_detail_btn.addAction(() -> doEditMode());
+        m_cancel_btn.addAction(() -> doReadMode());
+        m_confirm_btn.addAction(() -> doReadMode());
     }
 
-    public void buildBody() {
-        detail_name_label = new DefaultLabel("");
-        detail_decimal_number_label = new DefaultLabel("");
-        decimal_number_input = new InputText();
-        describe_label = new DefaultLabel("");
-        description_input_panel = new InputTextArea();
-        parameters_label = new DefaultLabel("");
+    private void buildBody() {
+        m_body_panel = new JPanel(new MigLayout("inset 10"));
+
+        m_detail_name_label = new DefaultLabel("Наименование");
+        m_detail_name_input = new JTextField();
+        m_detail_decimal_number_label = new DefaultLabel("Децимальный номер");
+        m_detail_decimal_number_input = new InputText();
+        m_detail_describe_label = new DefaultLabel("Примечание");
+        m_detail_description_input = new InputTextArea();
+        m_filepath_label = new DefaultLabel("Загружаемый файл");
+        m_filepath_input = new JTextField();
+        m_detail_parameter_control_panel = new SwitcherPanel();
+        m_parameters_label = new DefaultLabel("Параметры");
         m_add_detail_parameter_btn = new AddButton();
         m_edit_detail_parameter_btn = new EditButton();
 
-    }
+        m_add_detail_parameter_btn.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                DetailParameterPanel dpp = new DetailParameterPanel(detail_parameter_panel_width);
+                m_detail_parameter_panels.add(dpp);
 
-    /* OLD */
-    private JButton m_add, m_edit, m_remove, m_add_parameter;
-    public InputField m_name, m_decimal_name, m_description;
-    public ArrayList<DetailParameterPanel> m_detail_parameters;
+                dpp.setVisibleDeleteButton(false);
+                dpp.setEditable(false);
 
-    public JButton getCreateButton() { return m_add; }
-    public JButton getRemoveButton() { return m_remove; }
-    public JButton getEditButton() { return m_edit; }
+                if (isEditMode() || isCreateMode()) {
+                    dpp.setVisibleDeleteButton(true);
+                    dpp.setEditable(true);
+                }
 
-    public void buildTopPanel() {
-        m_update_btn = new UpdateButton();
-        detail_icon = new JLabel();
+                dpp.addDeleteAction(() -> {
+                    m_panel.remove(dpp);
+                    m_panel.revalidate();
+                    m_panel.repaint();
+                    m_detail_parameter_panels.remove(dpp);
+                });
+                m_panel.add(dpp, "al center, wrap");
+
+                m_panel.revalidate();
+                m_panel.repaint();
+//                m_frame.pack();
+            });
+        });
+
+        JPanel read_mode_panel = new JPanel(new MigLayout());
+        JPanel write_mode_panel = new JPanel(new MigLayout());
+
+        read_mode_panel.add(m_parameters_label);
+        write_mode_panel.add(m_parameters_label, "split 3");
+        write_mode_panel.add(m_add_detail_parameter_btn);
+        write_mode_panel.add(m_edit_detail_parameter_btn);
+        m_detail_parameter_control_panel.addPanel(read_mode_panel, switch_panels.READ_MODE.s());
+        m_detail_parameter_control_panel.addPanel(write_mode_panel, switch_panels.WRITE_MODE.s());
     }
 
     public DetailControlWindow() {
         build();
+        detail_parameter_panel_width = 160;
         afterBuild();
     }
 
-    public void clearParametersPanel() {
-        for (DetailParameterPanel dpp : m_detail_parameters) {
+    public void clearDetailParameterPanels() {
+        for (DetailParameterPanel dpp : m_detail_parameter_panels) {
             m_panel.remove(dpp);
             m_panel.revalidate();
             m_panel.repaint();
         }
-        m_detail_parameters.clear();
+        m_detail_parameter_panels.clear();
     }
 
     public void addParameter(String key, String value) {
-        m_panel.remove(m_add_parameter);
-        DetailParameterPanel dp = new DetailParameterPanel(160);
-        dp.setKey(key);
-        dp.setValue(value);
-        m_detail_parameters.add(dp);
-        dp.setVisibleDeleteButton(false);
-        dp.setEditable(false);
-        if (edit || create) {
-            dp.setVisibleDeleteButton(true);
-            dp.setEditable(true);
-        }
-        dp.addDeleteAction(() -> {
-            m_panel.remove(dp);
-            m_panel.revalidate();
-            m_panel.repaint();
-            m_detail_parameters.remove(dp);
-        });
-        m_panel.add(dp, "wrap");
 
-        m_panel.add(m_add_parameter);
+
+//        DetailParameterPanel dp = new DetailParameterPanel(160);
+//        dp.setKey(key);
+//        dp.setValue(value);
+//        m_detail_parameters.add(dp);
+//        dp.setVisibleDeleteButton(false);
+//        dp.setEditable(false);
+//        if (edit || create) {
+//            dp.setVisibleDeleteButton(true);
+//            dp.setEditable(true);
+//        }
+//        dp.addDeleteAction(() -> {
+//            m_panel.remove(dp);
+//            m_panel.revalidate();
+//            m_panel.repaint();
+//            m_detail_parameters.remove(dp);
+//        });
+//        m_panel.add(dp, "wrap");
+//
+//        m_panel.add(m_add_parameter);
+
         m_panel.revalidate();
         m_panel.repaint();
         m_frame.pack();
     }
 
-
-//    public DefaultTable getTable() { return m_table; }
-//    public SearchBar getSearchBar() { return m_search_bar; }
-//    public AddButton getAddDetailButton() { return m_add_detail_button; }
-
-    private boolean edit = false;
-    private boolean create = false;
-
-    public boolean isCreateMode() { return create; }
-    public boolean isEditMode() { return edit; }
-
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10, debug"));
+        m_panel = new JPanel(new MigLayout("inset 10"));
+        m_detail_parameter_panels = new ArrayList<>();
+        buildTop();
+        buildBody();
+        arrangeComponents();
+    }
 
-        m_name = new InputField("Наименование", "", 160);
-        m_decimal_name = new InputField("Децимальный номер", "", 160);
-        m_description = new InputField("Описание", "", 160);
-        m_detail_parameters = new ArrayList<>();
-        m_detail_parameters.add(new DetailParameterPanel(160));
+    public void arrangeComponents() {
+        int label_width = 160;
+        int input_width = 280;
+        int input_area_width = 440;
+        int input_area_height = 120;
 
-        m_detail_id = new String();
-        m_add = new JButton("Создать");
-        m_edit = new JButton("Редактировать");
-        m_remove = new JButton("Удалить");
-        m_add_parameter = new JButton("Добавить параметр");
+        m_panel.add(m_top_panel, "al center, pushx, wrap");
+        m_panel.add(m_detail_name_label, "al center, width " + label_width + ", split 2");
+        m_panel.add(m_detail_name_input, "width " +  input_width + ", wrap");
+        m_panel.add(m_detail_decimal_number_label, "al center, width " + label_width + ", split 2");
+        m_panel.add(m_detail_decimal_number_input, "width " +  input_width + ", wrap");
+        m_panel.add(m_detail_describe_label, "al center, wrap");
+        m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + ", wrap");
+        m_panel.add(m_filepath_label, "al center, split 2, width " + label_width);
+        m_panel.add(m_filepath_input, "width " + input_width + ", wrap");
+        m_panel.add(m_parameters_label, "al center, split 3");
+        m_panel.add(m_add_detail_parameter_btn);
+        m_panel.add(m_edit_detail_parameter_btn, "wrap");
 
-        m_panel.add(m_add, "split 3");
-        m_panel.add(m_edit);
-        m_panel.add(m_remove, "wrap");
-        m_panel.add(m_name, "al center, wrap");
-        m_panel.add(m_decimal_name, "al center, wrap");
-        m_panel.add(m_description, "al center, wrap");
-
-        for (DetailParameterPanel d : m_detail_parameters) {
+        for (DetailParameterPanel d : m_detail_parameter_panels) {
             m_panel.add(d, "al center, pushx, wrap");
             d.addDeleteAction(() -> {
                 m_panel.remove(d);
                 m_panel.revalidate();
                 m_panel.repaint();
-                m_detail_parameters.remove(d);
+                m_detail_parameter_panels.remove(d);
             });
             d.setEditable(false);
         }
-
-        m_panel.add(m_add_parameter, "wrap");
-
-        m_name.setEditable(false);
-        m_decimal_name.setEditable(false);
-        m_description.setEditable(false);
-
-        m_add_parameter.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                m_panel.remove(m_add_parameter);
-                DetailParameterPanel dp = new DetailParameterPanel(160);
-                m_detail_parameters.add(dp);
-                dp.setVisibleDeleteButton(false);
-                dp.setEditable(false);
-                if (edit || create) {
-                    dp.setVisibleDeleteButton(true);
-                    dp.setEditable(true);
-                }
-                dp.addDeleteAction(() -> {
-                    m_panel.remove(dp);
-                    m_panel.revalidate();
-                    m_panel.repaint();
-                    m_detail_parameters.remove(dp);
-                });
-                m_panel.add(dp, "wrap");
-
-                m_panel.add(m_add_parameter);
-                m_panel.revalidate();
-                m_panel.repaint();
-                m_frame.pack();
-            });
-        });
-
-        m_edit.addActionListener(e -> {
-            if (m_detail_id == null || m_detail_id.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Чтобы редактировать, выберите деталь или создайте деталь");
-                return;
-            }
-            editMode();
-        });
-        m_add.addActionListener(e -> createMode());
-//        m_remove.addActionListener(e -> {
-////            int result = JOptionPane.showConfirmDialog(null, "Вы уверены?", "Удалить", JOptionPane.YES_NO_OPTION);
-////            if (result == 0) {
-////                // TODO action
-////                JOptionPane.showMessageDialog(null, "Успешно");
-////                m_id = "";
-////            }
-//        });
-
-        if (create) createMode();
-        else if (edit) editMode();
-        else {
-            m_add_parameter.setVisible(false);
-            for (DetailParameterPanel dp : m_detail_parameters) {
-                dp.setVisibleDeleteButton(false);
-            }
-        }
     }
 
-    public void addParamAction() {
-
-    }
-    public void doCreateMode() {
-        if (edit) {
-            JOptionPane.showMessageDialog(null, "Деталь в режиме редактирования");
-            return;
-        }
-        else if (!create) createMode();
+    public void doReadMode() {
+        setMode(false);
+        m_edit_mode = false;
+        m_create_mode = false;
+        m_detail_control_btn_panel.showPanel(switch_panels.READ_MODE.s());
     }
 
     public void doEditMode() {
-        if (create) {
+        if (isCreateMode()) {
             JOptionPane.showMessageDialog(null, "Деталь в режиме создания");
             return;
         }
-        if (!edit) editMode();
-    }
-
-    public void doNormalMode() { normalMode(); }
-
-    private void normalMode() {
-        toViewMode();
-        m_add.setVisible(true);
-        m_edit.setVisible(true);
-        m_remove.setVisible(true);
-        m_add.setText("Создать");
-        m_edit.setText("Редактировать");
-        create = false;
-        edit = false;
-    }
-
-    private void createMode() {
-        if (!create) {
-            toChangeMode();
-            m_edit.setVisible(false);
-            m_remove.setVisible(false);
-            m_add.setText("Готово");
-            create = true;
-        }
-        else {
-            toViewMode();
-            m_edit.setVisible(true);
-            m_remove.setVisible(true);
-            m_add.setText("Создать");
-            create = false;
+        if (!isEditMode()) {
+            setMode(true);
+            m_edit_mode = true;
+            m_create_mode = false;
+            m_detail_control_btn_panel.showPanel(switch_panels.WRITE_MODE.s());
         }
     }
 
-    private void editMode() {
-        if (!edit) {
-            toChangeMode();
-            m_add.setVisible(false);
-            m_remove.setVisible(false);
-            m_edit.setText("Сохранить");
-            edit = true;
+    public void doCreateMode() {
+        if (isEditMode()) {
+            JOptionPane.showMessageDialog(null, "Деталь в режиме редактирования");
+            return;
         }
-        else {
-            toViewMode();
-            m_add.setVisible(true);
-            m_remove.setVisible(true);
-            m_edit.setText("Редактировать");
-            edit = false;
-//            JOptionPane.showMessageDialog(null, "Успешно");
+        else if (!isCreateMode()) {
+            setMode(true);
+            m_edit_mode = false;
+            m_create_mode = true;
+            m_detail_control_btn_panel.showPanel(switch_panels.WRITE_MODE.s());
         }
     }
 
+    private void setMode(boolean flag) {
+        m_add_detail_parameter_btn.setVisible(flag);
+        m_edit_detail_parameter_btn.setVisible(flag);
 
-    private void toViewMode() {
-        m_add_parameter.setVisible(false);
+        m_detail_name_input.setEditable(flag);
+        m_detail_decimal_number_input.setEditable(flag);
+        m_detail_description_input.setEditable(flag);
 
-        m_name.setEditable(false);
-        m_decimal_name.setEditable(false);
-        m_description.setEditable(false);
-
-        for (DetailParameterPanel dp : m_detail_parameters) {
-            dp.setEditable(false);
-            dp.setVisibleDeleteButton(false);
-        }
-    }
-
-    private void toChangeMode() {
-        m_add_parameter.setVisible(true);
-
-        m_name.setEditable(true);
-        m_decimal_name.setEditable(true);
-        m_description.setEditable(true);
-
-        for (DetailParameterPanel dp : m_detail_parameters) {
-            dp.setEditable(true);
-            dp.setVisibleDeleteButton(true);
+        for (DetailParameterPanel dp : m_detail_parameter_panels) {
+            dp.setEditable(flag);
+            dp.setVisibleDeleteButton(flag);
         }
     }
 

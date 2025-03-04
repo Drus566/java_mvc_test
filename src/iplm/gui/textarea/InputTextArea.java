@@ -19,6 +19,8 @@ public class InputTextArea extends JScrollPane {
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         Color disabled_background = new Color(255, 255, 255, 255);
-        putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
+//        putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
     }
+
+    public void setEditable(boolean flag) { m_text_area.setEditable(flag); }
 }

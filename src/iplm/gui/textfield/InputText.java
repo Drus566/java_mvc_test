@@ -14,6 +14,9 @@ public class InputText extends JTextField {
     private ArrayList<Runnable> m_press_actions;
 
     public InputText() {
+        m_tap_actions = new ArrayList<>();
+        m_press_actions = new ArrayList<>();
+
         Color disabled_background = new Color(255, 255, 255, 255);
         putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
 

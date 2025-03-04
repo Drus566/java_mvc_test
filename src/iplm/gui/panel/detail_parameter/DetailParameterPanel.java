@@ -1,6 +1,8 @@
 package iplm.gui.panel.detail_parameter;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import iplm.Resources;
+import iplm.gui.button.DeleteButton;
 import iplm.utility.ColorUtility;
 import net.miginfocom.swing.MigLayout;
 
@@ -9,7 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class DetailParameterPanel extends JPanel {
-    private JButton m_delete_btn;
+    private DeleteButton m_delete_btn;
     private JComboBox<String> m_name;
     private JTextField m_value;
 
@@ -41,7 +43,7 @@ public class DetailParameterPanel extends JPanel {
         setLayout(new MigLayout("inset 5"));
         m_delete_actions = new ArrayList<>();
 
-        m_delete_btn = new JButton("Удалить");
+        m_delete_btn = new DeleteButton();
         m_name = new JComboBox<>();
         m_value = new JTextField();
 

@@ -29,7 +29,6 @@ public abstract class AInfoLine extends ASearchPanelLine {
     public void addAction(Runnable action) { actions.add(action); }
 
     private void handleActionListener() {
-        System.out.println("INFO CLICK");
         for (Runnable r : actions) {
             r.run();
         }

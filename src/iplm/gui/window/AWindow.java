@@ -5,13 +5,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AWindow {
     protected JFrame m_frame;
     protected JPanel m_panel;
     protected JMenuBar m_menu_bar;
     protected JLayer m_layer;
+    protected JScrollPane m_scroll_pane;
 
     protected ArrayList<Runnable> m_component_resized_callbacks;
 
@@ -32,15 +32,24 @@ public abstract class AWindow {
     public JPanel getPanel() { return m_panel; }
     public JLayer getLayer() { return m_layer; }
     public JFrame getFrame() { return m_frame; }
+    public JScrollPane getScrollPane() { return m_scroll_pane; }
 
     public abstract void build();
 
     protected void afterBuild() {
         setName(this.getClass().getSimpleName());
-        if (m_layer != null) m_frame.add(m_layer);
-        else m_frame.setContentPane(m_panel);
+        if (m_scroll_pane == null) {
+            if (m_layer != null) m_frame.add(m_layer);
+            else m_frame.setContentPane(m_panel);
+        }
+        else {
+            if (m_layer != null) m_scroll_pane.setViewportView(m_layer);
+            else m_scroll_pane.setViewportView(m_panel);
+            m_frame.setContentPane(m_scroll_pane);
+        }
         if (m_menu_bar != null) m_frame.setJMenuBar(m_menu_bar);
         m_frame.pack();
+        m_frame.setMinimumSize(m_frame.getPreferredSize());
         hide();
     }
 
