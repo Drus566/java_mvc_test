@@ -16,13 +16,10 @@ import iplm.gui.table.DefaultTable;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.AWindow;
 import iplm.managers.WindowsManager;
-import iplm.mvc.views.DetailControlView;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

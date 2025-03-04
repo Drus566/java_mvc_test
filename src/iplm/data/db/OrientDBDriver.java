@@ -90,24 +90,28 @@ public class OrientDBDriver {
 
             ArrayList<String> queries = new ArrayList<>();
             queries.add("CREATE CLASS Detail IF NOT EXISTS");
-            queries.add("CREATE PROPERTY Detail.description STRING");
+            queries.add("CREATE PROPERTY Detail.name STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY Detail.decimal_number STRING");
+            queries.add("CREATE PROPERTY Detail.description STRING");
             queries.add("CREATE PROPERTY Detail.busy BOOLEAN (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY Detail.created_at DATETIME (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY Detail.updated_at DATETIME");
             queries.add("CREATE PROPERTY Detail.busy_user LINK OUser");
+
             queries.add("CREATE CLASS DetailParameter IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)");
+            queries.add("CREATE PROPERTY DetailParameter.info STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameter.detail_id LINK Detail");
             queries.add("CREATE PROPERTY Detail.params LINKSET DetailParameter");
+
             queries.add("CREATE CLASS DetailParameterType IF NOT EXISTS");
 //            queries.add("CREATE PROPERTY DetailParameterType.custom_value BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.enum BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameterType.value_type STRING");
+
             queries.add("CREATE CLASS DetailName IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailName.name STRING");
-            queries.add("CREATE PROPERTY Detail.name LINK DetailName");
             queries.add("CREATE PROPERTY DetailParameter.type LINK DetailParameterType");
 
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }

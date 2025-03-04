@@ -64,4 +64,20 @@ public abstract class AWindow {
     public void close() { m_frame.dispatchEvent(new WindowEvent(m_frame, WindowEvent.WINDOW_CLOSING)); }
     public String getTitle() { return m_frame.getTitle(); }
     public void setTitle(String title) { m_frame.setTitle(title); }
+
+//    public void packIf() {
+//        if (m_frame.getWidth() < m_panel.getWidth() || m_frame.getHeight() < m_panel.getHeight()) {
+//            m_frame.pack();
+//        }
+//
+//        System.out.println("Frame");
+//        System.out.println(m_frame.getWidth());
+//        System.out.println(m_frame.getHeight());
+//        System.out.println("Panel");
+//        System.out.println(m_panel.getWidth());
+//        System.out.println(m_panel.getHeight());
+//        System.out.println("ScrollPane");
+//        System.out.println(m_scroll_pane.getWidth());
+//        System.out.println(m_scroll_pane.getHeight());
+//     }
 }

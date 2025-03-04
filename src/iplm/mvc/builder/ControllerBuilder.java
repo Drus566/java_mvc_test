@@ -11,7 +11,7 @@ import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.DetailControlView;
 import iplm.mvc.views.DetailsView;
 
-public class ControllerBuilder {
+public class    ControllerBuilder {
     public IController build(ControllerComponent component, ModelsManager models_manager, ViewsManager views_manager) {
         IController result = null;
 

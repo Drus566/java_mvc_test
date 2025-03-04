@@ -1,23 +1,8 @@
 package iplm.mvc.controllers;
 
-import iplm.data.db.OrientDBDriver;
-import iplm.data.history.RequestHistory;
-import iplm.data.history.StorageHistory;
-import iplm.data.history.StorageHistoryType;
-import iplm.data.types.Detail;
-import iplm.data.types.DetailParameter;
-import iplm.gui.panel.detail_parameter.DetailParameterPanel;
-import iplm.gui.panel.search_panel.SearchPanel;
-import iplm.gui.table.DefaultTable;
-import iplm.gui.textfield.SearchBar;
-import iplm.gui.window.detail.DetailControlWindow;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.DetailControlView;
 import iplm.mvc.views.DetailsView;
-import iplm.utility.DateTimeUtility;
-
-import javax.swing.*;
-import java.util.ArrayList;
 
 public class DetailsController implements IController {
     private DetailModel m_model;

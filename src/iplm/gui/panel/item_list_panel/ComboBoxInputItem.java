@@ -1,7 +1,6 @@
-package iplm.gui.panel.detail_parameter;
+package iplm.gui.panel.item_list_panel;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import iplm.Resources;
 import iplm.gui.button.DeleteButton;
 import iplm.utility.ColorUtility;
 import net.miginfocom.swing.MigLayout;
@@ -10,7 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class DetailParameterPanel extends JPanel {
+public class ComboBoxInputItem extends JPanel implements IItem {
+    private IItemListener m_item_listener;
     private DeleteButton m_delete_btn;
     private JComboBox<String> m_name;
     private JTextField m_value;
@@ -36,7 +36,7 @@ public class DetailParameterPanel extends JPanel {
         m_value.setEditable(flag);
     }
 
-    public DetailParameterPanel(int width_name) {
+    public ComboBoxInputItem(int width_name) {
         Color disabled_background = new Color(255, 255, 255, 255);
         Color disabled_text = new Color(0, 0, 0, 255);
 
@@ -64,6 +64,7 @@ public class DetailParameterPanel extends JPanel {
             for (Runnable a : m_delete_actions) {
                 SwingUtilities.invokeLater(a);
             }
+            m_item_listener.onDelete(this);
         });
     }
 
@@ -86,6 +87,18 @@ public class DetailParameterPanel extends JPanel {
         }
         return result;
     }
+
+    @Override
+    public boolean contain(String text) { return false; }
+
+    @Override
+    public void addItemListener(IItemListener listener) { m_item_listener = listener; }
+
+    @Override
+    public String getPayload() { return null; }
+
+    @Override
+    public JComponent getComponent() { return this; }
 
 //    class NameModel extends AbstractListModel<String> implements  ComboBoxModel<String> {
 //        private List<String> list;

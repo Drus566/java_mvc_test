@@ -28,9 +28,6 @@ public class SearchBar extends JTextField {
 
     public String getLastRequest() { return last_enter_request; }
 
-//    private long start_press_time;
-//    private boolean pressed = false;
-
     private long char_interval;
     private boolean fast_enter;
 
