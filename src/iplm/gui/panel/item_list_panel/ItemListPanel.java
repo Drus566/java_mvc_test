@@ -33,7 +33,7 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
     private void init(int width) {
         m_click_actions = new ArrayList<>();
 
-        setLayout(new MigLayout("inset 0, gap rel -2, debug"));
+        setLayout(new MigLayout("inset 0, gap rel -2"));
         m_items = new ArrayList<>();
         m_prev_items = new ArrayList<>();
 

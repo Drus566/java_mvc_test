@@ -60,13 +60,11 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    own.requestFocus();
                     if (m_scroll_pane.isVisible()) m_scroll_pane.setVisible(false);
                     else {
                         updateGUI();
                         m_scroll_pane.setVisible(true);
                     }
-
                 }
             });
         });
@@ -89,10 +87,8 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
             m_list_panel.addParameter(new TextItem("Кронштейн крепления панели переключателей","id", 28));
         }
 
-        m_list_panel.updateUI();
-
-//        m_scroll_pane.revalidate();
-//        m_scroll_pane.repaint();
+//        m_list_panel.updateUI();
+        updateGUI();
 
         m_list_panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -121,10 +117,9 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
     }
 
     public void updateGUI() {
-        m_list_panel.setWidth((int) this.getBounds().getWidth());
         m_list_panel.updateUI();
+        m_list_panel.setWidth((int) this.getBounds().getWidth());
         m_scroll_pane.setMinimumSize(new Dimension((int) this.getBounds().getWidth(), m_list_panel.getHeight()));
         m_scroll_pane.setMaximumSize(new Dimension((int) this.getBounds().getWidth(), m_list_panel_height));
-        m_scroll_pane.setBackground(Color.white);
     }
 }

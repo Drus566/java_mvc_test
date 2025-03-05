@@ -23,6 +23,8 @@ public abstract class ASVGButton extends JButton {
         actions.add(e);
     }
 
+    public List<Runnable> getActions() { return actions; }
+
     protected void build() {
         setIcon(icon);
         setContentAreaFilled(false);

@@ -55,6 +55,8 @@ public class TextItem extends JTextField implements IItem {
                 setBackground(base_color);
             }
         });
+
+        m_delete_btn.addAction(() -> m_listener.onDelete(current_item));
     }
 
     public int getWidthLabel() { return this.getWidth() - m_delete_btn.getWidth(); }

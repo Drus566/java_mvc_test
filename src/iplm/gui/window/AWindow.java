@@ -1,6 +1,9 @@
 package iplm.gui.window;
 
+import iplm.utility.ScreenUtility;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
@@ -49,6 +52,10 @@ public abstract class AWindow {
         if (m_menu_bar != null) m_frame.setJMenuBar(m_menu_bar);
         m_frame.pack();
         m_frame.setMinimumSize(m_frame.getPreferredSize());
+        m_frame.setPreferredSize(new Dimension(ScreenUtility.getWidth() / 2, (int) (ScreenUtility.getHeight() / 1.4f)));
+        m_frame.setSize(new Dimension(ScreenUtility.getWidth() / 2, (int) (ScreenUtility.getHeight() / 1.4f)));
+
+        m_frame.setLocationRelativeTo(null);
         hide();
     }
 

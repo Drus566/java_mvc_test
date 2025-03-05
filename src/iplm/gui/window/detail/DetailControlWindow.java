@@ -15,8 +15,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class DetailControlWindow extends AWindow {
     enum SwitchPanels {
@@ -105,14 +103,6 @@ public class DetailControlWindow extends AWindow {
     public boolean isCreateMode() { return m_create_mode; }
     public boolean isEditMode() { return m_edit_mode; }
 
-    @Override
-    public void show() { SwingUtilities.invokeLater(() -> {
-            m_frame.setVisible(true);
-            updateUI();
-        });
-    }
-
-
     private void buildTop() {
         Color background_detail = Color.white;
         Color border_detail = new Color(217, 217, 217);
@@ -182,6 +172,7 @@ public class DetailControlWindow extends AWindow {
         m_edit_detail_parameter_btn = new EditButton();
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
+        m_parameters_panel_scroll_pane.setBorder(null);
 
         JPanel read_mode_panel = new JPanel(new MigLayout());
         JPanel write_mode_panel = new JPanel(new MigLayout());
@@ -200,8 +191,6 @@ public class DetailControlWindow extends AWindow {
         m_add_detail_parameter_btn.addAction(() -> {
             m_parameters_panel.addParameter(new ComboBoxInputItem(detail_parameter_panel_width));
             m_parameters_panel.updateUI();
-            m_parameters_panel_scroll_pane.revalidate();
-            m_parameters_panel_scroll_pane.repaint();
             updateUI();
         });
 
@@ -227,7 +216,7 @@ public class DetailControlWindow extends AWindow {
 
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10, debug"));
+        m_panel = new JPanel(new MigLayout("inset 10"));
         buildTop();
         buildBody();
         doReadMode();
@@ -239,7 +228,6 @@ public class DetailControlWindow extends AWindow {
         int input_width = 280;
         int input_area_width = 440;
         int input_area_height = 120;
-
 
         m_panel.add(m_detail_name_input.getScrollPane(), "pos input_name.x (input_name.y + input_name.h - 4)");
 
@@ -316,12 +304,6 @@ public class DetailControlWindow extends AWindow {
     public void updateUI() {
         m_frame.revalidate();
         m_frame.repaint();
-        m_panel.revalidate();
-        m_panel.repaint();
-        m_frame.setSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
         m_frame.setPreferredSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
-
-//        m_scroll_pane.revalidate();
-//        m_scroll_pane.repaint();
     }
 }
