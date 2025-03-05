@@ -43,8 +43,7 @@ public abstract class AWindow {
             else m_frame.setContentPane(m_panel);
         }
         else {
-            if (m_layer != null) m_scroll_pane.setViewportView(m_layer);
-            else m_scroll_pane.setViewportView(m_panel);
+            m_scroll_pane.setViewportView(m_panel);
             m_frame.setContentPane(m_scroll_pane);
         }
         if (m_menu_bar != null) m_frame.setJMenuBar(m_menu_bar);

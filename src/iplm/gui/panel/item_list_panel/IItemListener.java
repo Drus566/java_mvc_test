@@ -4,4 +4,5 @@ import javax.swing.*;
 
 public interface IItemListener {
     void onDelete(IItem item);
+    void onPress(IItem item);
 }

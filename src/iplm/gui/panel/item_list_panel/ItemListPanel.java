@@ -5,15 +5,35 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class ItemListPanel extends JPanel implements IItemListener {
+public class ItemListPanel extends JPanel implements IItemListener, IItemListPanel {
     private ArrayList<IItem> m_items;
     private ArrayList<IItem> m_prev_items;
     private boolean write_mode;
 
+    private IItemListPanelListener m_listener;
+
+    private ArrayList<Runnable> m_click_actions;
+
+    private int width;
+
     public boolean isWriteMode() { return write_mode; }
 
+    public ItemListPanel(int width) {
+        init(width);
+    }
+
     public ItemListPanel() {
-        setLayout(new MigLayout());
+        init(-1);
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    private void init(int width) {
+        m_click_actions = new ArrayList<>();
+
+        setLayout(new MigLayout("inset 0, gap rel -2, debug"));
         m_items = new ArrayList<>();
         m_prev_items = new ArrayList<>();
 
@@ -50,8 +70,11 @@ public class ItemListPanel extends JPanel implements IItemListener {
 
         removeAll();
         for (IItem item : m_items) {
-            add(item.getComponent(), "wrap");
+            String style_params = "al center, pushx, wrap";
+            if (width > 0) style_params = "width " + width + ", wrap";
+            add(item.getComponent(), style_params);
         }
+
         revalidate();
         repaint();
     }
@@ -72,6 +95,8 @@ public class ItemListPanel extends JPanel implements IItemListener {
         write_mode = false;
     }
 
+    public void addClickAction(Runnable action) { m_click_actions.add(action); }
+
     @Override
     public void onDelete(IItem item) {
         for (IItem i : m_items) {
@@ -82,5 +107,15 @@ public class ItemListPanel extends JPanel implements IItemListener {
         }
         m_items.remove(item);
         updateUI();
+    }
+
+    @Override
+    public void onPress(IItem item) {
+        m_listener.onPress(item.getPayload());
+    }
+
+    @Override
+    public void addItemListPanelListener(IItemListPanelListener listener) {
+        m_listener = listener;
     }
 }

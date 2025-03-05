@@ -96,13 +96,7 @@ public class ComboBoxInputItem extends JPanel implements IItem {
     }
 
     @Override
-    public boolean contain(String text) { return false; }
-
-    @Override
     public void addItemListener(IItemListener listener) { m_item_listener = listener; }
-
-    @Override
-    public String getPayload() { return null; }
 
     @Override
     public JComponent getComponent() { return this; }

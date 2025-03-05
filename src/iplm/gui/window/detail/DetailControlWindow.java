@@ -4,15 +4,19 @@ import iplm.gui.button.*;
 import iplm.gui.combobox.ComboBoxInputItem;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
+import iplm.gui.layer.intercept.InterceptLayer;
 import iplm.gui.panel.SwitcherPanel;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
+import iplm.gui.textfield.SelectCreateInputText;
 import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class DetailControlWindow extends AWindow {
     enum SwitchPanels {
@@ -55,7 +59,7 @@ public class DetailControlWindow extends AWindow {
     // Метка имени детали
     private DefaultLabel m_detail_name_label;
     // Ввод имени детали
-    private JTextField m_detail_name_input;
+    private SelectCreateInputText m_detail_name_input;
     // Метка децимального номера детали
     private DefaultLabel m_detail_decimal_number_label;
     // Ввод децимального номера детали
@@ -74,6 +78,7 @@ public class DetailControlWindow extends AWindow {
     private EditButton m_edit_detail_parameter_btn;
     // Панель параметров
     private ItemListPanel m_parameters_panel;
+    private JScrollPane m_parameters_panel_scroll_pane;
 
     private boolean m_edit_mode = false;
     private boolean m_create_mode = false;
@@ -100,6 +105,14 @@ public class DetailControlWindow extends AWindow {
     public boolean isCreateMode() { return m_create_mode; }
     public boolean isEditMode() { return m_edit_mode; }
 
+    @Override
+    public void show() { SwingUtilities.invokeLater(() -> {
+            m_frame.setVisible(true);
+            updateUI();
+        });
+    }
+
+
     private void buildTop() {
         Color background_detail = Color.white;
         Color border_detail = new Color(217, 217, 217);
@@ -114,8 +127,6 @@ public class DetailControlWindow extends AWindow {
         m_top_panel.add(m_update_btn, "split 3");
         m_top_panel.add(m_detail_icon);
         m_top_panel.add(m_detail_control_btn_panel, "wrap");
-
-        m_scroll_pane = new JScrollPane();
     }
 
     private void buildModeBtnPanel() {
@@ -155,10 +166,12 @@ public class DetailControlWindow extends AWindow {
     }
 
     private void buildBody() {
+        int name_input_list_panel_max_height = 260;
+
         m_body_panel = new JPanel(new MigLayout("inset 10"));
 
         m_detail_name_label = new DefaultLabel("Наименование");
-        m_detail_name_input = new JTextField();
+        m_detail_name_input = new SelectCreateInputText(name_input_list_panel_max_height);
         m_detail_decimal_number_label = new DefaultLabel("Децимальный номер");
         m_detail_decimal_number_input = new InputText();
         m_detail_describe_label = new DefaultLabel("Примечание");
@@ -168,6 +181,7 @@ public class DetailControlWindow extends AWindow {
         m_add_detail_parameter_btn = new AddButton();
         m_edit_detail_parameter_btn = new EditButton();
         m_parameters_panel = new ItemListPanel();
+        m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
 
         JPanel read_mode_panel = new JPanel(new MigLayout());
         JPanel write_mode_panel = new JPanel(new MigLayout());
@@ -186,7 +200,12 @@ public class DetailControlWindow extends AWindow {
         m_add_detail_parameter_btn.addAction(() -> {
             m_parameters_panel.addParameter(new ComboBoxInputItem(detail_parameter_panel_width));
             m_parameters_panel.updateUI();
+            m_parameters_panel_scroll_pane.revalidate();
+            m_parameters_panel_scroll_pane.repaint();
+            updateUI();
         });
+
+        m_detail_name_input.addDropdownAction(() -> updateUI());
     }
 
     private void rememberLast() {
@@ -208,7 +227,7 @@ public class DetailControlWindow extends AWindow {
 
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10"));
+        m_panel = new JPanel(new MigLayout("inset 10, debug"));
         buildTop();
         buildBody();
         doReadMode();
@@ -221,15 +240,20 @@ public class DetailControlWindow extends AWindow {
         int input_area_width = 440;
         int input_area_height = 120;
 
-        m_panel.add(m_top_panel, "al center, pushx, wrap");
+
+        m_panel.add(m_detail_name_input.getScrollPane(), "pos input_name.x (input_name.y + input_name.h - 4)");
+
+        m_panel.add(m_top_panel, "alignx center, aligny bottom, push, wrap");
         m_panel.add(m_detail_name_label, "al center, width " + label_width + ", split 2");
-        m_panel.add(m_detail_name_input, "width " +  input_width + ", wrap");
+        m_panel.add(m_detail_name_input, "id input_name, width " +  input_width + ", wrap");
         m_panel.add(m_detail_decimal_number_label, "al center, width " + label_width + ", split 2");
         m_panel.add(m_detail_decimal_number_input, "width " +  input_width + ", wrap");
         m_panel.add(m_detail_describe_label, "al center, wrap");
-        m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + ", wrap");
+        m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + "!, wrap");
         m_panel.add(m_detail_parameter_control_panel, "al center, wrap");
-        m_panel.add(m_parameters_panel, "al center, wrap");
+        m_panel.add(m_parameters_panel_scroll_pane, "al center, grow, push, wrap");
+
+        m_layer = new JLayer<>(m_panel, new InterceptLayer());
     }
 
     public void doReadMode() {
@@ -281,5 +305,23 @@ public class DetailControlWindow extends AWindow {
 
         if (flag) m_parameters_panel.toWriteMode();
         else m_parameters_panel.toReadMode();
+
+        m_detail_name_input.setVisibleButtons(flag);
+
+        m_detail_name_input.setCaretPosition(0);
+        m_detail_decimal_number_input.setCaretPosition(0);
+        m_detail_description_input.getTextArea().setCaretPosition(0);
+    }
+
+    public void updateUI() {
+        m_frame.revalidate();
+        m_frame.repaint();
+        m_panel.revalidate();
+        m_panel.repaint();
+        m_frame.setSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
+        m_frame.setPreferredSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
+
+//        m_scroll_pane.revalidate();
+//        m_scroll_pane.repaint();
     }
 }

@@ -52,7 +52,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     @Override
     public void build() {
-        m_panel = new JPanel(new MigLayout("inset 10"));
+        m_panel = new JPanel(new MigLayout("inset 10, debug"));
         m_panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -153,7 +153,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_panel.add(m_update_button, "split 3, al center");
         m_panel.add(m_search_bar, "id search_bar, height 40:pref:max, width min:pref:" + width + ", growx, al center");
         m_panel.add(m_add_detail_button, "al left, wrap");
-        m_panel.add(m_table.getScrollPane(), "grow, push, span 3");
+        m_panel.add(m_table.getScrollPane(), "grow, push");
         m_layer = new JLayer<>(m_panel, new InterceptLayer());
     }
 
