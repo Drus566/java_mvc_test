@@ -255,6 +255,7 @@ public class DetailControlWindow extends AWindow {
     }
 
     public void doReadMode() {
+        setTitle("Управления деталью");
         setMode(false);
         m_edit_mode = false;
         m_create_mode = false;
@@ -268,6 +269,7 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         if (!isEditMode()) {
+            setTitle("Управления деталью | Редактирование");
             setMode(true);
             m_edit_mode = true;
             m_create_mode = false;
@@ -284,6 +286,7 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         else if (!isCreateMode()) {
+            setTitle("Управления деталью | Создание");
             setMode(true);
             m_edit_mode = false;
             m_create_mode = true;
