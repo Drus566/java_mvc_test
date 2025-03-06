@@ -3,6 +3,7 @@ package iplm.mvc.models;
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
+import iplm.data.types.DetailParameterType;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
 import iplm.data.service.DetailService;
@@ -20,6 +21,11 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public boolean deleteDetailName(String id) { return m_service.deleteDetailName(id); }
     public String updateDetailName(DetailName detail_name) { return m_service.updateDetailName(detail_name); }
     public ArrayList<DetailName> getDetailNames() { return m_service.getDetailNames(); }
+
+    public String addDetailParameterType(DetailParameterType detail_parameter_type) { return m_service.addDetailParameterType(detail_parameter_type); }
+    public boolean deleteDetailParameterType(String id) { return m_service.deleteDetailParameterType(id); }
+    public String updateDetailParameterType(DetailParameterType detail_parameter_type) { return m_service.updateDetailParameterType(detail_parameter_type); }
+    public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_service.getDetailParameterTypes(); }
 
 //    public ArrayList<Detail> getAll() { return m_service.getAll(); }
 //

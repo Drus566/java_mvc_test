@@ -4,6 +4,7 @@ import iplm.data.repository.RepositoryType;
 import iplm.data.repository.detail.DetailRepository;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
+import iplm.data.types.DetailParameterType;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,11 @@ public class DetailService {
     public boolean deleteDetailName(String id) { return m_repository.deleteDetailName(id, m_repository_type); }
     public String updateDetailName(DetailName detail_name) { return m_repository.updateDetailName(detail_name, m_repository_type); }
     public ArrayList<DetailName> getDetailNames() { return m_repository.getDetailNames(m_repository_type); }
+
+    public String addDetailParameterType(DetailParameterType detail_parameter_type) { return m_repository.addDetailParameterType(detail_parameter_type, m_repository_type); }
+    public boolean deleteDetailParameterType(String id) { return m_repository.deleteDetailParameterType(id, m_repository_type); }
+    public String updateDetailParameterType(DetailParameterType detail_parameter_type) { return m_repository.updateDetailParameterType(detail_parameter_type, m_repository_type); }
+    public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_repository.getDetailParameterTypes(m_repository_type); }
 
 //    public ArrayList<Detail> get(String request) { return m_repository.get(request, m_repository_type); }
 //

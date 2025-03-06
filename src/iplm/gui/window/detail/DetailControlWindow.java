@@ -100,6 +100,7 @@ public class DetailControlWindow extends AWindow {
     public DirectoryButton getDownloadDetailBtn() { return m_directory_detail_btn; }
 
     // BODY
+    public DefaultComboBox getInputName() { return m_detail_name_input; }
     public InputText decimalNumberInput() { return m_detail_decimal_number_input; }
     public InputTextArea descriptionInput() { return m_detail_description_input; }
     public AddButton addDetailParameterBtn() { return m_add_detail_btn; }

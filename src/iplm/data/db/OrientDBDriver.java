@@ -29,6 +29,8 @@ public class OrientDBDriver {
     public String getLastError() { return m_last_error; }
     public void setLastError(String last_error) { m_last_error = last_error; }
 
+    public boolean isConnect() { return m_db != null && m_session != null; }
+
     public OrientDBDriver() {}
 
     public void connect() { connect(DEFAULT_ADDRESS, DEFAULT_USERNAME, DEFAULT_PASSWORD); }

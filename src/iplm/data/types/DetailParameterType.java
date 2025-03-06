@@ -16,6 +16,14 @@ public class DetailParameterType {
         public String s() { return m_string; }
     }
 
+    public DetailParameterType() {}
+
+    public DetailParameterType(String id, String name, String type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
     /* ID */
     public String id;
     /* Имя (например Материал) */

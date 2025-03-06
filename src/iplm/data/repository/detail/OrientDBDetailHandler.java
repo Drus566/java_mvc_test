@@ -27,6 +27,7 @@ public class OrientDBDetailHandler {
     enum C {
         detail("Detail"),
         detail_parameter("DetailParameter"),
+        detail_parameter_type("DetailParameterType"),
         detail_name("DetailName");
 
         private String m_string;
@@ -45,10 +46,11 @@ public class OrientDBDetailHandler {
         description("description"),
         deleted("deleted"),
         parameters("parameters"),
-        enumeration("enumeration"),
+        enumeration("enum"),
         type("type"),
         value("value"),
         count("count"),
+        value_type("value_type"),
         custom_val("custom_val");
 
         private String m_string;
@@ -64,7 +66,13 @@ public class OrientDBDetailHandler {
         m_session = OrientDBDriver.getInstance().getSession();
     }
 
+    /******* Detail Name ************/
     public String addDetailName(String name) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
         String result = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO ").append(C.detail_name.s());
@@ -87,6 +95,11 @@ public class OrientDBDetailHandler {
     }
 
     public boolean deleteDetailName(String id) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return false;
+        }
+
         boolean result = false;
         StringBuilder query = new StringBuilder();
         query.append("DELETE FROM ").append(C.detail_name.s());
@@ -109,6 +122,11 @@ public class OrientDBDetailHandler {
     }
 
     public String updateDetailName(DetailName detail_name) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
         String result = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE ").append(C.detail_name.s());
@@ -131,6 +149,11 @@ public class OrientDBDetailHandler {
     }
 
     public ArrayList<DetailName> getDetailNames() {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
         ArrayList<DetailName> result = null;
         String query = "SELECT * FROM ?";
 
@@ -152,6 +175,121 @@ public class OrientDBDetailHandler {
         return result;
     }
 
+    /************** Detail Parameter Type ********************/
+
+    public String addDetailParameterType(DetailParameterType detail_parameter_type) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
+        String result = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO ").append(C.detail_parameter_type.s());
+        query.append(" CONTENT { name: '");
+        query.append(detail_parameter_type.name).append("', value_type: '");
+        query.append(detail_parameter_type.type).append("', enum: ");
+        query.append(detail_parameter_type.enumeration).append("}");
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query.toString());
+
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                result = item.getProperty(P.rid.s()).toString();
+                break;
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
+
+    public boolean deleteDetailParameterType(String id) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return false;
+        }
+
+        boolean result = false;
+        StringBuilder query = new StringBuilder();
+        query.append("DELETE FROM ").append(C.detail_parameter_type.s());
+        query.append(" WHERE @rid = ").append(id);
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query.toString());
+
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                long count = item.getProperty(P.count.s());
+                if (count > 0) result = true;
+                break;
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
+
+    public String updateDetailParameterType(DetailParameterType detail_parameter_type) {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
+        String result = null;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE ").append(C.detail_parameter_type.s());
+        query.append(" SET ").append(P.name.s()).append(" = '").append(detail_parameter_type.name);
+        query.append("', ").append(P.value_type).append(" = '").append(detail_parameter_type.type);
+        query.append("', ").append(P.enumeration).append(" = ").append(detail_parameter_type.enumeration);
+        query.append(" RETURN AFTER @rid WHERE @rid = ").append(detail_parameter_type.id);
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query.toString());
+
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                result = item.getProperty(P.rid.s()).toString();
+                break;
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
+
+    public ArrayList<DetailParameterType> getDetailParameterTypes() {
+        if (!OrientDBDriver.getInstance().isConnect()) {
+            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+            return null;
+        }
+
+        ArrayList<DetailParameterType> result = null;
+        String query = "SELECT * FROM ?";
+
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query, C.detail_parameter_type.s());
+
+            while (rs.hasNext()) {
+                if (result == null) result = new ArrayList<>();
+                OResult item = rs.next();
+                DetailParameterType dpt = new DetailParameterType();
+                dpt.id = item.getProperty(P.rid.s()).toString();
+                dpt.name = item.getProperty(P.name.s()).toString();
+                dpt.type = item.getProperty(P.value_type.s()).toString();
+                dpt.enumeration = item.getProperty(P.enumeration.s());
+                result.add(dpt);
+            }
+        }
+        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+
+        return result;
+    }
 
 
 //    insert into animal set name = 'dog', children = [<rid>]

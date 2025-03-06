@@ -3,6 +3,7 @@ package iplm.data.repository.detail;
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
+import iplm.data.types.DetailParameterType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class DetailRepository {
         m_details = new ArrayList<>();
     }
 
+    /* Наименования деталей */
     public String addDetailName(String name, RepositoryType type) {
         String result = null;
         switch (type) {
@@ -57,6 +59,56 @@ public class DetailRepository {
         switch (type) {
             case ORIENTDB:
                 result = m_orient_db_handler.getDetailNames();
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+
+    /* Тип параметра деталей */
+    public String addDetailParameterType(DetailParameterType detail_parameter_type, RepositoryType type) {
+        String result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.addDetailParameterType(detail_parameter_type);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public boolean deleteDetailParameterType(String id, RepositoryType type) {
+        boolean result = false;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.deleteDetailParameterType(id);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public String updateDetailParameterType(DetailParameterType detail_parameter_type, RepositoryType type) {
+        String result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.updateDetailParameterType(detail_parameter_type);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public ArrayList<DetailParameterType> getDetailParameterTypes(RepositoryType type) {
+        ArrayList<DetailParameterType> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetailParameterTypes();
                 break;
             case MYSQL:
                 break;

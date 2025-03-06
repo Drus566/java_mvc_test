@@ -61,10 +61,6 @@ public class ComboBoxInputItem extends JPanel implements IItem {
 
 //        m_value.setText("");
 
-        m_name.addItem("Материал");
-        m_name.addItem("Толщина");
-        m_name.addItem("Ширина");
-
         add(m_name, "width " + width_name + "!");
         add(m_value, "width " + width_name + "pref:" + width_name*2);
         add(m_delete_btn);

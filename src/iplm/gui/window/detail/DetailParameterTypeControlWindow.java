@@ -1,5 +1,6 @@
 package iplm.gui.window.detail;
 
+import iplm.data.types.DetailParameterType;
 import iplm.gui.button.AddButton;
 import iplm.gui.button.DeleteButton;
 import iplm.gui.button.EditButton;
@@ -10,11 +11,17 @@ import iplm.gui.window.AWindow;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DetailParameterTypeControlWindow extends AWindow {
-    private String m_detail_type_id;
+    public String getId() {
+        String result = null;
+        int sr = m_table.getTable().getSelectedRow();
+        if (sr != -1) result = (String) m_table.getTableModel().getValueAt(sr, 0);
+        return result;
+    }
 
     private UpdateButton m_update_btn;
     private AddButton m_add_btn;
@@ -24,6 +31,14 @@ public class DetailParameterTypeControlWindow extends AWindow {
     private InputText m_name;
     private JComboBox m_value_type;
     private DefaultTable m_table;
+
+    public UpdateButton getUpdateButton() { return m_update_btn; }
+    public AddButton getAddButton() { return m_add_btn; }
+    public EditButton getEditButton() { return m_edit_btn; }
+    public DeleteButton getDeleteButton() { return m_delete_btn; }
+    public InputText getInputText() { return m_name; }
+    public JComboBox getValueType() { return m_value_type; }
+    public DefaultTable getTable() { return m_table; }
 
     // TODO: добавить тип перечисление, например (Str1, Str2) или (1,2,3) или (1-2,3-4,5-6) или (2.32,3.11) или true, false, true
 
@@ -48,6 +63,10 @@ public class DetailParameterTypeControlWindow extends AWindow {
 
         m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Наименование параметра детали", "Тип данных значения параметра детали")));
         m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(0));
+
+        for (DetailParameterType.Type dpp : DetailParameterType.Type.values()) {
+            m_value_type.addItem(dpp.s());
+        }
 
         arrangeComponents();
     }
