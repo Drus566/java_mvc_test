@@ -2,7 +2,9 @@ package iplm.mvc.builder.component;
 
 public enum ViewComponent {
     DetailsView(true, "DetailsView", "DetailsWindow", true, false),
-    DetailСontrolView(true, "DetailСontrolView", "DetailСontrolWindow", true, false);
+    DetailСontrolView(true, "DetailСontrolView", "DetailСontrolWindow", true, false),
+    DetailNameControlView(true, "DetailNameControlView", "DetailNameControlWindow", true, false),
+    DetailParameterTypeControlView(true, "DetailParameterTypeControlView", "DetailParameterTypeControlWindow", true, false);
 
     private boolean m_active;
     private String m_name;

@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class DefaultTable {
     private JTable m_table;
@@ -17,6 +18,11 @@ public class DefaultTable {
     private int last_row = -1;
     private long last_click_time = 0;
     private ArrayList<Runnable> double_click_action;
+
+    public void setSelectedRowText(int col, String text) {
+        int sr = m_table.getSelectedRow();
+        m_model.setValueAt(text, sr, col);
+    }
 
     public DefaultTable() {
         double_click_action = new ArrayList<>();
@@ -75,8 +81,18 @@ public class DefaultTable {
         }
     }
 
+    public void addLine(String... cols_row) {
+        if (cols_row.length <= 0) return;
+        ArrayList<String> row = new ArrayList<>();
+        for (String col : cols_row) {
+            row.add(col);
+        }
+        addLine(row);
+    }
+
     public void addLine(List<String> line) {
-        m_model.addRow(line.toArray());
+//        m_model.addRow(line.toArray());
+        m_model.insertRow(0, line.toArray());
     }
 
     public void addLines(List<List<String>> many_lines) {

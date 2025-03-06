@@ -12,7 +12,7 @@ public class Detail {
     /* Описание */
     public String description;
     /* Список параметров */
-    public ArrayList<DetailParameter> params;
+    public ArrayList<DetailParameterType> params;
 
     /* Занят ли */
     public boolean busy;

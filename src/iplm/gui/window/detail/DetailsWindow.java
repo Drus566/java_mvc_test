@@ -53,6 +53,8 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
+        setTitle("Детали");
+
         m_panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

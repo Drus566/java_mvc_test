@@ -2,6 +2,7 @@ package iplm.mvc.models;
 
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
+import iplm.data.types.DetailName;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
 import iplm.data.service.DetailService;
@@ -15,26 +16,31 @@ public class DetailModel implements IModel, IObservable<Detail> {
 
     public DetailModel() { m_service = new DetailService(RepositoryType.ORIENTDB); }
 
-    public ArrayList<Detail> getAll() { return m_service.getAll(); }
+    public String addDetailName(String name) { return m_service.addDetailName(name); }
+    public boolean deleteDetailName(String id) { return m_service.deleteDetailName(id); }
+    public String updateDetailName(DetailName detail_name) { return m_service.updateDetailName(detail_name); }
+    public ArrayList<DetailName> getDetailNames() { return m_service.getDetailNames(); }
 
-    public Detail getById(String id) { return m_service.getById(id); }
-
-
-    /* get detail list */
-    public ArrayList<Detail> get(String request) { return m_service.get(request); }
-
-    /* return id */
-    public String add(Detail d) {
-        return m_service.add(d);
-    }
-
-    /* return id */
-    public String delete(String id) { return m_service.delete(id); }
-
-    /* return id */
-    public String update(Detail detail) { return m_service.update(detail); }
-
-    public boolean rebuildIndex() { return m_service.rebuildIndex(); }
+//    public ArrayList<Detail> getAll() { return m_service.getAll(); }
+//
+//    public Detail getById(String id) { return m_service.getById(id); }
+//
+//
+//    /* get detail list */
+//    public ArrayList<Detail> get(String request) { return m_service.get(request); }
+//
+//    /* return id */
+//    public String add(Detail d) {
+//        return m_service.add(d);
+//    }
+//
+//    /* return id */
+//    public String delete(String id) { return m_service.delete(id); }
+//
+//    /* return id */
+//    public String update(Detail detail) { return m_service.update(detail); }
+//
+//    public boolean rebuildIndex() { return m_service.rebuildIndex(); }
 
     @Override
     public void addObserver(IObserver<Detail> observer) { m_observers.add(observer); }

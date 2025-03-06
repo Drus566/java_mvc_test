@@ -54,6 +54,8 @@ public class ComboBoxInputItem extends JPanel implements IItem {
         m_name = new JComboBox<>();
         m_value = new JTextField();
 
+        m_name.setEditable(false);
+
         m_name.putClientProperty(FlatClientProperties.STYLE, "disabledBackground: " + ColorUtility.colourToString(disabled_background) + "; disabledForeground: " + ColorUtility.colourToString(disabled_text));
         m_value.putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
 

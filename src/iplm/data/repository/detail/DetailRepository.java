@@ -2,6 +2,7 @@ package iplm.data.repository.detail;
 
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
+import iplm.data.types.DetailName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,11 @@ public class DetailRepository {
         m_details = new ArrayList<>();
     }
 
-    public ArrayList<Detail> getAll(RepositoryType type) {
-        ArrayList<Detail> result = null;
+    public String addDetailName(String name, RepositoryType type) {
+        String result = null;
         switch (type) {
             case ORIENTDB:
-                result = m_orient_db_handler.getAll();
+                result = m_orient_db_handler.addDetailName(name);
                 break;
             case MYSQL:
                 break;
@@ -27,91 +28,140 @@ public class DetailRepository {
         return result;
     }
 
-    public Detail getById(String id, RepositoryType type) {
-        Detail result = null;
-        switch (type) {
-            case ORIENTDB:
-                result = m_orient_db_handler.getById(id);
-                break;
-            case MYSQL:
-                break;
-        }
-        return result;
-    }
-
-    public ArrayList<Detail> get(String request, RepositoryType type) {
-        ArrayList<Detail> result = null;
-        switch (type) {
-            case ORIENTDB:
-                result = m_orient_db_handler.get(request);
-                break;
-            case MYSQL:
-                break;
-        }
-        return result;
-    }
-
-    public String add(Detail detail, RepositoryType type) {
-        String result = "";
-        switch (type) {
-            case ORIENTDB:
-                result = m_orient_db_handler.add(detail);
-                break;
-            case MYSQL:
-                break;
-        }
-        return result;
-    }
-
-    public String delete(String id, RepositoryType type) {
-        String result = "";
-        switch (type) {
-            case ORIENTDB:
-                result = m_orient_db_handler.delete(id);
-                break;
-            case MYSQL:
-                break;
-        }
-        return result;
-    }
-
-    public String update(Detail detail, RepositoryType type) {
-        String result = "";
-        switch (type) {
-            case ORIENTDB:
-                result = m_orient_db_handler.update(detail);
-                break;
-            case MYSQL:
-                break;
-        }
-        return result;
-    }
-
-    public Detail findById(int id) {
-        return null;
-    }
-
-    public List<Detail> getAll() {
-        return null;
-    }
-
-    public RepositoryType getType() {
-        return RepositoryType.LOCAL;
-    }
-
-    public Object getParameter(String name) {
-        return null;
-    }
-
-    public boolean rebuildIndex(RepositoryType type) {
+    public boolean deleteDetailName(String id, RepositoryType type) {
         boolean result = false;
         switch (type) {
             case ORIENTDB:
-                result = m_orient_db_handler.rebuildIndex();
+                result = m_orient_db_handler.deleteDetailName(id);
                 break;
             case MYSQL:
                 break;
         }
         return result;
     }
+
+    public String updateDetailName(DetailName detail_name, RepositoryType type) {
+        String result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.updateDetailName(detail_name);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public ArrayList<DetailName> getDetailNames(RepositoryType type) {
+        ArrayList<DetailName> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetailNames();
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+
+//    public ArrayList<Detail> getAll(RepositoryType type) {
+//        ArrayList<Detail> result = null;
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.getAll();
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public Detail getById(String id, RepositoryType type) {
+//        Detail result = null;
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.getById(id);
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public ArrayList<Detail> get(String request, RepositoryType type) {
+//        ArrayList<Detail> result = null;
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.get(request);
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public String add(Detail detail, RepositoryType type) {
+//        String result = "";
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.add(detail);
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public String delete(String id, RepositoryType type) {
+//        String result = "";
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.delete(id);
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public String update(Detail detail, RepositoryType type) {
+//        String result = "";
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.update(detail);
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
+//
+//    public Detail findById(int id) {
+//        return null;
+//    }
+//
+//    public List<Detail> getAll() {
+//        return null;
+//    }
+//
+//    public RepositoryType getType() {
+//        return RepositoryType.LOCAL;
+//    }
+//
+//    public Object getParameter(String name) {
+//        return null;
+//    }
+//
+//    public boolean rebuildIndex(RepositoryType type) {
+//        boolean result = false;
+//        switch (type) {
+//            case ORIENTDB:
+//                result = m_orient_db_handler.rebuildIndex();
+//                break;
+//            case MYSQL:
+//                break;
+//        }
+//        return result;
+//    }
 }

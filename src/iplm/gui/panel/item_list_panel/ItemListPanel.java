@@ -3,6 +3,7 @@ package iplm.gui.panel.item_list_panel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ItemListPanel extends JPanel implements IItemListener, IItemListPanel {
@@ -28,6 +29,9 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
 
     public void setWidth(int width) {
         this.width = width;
+//        setPreferredSize(new Dimension(width, getHeight()));
+//        setMaximumSize(new Dimension(width, getHeight()));
+//        setMinimumSize(new Dimension(width, getHeight()));
     }
 
     private void init(int width) {
@@ -43,6 +47,16 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
     public void addParameter(IItem item) {
         item.addItemListener(this);
         m_items.add(item);
+    }
+
+    public int getItemsHeight() {
+        int result = 0;
+        for (IItem i : m_items) {
+            JComponent c = i.getComponent();
+            result += c.getBounds().height;
+//            result += c.getBorder().getBorderInsets(c).top + c.getBorder().getBorderInsets(c).bottom;
+        }
+        return result;
     }
 
     public void removeParameter(IItem item) {
@@ -65,18 +79,19 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
         }
     }
 
-    public void updateUI() {
-        if (m_items == null) return;
+    public void updateGUI() {
+        SwingUtilities.invokeLater(() -> {
+            if (m_items == null) return;
 
-        removeAll();
-        for (IItem item : m_items) {
-            String style_params = "al center, pushx, wrap";
-            if (width > 0) style_params = "width " + width + ", wrap";
-            add(item.getComponent(), style_params);
-        }
-
-        revalidate();
-        repaint();
+            removeAll();
+            for (IItem item : m_items) {
+                String style_params = "al center, pushx, wrap";
+                if (width > 0) style_params = "width " + width + ", wrap";
+                add(item.getComponent(), style_params);
+            }
+            revalidate();
+            repaint();
+        });
     }
 
     public void toWriteMode() {
@@ -106,7 +121,9 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
             }
         }
         m_items.remove(item);
-        updateUI();
+        updateGUI();
+
+        if (m_listener != null) { m_listener.onDelete(); }
     }
 
     @Override

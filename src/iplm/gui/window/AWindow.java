@@ -17,11 +17,13 @@ public abstract class AWindow {
     protected JScrollPane m_scroll_pane;
 
     protected ArrayList<Runnable> m_component_resized_callbacks;
+    protected ArrayList<Runnable> m_startup_actions;
 
     public AWindow() {
         m_frame = new JFrame();
 
         m_component_resized_callbacks = new ArrayList<>();
+        m_startup_actions = new ArrayList<>();
         m_frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -51,13 +53,15 @@ public abstract class AWindow {
         }
         if (m_menu_bar != null) m_frame.setJMenuBar(m_menu_bar);
         m_frame.pack();
-        m_frame.setMinimumSize(m_frame.getPreferredSize());
+        m_frame.setMinimumSize(m_frame.getSize());
         m_frame.setPreferredSize(new Dimension(ScreenUtility.getWidth() / 2, (int) (ScreenUtility.getHeight() / 1.4f)));
         m_frame.setSize(new Dimension(ScreenUtility.getWidth() / 2, (int) (ScreenUtility.getHeight() / 1.4f)));
 
         m_frame.setLocationRelativeTo(null);
         hide();
     }
+
+    public void addVisibleAction(Runnable action) { m_startup_actions.add(action); }
 
     public String getName() { return m_frame.getName(); }
     public void setName(String name) { m_frame.setName(name); }
@@ -66,7 +70,10 @@ public abstract class AWindow {
         return m_frame.isVisible() == false;
     }
     public void hide() { SwingUtilities.invokeLater(() -> m_frame.setVisible(false)); }
-    public void show() { SwingUtilities.invokeLater(() -> m_frame.setVisible(true)); }
+    public void show() {
+        for (Runnable a : m_startup_actions) { a.run(); }
+        SwingUtilities.invokeLater(() -> m_frame.setVisible(true));
+    }
     public void close() { m_frame.dispatchEvent(new WindowEvent(m_frame, WindowEvent.WINDOW_CLOSING)); }
     public String getTitle() { return m_frame.getTitle(); }
     public void setTitle(String title) { m_frame.setTitle(title); }

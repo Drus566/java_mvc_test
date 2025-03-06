@@ -2,6 +2,7 @@ package iplm.gui.window.detail;
 
 import iplm.gui.button.*;
 import iplm.gui.combobox.ComboBoxInputItem;
+import iplm.gui.combobox.DefaultComboBox;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
 import iplm.gui.layer.intercept.InterceptLayer;
@@ -9,8 +10,8 @@ import iplm.gui.panel.SwitcherPanel;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
-import iplm.gui.textfield.SelectCreateInputText;
 import iplm.gui.window.AWindow;
+import iplm.managers.WindowsManager;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -54,10 +55,14 @@ public class DetailControlWindow extends AWindow {
 
     // BODY
     private JPanel m_body_panel;
+    // Панель метки и кнопки редактирования имени детали
+    private JPanel m_detail_name_panel;
+    // Кнопка редактирования имени детали
+    private EditButton m_detail_name_edit;
     // Метка имени детали
     private DefaultLabel m_detail_name_label;
     // Ввод имени детали
-    private SelectCreateInputText m_detail_name_input;
+    private DefaultComboBox m_detail_name_input;
     // Метка децимального номера детали
     private DefaultLabel m_detail_decimal_number_label;
     // Ввод децимального номера детали
@@ -73,7 +78,7 @@ public class DetailControlWindow extends AWindow {
     // Создать параметр детали
     private AddButton m_add_detail_parameter_btn;
     // Окно контроля параметров детали
-    private EditButton m_edit_detail_parameter_btn;
+    private EditButton m_detail_parameter_edit_btn;
     // Панель параметров
     private ItemListPanel m_parameters_panel;
     private JScrollPane m_parameters_panel_scroll_pane;
@@ -98,7 +103,7 @@ public class DetailControlWindow extends AWindow {
     public InputText decimalNumberInput() { return m_detail_decimal_number_input; }
     public InputTextArea descriptionInput() { return m_detail_description_input; }
     public AddButton addDetailParameterBtn() { return m_add_detail_btn; }
-    public EditButton editDetailParameterBtn() { return m_edit_detail_parameter_btn; }
+    public EditButton editDetailParameterBtn() { return m_detail_parameter_edit_btn; }
 
     public boolean isCreateMode() { return m_create_mode; }
     public boolean isEditMode() { return m_edit_mode; }
@@ -150,7 +155,7 @@ public class DetailControlWindow extends AWindow {
             m_parameters_panel.fillLastItems();
             fillLast();
             doReadMode();
-            m_parameters_panel.updateUI();
+            m_parameters_panel.updateGUI();
         });
         m_confirm_btn.addAction(() -> doReadMode());
     }
@@ -160,8 +165,10 @@ public class DetailControlWindow extends AWindow {
 
         m_body_panel = new JPanel(new MigLayout("inset 10"));
 
+        m_detail_name_panel = new JPanel(new MigLayout("inset 0, gap rel -2"));
+        m_detail_name_edit = new EditButton();
         m_detail_name_label = new DefaultLabel("Наименование");
-        m_detail_name_input = new SelectCreateInputText(name_input_list_panel_max_height);
+        m_detail_name_input = new DefaultComboBox();
         m_detail_decimal_number_label = new DefaultLabel("Децимальный номер");
         m_detail_decimal_number_input = new InputText();
         m_detail_describe_label = new DefaultLabel("Примечание");
@@ -169,10 +176,16 @@ public class DetailControlWindow extends AWindow {
         m_detail_parameter_control_panel = new SwitcherPanel();
         m_parameters_label = new DefaultLabel("Параметры");
         m_add_detail_parameter_btn = new AddButton();
-        m_edit_detail_parameter_btn = new EditButton();
+        m_detail_parameter_edit_btn = new EditButton();
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
         m_parameters_panel_scroll_pane.setBorder(null);
+
+        m_detail_name_panel.add(m_detail_name_label);
+        m_detail_name_panel.add(m_detail_name_edit);
+
+        m_detail_name_edit.addAction(() -> WindowsManager.getInstance().showWindow("DetailNameControlWindow"));
+        m_detail_parameter_edit_btn.addAction(() -> WindowsManager.getInstance().showWindow("DetailParameterTypeControlWindow"));
 
         JPanel read_mode_panel = new JPanel(new MigLayout());
         JPanel write_mode_panel = new JPanel(new MigLayout());
@@ -181,7 +194,7 @@ public class DetailControlWindow extends AWindow {
 
         write_mode_panel.add(m_parameters_label, "al center, split 3");
         write_mode_panel.add(m_add_detail_parameter_btn);
-        write_mode_panel.add(m_edit_detail_parameter_btn);
+        write_mode_panel.add(m_detail_parameter_edit_btn);
 
         m_detail_parameter_control_panel.addPanel(read_mode_panel, SwitchPanels.READ_MODE.s());
         m_detail_parameter_control_panel.addPanel(write_mode_panel, SwitchPanels.WRITE_MODE.s());
@@ -190,21 +203,19 @@ public class DetailControlWindow extends AWindow {
 
         m_add_detail_parameter_btn.addAction(() -> {
             m_parameters_panel.addParameter(new ComboBoxInputItem(detail_parameter_panel_width));
-            m_parameters_panel.updateUI();
-            updateUI();
+            m_parameters_panel.updateGUI();
+            updateGUI();
         });
-
-        m_detail_name_input.addDropdownAction(() -> updateUI());
     }
 
     private void rememberLast() {
-        last_name = m_detail_name_input.getText();
+        last_name = (String)m_detail_name_input.getSelectedItem();
         last_decimal_number = m_detail_decimal_number_input.getText();
         last_description = m_detail_description_input.getTextArea().getText();
     }
 
     private void fillLast() {
-        m_detail_name_input.setText(last_name);
+        m_detail_name_input.setSelectedItem(last_name);
         m_detail_decimal_number_input.setText(last_decimal_number);
         m_detail_description_input.getTextArea().setText(last_description);
     }
@@ -217,6 +228,7 @@ public class DetailControlWindow extends AWindow {
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
+        setTitle("Управление деталью");
         buildTop();
         buildBody();
         doReadMode();
@@ -229,14 +241,12 @@ public class DetailControlWindow extends AWindow {
         int input_area_width = 440;
         int input_area_height = 120;
 
-        m_panel.add(m_detail_name_input.getScrollPane(), "pos input_name.x (input_name.y + input_name.h - 4)");
-
         m_panel.add(m_top_panel, "alignx center, aligny bottom, push, wrap");
-        m_panel.add(m_detail_name_label, "al center, width " + label_width + ", split 2");
+        m_panel.add(m_detail_name_panel, "al center, width " + label_width + ", split 2");
         m_panel.add(m_detail_name_input, "id input_name, width " +  input_width + ", wrap");
         m_panel.add(m_detail_decimal_number_label, "al center, width " + label_width + ", split 2");
         m_panel.add(m_detail_decimal_number_input, "width " +  input_width + ", wrap");
-        m_panel.add(m_detail_describe_label, "al center, wrap");
+        m_panel.add(m_detail_describe_label, "al center, gap top 10, wrap");
         m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + "!, wrap");
         m_panel.add(m_detail_parameter_control_panel, "al center, wrap");
         m_panel.add(m_parameters_panel_scroll_pane, "al center, grow, push, wrap");
@@ -285,25 +295,26 @@ public class DetailControlWindow extends AWindow {
 
     private void setMode(boolean flag) {
         m_add_detail_parameter_btn.setVisible(flag);
-        m_edit_detail_parameter_btn.setVisible(flag);
+        m_detail_parameter_edit_btn.setVisible(flag);
 
-        m_detail_name_input.setEditable(flag);
+        m_detail_name_edit.setVisible(flag);
+
+        m_detail_name_input.setEnable(flag);
+
         m_detail_decimal_number_input.setEditable(flag);
         m_detail_description_input.setEditable(flag);
 
         if (flag) m_parameters_panel.toWriteMode();
         else m_parameters_panel.toReadMode();
 
-        m_detail_name_input.setVisibleButtons(flag);
-
-        m_detail_name_input.setCaretPosition(0);
         m_detail_decimal_number_input.setCaretPosition(0);
         m_detail_description_input.getTextArea().setCaretPosition(0);
     }
 
-    public void updateUI() {
+    public void updateGUI() {
         m_frame.revalidate();
         m_frame.repaint();
         m_frame.setPreferredSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
     }
+
 }

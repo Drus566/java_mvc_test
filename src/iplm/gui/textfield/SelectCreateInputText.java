@@ -10,11 +10,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-/* Позволяет выбирать из списка, добавлять в список и удалить из списка Items (например строки)
- */
+/* Позволяет выбирать из списка, добавлять в список и удалить из списка Items (например строки) */
 public class SelectCreateInputText extends JTextField implements IItemListPanelListener {
     private JTextField own;
     // Кнопка добавить в список
@@ -57,13 +54,16 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
         putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
 
         m_dropdown_btn.addAction(() -> {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (m_scroll_pane.isVisible()) m_scroll_pane.setVisible(false);
-                    else {
+            SwingUtilities.invokeLater(() -> {
+                if (m_scroll_pane.isVisible()) m_scroll_pane.setVisible(false);
+                else {
+                    updateGUI();
+                    m_scroll_pane.setVisible(true);
+
+                    if (m_scroll_pane.getVerticalScrollBar().isVisible()) {
+                        System.out.println("GGWP");
+                        m_list_panel.setWidth((int) own.getBounds().getWidth() - m_scroll_pane.getVerticalScrollBar().getWidth());
                         updateGUI();
-                        m_scroll_pane.setVisible(true);
                     }
                 }
             });
@@ -78,32 +78,26 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
         m_list_panel = new ItemListPanel();
         m_list_panel.addItemListPanelListener(this);
 
-        m_scroll_pane.setBackground(Color.white);
+        m_list_panel.setBackground(Color.white);
+
         m_scroll_pane.setVisible(false);
+        m_scroll_pane.setBackground(Color.white);
         m_scroll_pane.setViewportView(m_list_panel);
         m_scroll_pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//        m_scroll_pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        m_scroll_pane.setMaximumSize(new Dimension((int) own.getBounds().getWidth(), m_list_panel_height));
 
         for (int i = 0; i < 8; i++) {
             m_list_panel.addParameter(new TextItem("Кронштейн крепления панели переключателей","id", 28));
         }
-
-//        m_list_panel.updateUI();
         updateGUI();
-
-        m_list_panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent e) {
-                System.out.println("GGWP");
-                m_scroll_pane.setVisible(false);
-            }
-        });
     }
 
     public void setVisibleButtons(boolean flag) {
         JComponent trailing_component = null;
         if (flag) trailing_component = trailing_panel;
+        else m_scroll_pane.setVisible(flag);
         putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, trailing_component);
-        if (flag == false) m_scroll_pane.setVisible(flag);
     }
 
     public void addDropdownAction(Runnable action) { m_dropdown_btn.addAction(action); }
@@ -116,10 +110,19 @@ public class SelectCreateInputText extends JTextField implements IItemListPanelL
         m_scroll_pane.setVisible(false);
     }
 
+    @Override
+    public void onDelete() {
+        updateGUI();
+    }
+
     public void updateGUI() {
-        m_list_panel.updateUI();
-        m_list_panel.setWidth((int) this.getBounds().getWidth());
-        m_scroll_pane.setMinimumSize(new Dimension((int) this.getBounds().getWidth(), m_list_panel.getHeight()));
-        m_scroll_pane.setMaximumSize(new Dimension((int) this.getBounds().getWidth(), m_list_panel_height));
+        SwingUtilities.invokeLater(() -> {
+            m_list_panel.setWidth((int) own.getBounds().getWidth());
+            m_list_panel.updateGUI();
+
+//            m_scroll_pane.setPreferredSize(new Dimension((int) own.getBounds().getWidth(), (int) m_list_panel.getBounds().getHeight()));
+            m_scroll_pane.setSize(new Dimension((int) own.getBounds().getWidth(), (int) m_list_panel.getBounds().getHeight()));
+            m_list_panel.updateGUI();
+        });
     }
 }

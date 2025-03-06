@@ -1,20 +1,138 @@
 package iplm.mvc.controllers;
 
+import iplm.data.db.OrientDBDriver;
+import iplm.data.types.DetailName;
+import iplm.gui.button.AddButton;
+import iplm.gui.button.DeleteButton;
+import iplm.gui.button.EditButton;
+import iplm.gui.button.UpdateButton;
+import iplm.gui.table.DefaultTable;
+import iplm.gui.window.detail.DetailNameControlWindow;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.DetailControlView;
+import iplm.mvc.views.DetailNameControlView;
+import iplm.mvc.views.DetailParameterTypeControlView;
 import iplm.mvc.views.DetailsView;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 public class DetailsController implements IController {
     private DetailModel m_model;
     private DetailsView m_details_view;
     private DetailControlView m_detail_control_view;
+    private DetailNameControlView m_detail_name_control_view;
+    private DetailParameterTypeControlView m_detail_parameter_type_control_view;
 
-    public DetailsController(DetailModel model, DetailsView detail_view, DetailControlView detail_control_view) {
+    public DetailsController(DetailModel model,
+                             DetailsView detail_view,
+                             DetailControlView detail_control_view,
+                             DetailNameControlView detail_name_control_view,
+                             DetailParameterTypeControlView detail_parameter_type_control_view) {
         m_model = model;
         m_details_view = detail_view;
         m_detail_control_view = detail_control_view;
+        m_detail_name_control_view = detail_name_control_view;
+        m_detail_parameter_type_control_view = detail_parameter_type_control_view;
 
         bindActions();
+        bindDetailNameControlActions();
+    }
+
+    private void bindDetailNameControlActions() {
+        DetailNameControlWindow w = m_detail_name_control_view.getDetailNameControlWindow();
+        DefaultTable t = w.getTable();
+        AddButton ab = w.getAddButton();
+        EditButton eb = w.getEditButton();
+        DeleteButton db = w.getDeleteButton();
+        UpdateButton ub = w.getUpdateButton();
+        JTextField ni = w.getNameInput();
+
+        /* Подгрузка всех имен деталей при появлении окна */
+        w.addVisibleAction(() -> {
+            ArrayList<DetailName> result = m_model.getDetailNames();
+            if (result != null) {
+                t.clear();
+                for (DetailName dn : result) {
+                    ArrayList<String> row = new ArrayList<>();
+                    row.add(dn.id);
+                    row.add(dn.name);
+                    t.addLine(row);
+                }
+            }
+            else JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        });
+
+        /* Обновление таблицы имен */
+        ub.addAction(() -> {
+            ArrayList<DetailName> result = m_model.getDetailNames();
+            if (result != null) {
+                t.clear();
+                for (DetailName dn : result) {
+                    ArrayList<String> row = new ArrayList<>();
+                    row.add(dn.id);
+                    row.add(dn.name);
+                    t.addLine(row);
+                }
+            }
+            else JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        });
+
+        /* Добавление нового имени в список имен деталей */
+        ab.addAction(() -> {
+            String new_name = ni.getText().trim();
+            if (new_name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String id = m_model.addDetailName(new_name);
+            if (id == null) {
+                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            t.addLine(id, new_name);
+            t.getTable().setRowSelectionInterval(0, 0);
+            JOptionPane.showMessageDialog(null, "Наименование детали добавлено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        /* Редактирование имени детали */
+        eb.addAction(() -> {
+            String id = w.getId();
+            if (id == null) {
+                JOptionPane.showMessageDialog(null, "Выберите наименование детали", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            String new_name = ni.getText().trim();
+            if (new_name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            id = m_model.updateDetailName(new DetailName(id, new_name));
+            if (id == null) {
+                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            ni.setText(new_name);
+            t.setSelectedRowText(1, new_name);
+            JOptionPane.showMessageDialog(null, "Наименование детали обновлено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        /* Удаление имени детали */
+        db.addAction(() -> {
+            String id = w.getId();
+            if (id == null) {
+                JOptionPane.showMessageDialog(null, "Выберите наименование детали", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            boolean result = m_model.deleteDetailName(id);
+            if (!result) {
+                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            ni.setText("");
+            t.getTableModel().removeRow(t.getTable().getSelectedRow());
+            JOptionPane.showMessageDialog(null, "Наименование детали удалено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     public void getAll() {

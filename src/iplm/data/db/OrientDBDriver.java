@@ -1,15 +1,11 @@
 package iplm.data.db;
 
 import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.db.*;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import iplm.data.repository.detail.OrientDBDetailHandler;
-import iplm.data.types.DetailParameter;
-import iplm.utility.DateTimeUtility;
+import iplm.data.types.DetailName;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -109,6 +105,8 @@ public class OrientDBDriver {
             queries.add("CREATE PROPERTY DetailParameterType.enum BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameterType.value_type STRING");
+            queries.add("CREATE PROPERTY DetailParameterType.busy BOOLEAN");
+            queries.add("CREATE PROPERTY DetailParameterType.busy_user LINK OUser");
 
             queries.add("CREATE CLASS DetailName IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailName.name STRING");

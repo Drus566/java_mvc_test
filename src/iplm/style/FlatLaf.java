@@ -51,6 +51,7 @@ public class FlatLaf {
         UIManager.put("OptionPane.noButtonText", "Нет");
         UIManager.put("OptionPane.cancelButtonText", "Отмена");
         UIManager.put("OptionPane.okButtonText", "Готово");
+        UIManager.put("TitlePane.centerTitle", true);
 
         // remember active look and feel
         UIManager.addPropertyChangeListener( e -> {

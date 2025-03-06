@@ -35,9 +35,11 @@ public class TextItem extends JTextField implements IItem {
         setEditable(false);
         putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, m_delete_btn);
         putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(base_color));
-        m_delete_btn.setBorder(new EmptyBorder(0,10,0,12));
+        m_delete_btn.setBorder(new EmptyBorder(0,10,0,10));
 
         setMinimumSize(new Dimension(100, height));
+
+        m_delete_btn.setFocusable(false);
 
         addMouseListener(new MouseAdapter() {
             @Override
