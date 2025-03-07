@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import iplm.data.repository.detail.OrientDBDetailHandler;
 import iplm.data.types.DetailName;
+import iplm.utility.DialogUtility;
 
 import javax.swing.*;
 import java.util.ArrayList;

@@ -31,6 +31,12 @@ public class DetailService {
     public String updateDetailParameterType(DetailParameterType detail_parameter_type) { return m_repository.updateDetailParameterType(detail_parameter_type, m_repository_type); }
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_repository.getDetailParameterTypes(m_repository_type); }
 
+    public String addDetail(Detail detail) { return m_repository.addDetail(detail, m_repository_type); }
+    public boolean deleteDetail(String id) { return m_repository.deleteDetail(id, m_repository_type); }
+    public String updateDetail(Detail detail) { return m_repository.updateDetail(detail, m_repository_type); }
+    public ArrayList<Detail> getDetails() { return m_repository.getDetails(m_repository_type); }
+
+
 //    public ArrayList<Detail> get(String request) { return m_repository.get(request, m_repository_type); }
 //
 //    public Detail getById(String id) { return m_repository.getById(id, m_repository_type); }

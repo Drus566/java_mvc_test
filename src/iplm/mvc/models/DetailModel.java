@@ -27,6 +27,11 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public String updateDetailParameterType(DetailParameterType detail_parameter_type) { return m_service.updateDetailParameterType(detail_parameter_type); }
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_service.getDetailParameterTypes(); }
 
+    public String addDetail(Detail detail) { return m_service.addDetail(detail); }
+    public boolean deleteDetail(String id) { return m_service.deleteDetail(id); }
+    public String updateDetail(Detail detail) { return m_service.updateDetail(detail); }
+    public ArrayList<Detail> getDetails() { return m_service.getDetails(); }
+
 //    public ArrayList<Detail> getAll() { return m_service.getAll(); }
 //
 //    public Detail getById(String id) { return m_service.getById(id); }

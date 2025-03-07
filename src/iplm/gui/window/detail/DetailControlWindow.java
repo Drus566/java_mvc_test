@@ -1,12 +1,14 @@
 package iplm.gui.window.detail;
 
+import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.combobox.ComboBoxInputItem;
 import iplm.gui.combobox.DefaultComboBox;
+import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
 import iplm.gui.layer.intercept.InterceptLayer;
 import iplm.gui.panel.SwitcherPanel;
+import iplm.gui.panel.item_list_panel.IItem;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
@@ -16,6 +18,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
     enum SwitchPanels {
@@ -31,6 +34,11 @@ public class DetailControlWindow extends AWindow {
     }
 
     private String m_detail_id;
+    public void setDetailId(String id) { m_detail_id = id; }
+
+    private ArrayList<DetailParameterType> m_detail_parameter_type_list;
+    public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_detail_parameter_type_list; }
+//    public void addDetailParameterType(DetailParameterType type) { m_detail_parameter_type_list.add(type); }
 
     // TOP
     private JPanel m_top_panel;
@@ -100,14 +108,18 @@ public class DetailControlWindow extends AWindow {
     public DirectoryButton getDownloadDetailBtn() { return m_directory_detail_btn; }
 
     // BODY
-    public DefaultComboBox getInputName() { return m_detail_name_input; }
-    public InputText decimalNumberInput() { return m_detail_decimal_number_input; }
-    public InputTextArea descriptionInput() { return m_detail_description_input; }
-    public AddButton addDetailParameterBtn() { return m_add_detail_btn; }
-    public EditButton editDetailParameterBtn() { return m_detail_parameter_edit_btn; }
+    public DefaultComboBox getNameInput() { return m_detail_name_input; }
+    public InputText getDecimalNumberInput() { return m_detail_decimal_number_input; }
+    public InputTextArea getDescriptionInput() { return m_detail_description_input; }
+    public AddButton getAddDetailParameterBtn() { return m_add_detail_btn; }
+    public EditButton getEditDetailParameterBtn() { return m_detail_parameter_edit_btn; }
+    public ItemListPanel getParametersPanel() { return m_parameters_panel; }
 
     public boolean isCreateMode() { return m_create_mode; }
     public boolean isEditMode() { return m_edit_mode; }
+
+    public void updateParametersPanel() { m_parameters_panel.updateItems(m_detail_parameter_type_list); }
+    public ArrayList<IItem> getParameterPanelItems() { return m_parameters_panel.getItems(); }
 
     private void buildTop() {
         Color background_detail = Color.white;
@@ -203,7 +215,7 @@ public class DetailControlWindow extends AWindow {
         detail_parameter_panel_width = 160;
 
         m_add_detail_parameter_btn.addAction(() -> {
-            m_parameters_panel.addParameter(new ComboBoxInputItem(detail_parameter_panel_width));
+            m_parameters_panel.addParameter(new DetailParameterUI(detail_parameter_panel_width, m_detail_parameter_type_list));
             m_parameters_panel.updateGUI();
             updateGUI();
         });
@@ -229,6 +241,7 @@ public class DetailControlWindow extends AWindow {
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
+        m_detail_parameter_type_list = new ArrayList<>();
         setTitle("Управление деталью");
         buildTop();
         buildBody();
@@ -240,7 +253,7 @@ public class DetailControlWindow extends AWindow {
         int label_width = 160;
         int input_width = 280;
         int input_area_width = 440;
-        int input_area_height = 120;
+        int input_area_height = 80;
 
         m_panel.add(m_top_panel, "alignx center, aligny bottom, push, wrap");
         m_panel.add(m_detail_name_panel, "al center, width " + label_width + ", split 2");
@@ -320,5 +333,4 @@ public class DetailControlWindow extends AWindow {
         m_frame.repaint();
         m_frame.setPreferredSize(new Dimension(m_frame.getWidth(), m_frame.getHeight()));
     }
-
 }

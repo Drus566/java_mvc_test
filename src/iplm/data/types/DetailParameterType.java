@@ -6,10 +6,10 @@ public class DetailParameterType {
     /* Тип данных параметра */
     public enum Type {
         DEC("Число"),
-//        FLOAT("Число с плавающей точкой"),
-        STRING("Строка"),
+        FLOAT("Число с плавающей точкой"),
+        STRING("Строка");
 //        RANGE("Диапазон"),
-        BOOL("Флаг");
+//        BOOL("Флаг");
 
         private String m_string;
         Type(String string) { m_string = string; }

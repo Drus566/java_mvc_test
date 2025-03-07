@@ -3,7 +3,6 @@ package iplm.gui.panel.item_list_panel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ItemListPanel extends JPanel implements IItemListener, IItemListPanel {
@@ -26,6 +25,8 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
     public ItemListPanel() {
         init(-1);
     }
+
+    public ArrayList<IItem> getItems() { return m_items; }
 
     public void setWidth(int width) {
         this.width = width;
@@ -108,6 +109,12 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
             i.toReadMode();
         }
         write_mode = false;
+    }
+
+    public void updateItems(Object data) {
+        for (IItem i : m_items) {
+            i.updateItem(data);
+        }
     }
 
     public void addClickAction(Runnable action) { m_click_actions.add(action); }

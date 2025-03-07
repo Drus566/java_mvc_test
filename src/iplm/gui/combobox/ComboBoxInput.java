@@ -11,17 +11,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class ComboBoxInputItem extends JPanel implements IItem {
-    private IItemListener m_item_listener;
+public class ComboBoxInput extends JPanel {
+    protected DeleteButton m_delete_btn;
+    protected JComboBox<String> m_name;
+    protected JTextField m_value;
 
-    private DeleteButton m_delete_btn;
-    private JComboBox<String> m_name;
-    private JTextField m_value;
+    protected String m_last_name;
+    protected String m_last_value;
 
-    private String m_last_name;
-    private String m_last_value;
-
-    private ArrayList<Runnable> m_delete_actions;
+    protected ArrayList<Runnable> m_delete_actions;
 
     public String getKey() { return m_name.getSelectedItem().toString().trim(); }
     public String getValue() { return m_value.getText().trim(); }
@@ -43,7 +41,7 @@ public class ComboBoxInputItem extends JPanel implements IItem {
         setVisibleDeleteButton(flag);
     }
 
-    public ComboBoxInputItem(int width_name) {
+    public ComboBoxInput(int width_name) {
         Color disabled_background = new Color(255, 255, 255, 255);
         Color disabled_text = new Color(0, 0, 0, 255);
 
@@ -69,7 +67,6 @@ public class ComboBoxInputItem extends JPanel implements IItem {
             for (Runnable a : m_delete_actions) {
                 SwingUtilities.invokeLater(a);
             }
-            SwingUtilities.invokeLater(() -> m_item_listener.onDelete(this));
         });
     }
 
@@ -91,29 +88,4 @@ public class ComboBoxInputItem extends JPanel implements IItem {
             }
         }
         return result;
-    }
-
-    @Override
-    public void addItemListener(IItemListener listener) { m_item_listener = listener; }
-
-    @Override
-    public JComponent getComponent() { return this; }
-
-    @Override
-    public void toWriteMode() { setEditable(true); }
-
-    @Override
-    public void toReadMode() { setEditable(false); }
-
-    @Override
-    public void rememberLast() {
-        m_last_name = (String)m_name.getSelectedItem();
-        m_last_value = m_value.getText();
-    }
-
-    @Override
-    public void fillLast() {
-        m_name.setSelectedItem(m_last_name);
-        m_value.setText(m_last_value);
-    }
-}
+    }}

@@ -117,6 +117,56 @@ public class DetailRepository {
     }
 
 
+    /* Детали */
+    public String addDetail(Detail detail, RepositoryType type) {
+        String result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.addDetail(detail);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public boolean deleteDetail(String id, RepositoryType type) {
+        boolean result = false;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.deleteDetail(id);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public String updateDetail(Detail detail, RepositoryType type) {
+        String result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.updateDetail(detail);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public ArrayList<Detail> getDetails(RepositoryType type) {
+        ArrayList<Detail> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetails();
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+
 //    public ArrayList<Detail> getAll(RepositoryType type) {
 //        ArrayList<Detail> result = null;
 //        switch (type) {

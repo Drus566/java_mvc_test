@@ -11,4 +11,11 @@ public class DetailParameter {
     public DetailParameterType type;
     /* Значение */
     public Object value;
+
+    public DetailParameter() {}
+
+    public DetailParameter(Object value, DetailParameterType type) {
+        this.value = value;
+        this.type = type;
+    }
 }
