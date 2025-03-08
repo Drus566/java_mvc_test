@@ -22,8 +22,11 @@ public class DetailParameterUI extends ComboBoxInputItem {
         for (DetailParameterType dpt : this.detail_parameter_type_list) {
             m_name.addItem(dpt.name);
         }
-        m_name.setSelectedIndex(0);
+//        m_name.setSelectedIndex(0);
         m_name.addItemListener(e -> setType(e.getItem().toString()));
+        if (detail_parameter_type_list != null && !detail_parameter_type_list.isEmpty()) {
+            current_type = detail_parameter_type_list.get(0);
+        }
     }
 
     @Override

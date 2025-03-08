@@ -5,10 +5,7 @@ import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
-import iplm.gui.button.AddButton;
-import iplm.gui.button.DeleteButton;
-import iplm.gui.button.EditButton;
-import iplm.gui.button.UpdateButton;
+import iplm.gui.button.*;
 import iplm.gui.combobox.DefaultComboBox;
 import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.panel.item_list_panel.IItem;
@@ -63,6 +60,8 @@ public class DetailsController implements IController {
         AddButton ab = w.getAddDetailBtn();
         EditButton eb = w.getEditDetailBtn();
         DeleteButton db = w.getDeleteDetailBtn();
+        ConfirmButton cb = w.getConfirmButton();
+        CancelButton canb = w.getCancelButton();
 
         /* Подгрузка всех имен деталей при появлении окна */
         w.addVisibleAction(() -> {
@@ -115,14 +114,20 @@ public class DetailsController implements IController {
             else DialogUtility.showErrorIfExists();
         });
 
-        /* Добавление деталь в БД */
-        ab.addAction(() -> {
+        Runnable add_action = () -> {
             Detail detail = new Detail();
             ArrayList<DetailParameter> params = null;
 
-            detail.name = in.getSelectedItem().toString();
+            if (in.getSelectedItem() == null) detail.name = "";
+            else detail.name = in.getSelectedItem().toString();
+
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
+
+            if (detail.name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             // Проверка полей на корректность
             ArrayList<IItem> items = w.getParameterPanelItems();
@@ -167,6 +172,136 @@ public class DetailsController implements IController {
 
             }
             else DialogUtility.showErrorIfExists();
+        };
+
+        Runnable edit_action = () -> {
+            Detail detail = new Detail();
+            ArrayList<DetailParameter> params = null;
+
+            if (in.getSelectedItem() == null) detail.name = "";
+            else detail.name = in.getSelectedItem().toString();
+
+            detail.decimal_number = dn.getText();
+            detail.description = di.getTextArea().getText();
+
+            if (detail.name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Проверка полей на корректность
+            ArrayList<IItem> items = w.getParameterPanelItems();
+            for (IItem i : items) {
+                if (params == null) params = new ArrayList<>();
+
+                DetailParameterUI dp = (DetailParameterUI) i.getComponent();
+                DetailParameterType dpt = dp.getCurrentType();
+
+                String value = dp.getValue();
+                if (value.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) params.add(new DetailParameter(value, dpt));
+                else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.DEC.s())) {
+                    try {
+                        int num = Integer.parseInt(value);
+                        params.add(new DetailParameter(num, dpt));
+                    }
+                    catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.FLOAT.s())) {
+                    try {
+                        float num = Float.parseFloat(value);
+                        params.add(new DetailParameter(num, dpt));
+                    }
+                    catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть число с плавающей точкой", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            }
+            detail.params = params;
+
+            String result = m_model.addDetail(detail);
+            if (result != null) {
+
+            }
+            else DialogUtility.showErrorIfExists();
+        };
+
+        /* Добавление | Релактирование детали в БД */
+        cb.addAction(() -> {
+            if (w.isEditMode()) edit_action.run();
+            else if (w.isCreateMode()) {
+                Detail detail = new Detail();
+                ArrayList<DetailParameter> params = null;
+
+                if (in.getSelectedItem() == null) detail.name = "";
+                else detail.name = in.getSelectedItem().toString();
+
+                detail.decimal_number = dn.getText();
+                detail.description = di.getTextArea().getText();
+
+                if (detail.name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Проверка полей на корректность
+                ArrayList<IItem> items = w.getParameterPanelItems();
+                for (IItem i : items) {
+                    if (params == null) params = new ArrayList<>();
+
+                    DetailParameterUI dp = (DetailParameterUI) i.getComponent();
+                    DetailParameterType dpt = dp.getCurrentType();
+
+                    String value = dp.getValue();
+                    if (value.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (dpt == null) {
+                        JOptionPane.showMessageDialog(null, "Тип параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) params.add(new DetailParameter(value, dpt));
+                    else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.DEC.s())) {
+                        try {
+                            int num = Integer.parseInt(value);
+                            params.add(new DetailParameter(num, dpt));
+                        }
+                        catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                    else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.FLOAT.s())) {
+                        try {
+                            float num = Float.parseFloat(value);
+                            params.add(new DetailParameter(num, dpt));
+                        }
+                        catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть число с плавающей точкой", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }
+                detail.params = params;
+
+                String result = m_model.addDetail(detail);
+                if (result != null) {
+                    DialogUtility.showErrorIfExists();
+                }
+                else DialogUtility.showErrorIfExists();
+            }
+            w.doReadMode();
 
 
 //            String new_name = ni.getText().trim();

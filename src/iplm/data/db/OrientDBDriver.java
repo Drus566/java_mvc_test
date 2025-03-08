@@ -99,7 +99,7 @@ public class OrientDBDriver {
 
             queries.add("CREATE CLASS DetailParameter IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)");
-            queries.add("CREATE PROPERTY DetailParameter.info STRING (MANDATORY TRUE)");
+//            queries.add("CREATE PROPERTY DetailParameter.info STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameter.detail_id LINK Detail");
             queries.add("CREATE PROPERTY Detail.params LINKSET DetailParameter");
 

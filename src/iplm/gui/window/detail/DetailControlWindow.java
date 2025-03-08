@@ -106,6 +106,8 @@ public class DetailControlWindow extends AWindow {
     public EditButton getEditDetailBtn() { return m_edit_detail_btn; }
     public DeleteButton getDeleteDetailBtn() { return  m_delete_detail_btn; };
     public DirectoryButton getDownloadDetailBtn() { return m_directory_detail_btn; }
+    public ConfirmButton getConfirmButton() { return m_confirm_btn; }
+    public CancelButton getCancelButton() { return m_cancel_btn; }
 
     // BODY
     public DefaultComboBox getNameInput() { return m_detail_name_input; }
@@ -170,7 +172,6 @@ public class DetailControlWindow extends AWindow {
             doReadMode();
             m_parameters_panel.updateGUI();
         });
-        m_confirm_btn.addAction(() -> doReadMode());
     }
 
     private void buildBody() {

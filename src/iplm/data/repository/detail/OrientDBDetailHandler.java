@@ -320,11 +320,12 @@ public class OrientDBDetailHandler {
                 OElement parameter = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
                 parameter.setProperty(P.value.s(), p.value);
                 parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
+                param_elements.add(parameter);
             }
         }
 
-        OrientDBDriver.getInstance().getSession().begin();
         try {
+            OrientDBDriver.getInstance().getSession().begin();
             ArrayList<ORecordId> param_ids = new ArrayList<>();
             // Создание детали
             detail_element.save();
@@ -343,6 +344,7 @@ public class OrientDBDetailHandler {
                 // Обновление детали (добавление связи с параметрами)
                 detail_element.save();
             }
+            OrientDBDriver.getInstance().getSession().commit();
         }
         catch (Exception e) {
             OrientDBDriver.getInstance().getSession().rollback();
