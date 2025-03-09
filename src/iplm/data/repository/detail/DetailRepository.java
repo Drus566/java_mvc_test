@@ -154,17 +154,43 @@ public class DetailRepository {
         return result;
     }
 
-    public ArrayList<Detail> getDetails(RepositoryType type) {
+    public ArrayList<Detail> getAllDetails(boolean depends, RepositoryType type) {
         ArrayList<Detail> result = null;
         switch (type) {
             case ORIENTDB:
-                result = m_orient_db_handler.getDetails();
+                result = m_orient_db_handler.getAllDetails(depends);
                 break;
             case MYSQL:
                 break;
         }
         return result;
     }
+
+    public ArrayList<Detail> getDetails(String request, boolean depends, RepositoryType type) {
+        ArrayList<Detail> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetails(request, depends);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+    public Detail getDetailByID(String id, boolean depends, RepositoryType type) {
+        Detail result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetailByID(id, depends);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
+
 
 
 //    public ArrayList<Detail> getAll(RepositoryType type) {

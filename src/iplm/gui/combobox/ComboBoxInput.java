@@ -2,8 +2,6 @@ package iplm.gui.combobox;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import iplm.gui.button.DeleteButton;
-import iplm.gui.panel.item_list_panel.IItem;
-import iplm.gui.panel.item_list_panel.IItemListener;
 import iplm.utility.ColorUtility;
 import net.miginfocom.swing.MigLayout;
 

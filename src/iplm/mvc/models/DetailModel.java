@@ -28,9 +28,14 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_service.getDetailParameterTypes(); }
 
     public String addDetail(Detail detail) { return m_service.addDetail(detail); }
-    public boolean deleteDetail(String id) { return m_service.deleteDetail(id); }
     public String updateDetail(Detail detail) { return m_service.updateDetail(detail); }
-    public ArrayList<Detail> getDetails() { return m_service.getDetails(); }
+    public boolean deleteDetail(String id) { return m_service.deleteDetail(id); }
+    public ArrayList<Detail> getAllDetails() { return m_service.getAllDetails(false); }
+    public ArrayList<Detail> getAllDetailsWithDepends() { return m_service.getAllDetails(true); }
+    public ArrayList<Detail> getDetails(String request) { return m_service.getDetails(request, false); }
+    public ArrayList<Detail> getDetailsWithDepends(String request) { return m_service.getDetails(request, true); }
+    public Detail getDetailByID(String id) { return m_service.getDetailByID(id, false); }
+    public Detail getDetailByIDWithDepends(String id) { return m_service.getDetailByID(id, true); }
 
 //    public ArrayList<Detail> getAll() { return m_service.getAll(); }
 //

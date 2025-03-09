@@ -35,6 +35,8 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
 //        setMinimumSize(new Dimension(width, getHeight()));
     }
 
+    public void removeItems() { m_items.clear(); }
+
     private void init(int width) {
         m_click_actions = new ArrayList<>();
 
@@ -96,7 +98,7 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
     }
 
     public void toWriteMode() {
-        if (isWriteMode()) return;
+//        if (isWriteMode()) return;
         for (IItem i : m_items) {
             i.toWriteMode();
         }
@@ -104,7 +106,7 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
     }
 
     public void toReadMode() {
-        if (!isWriteMode()) return;
+//        if (isWriteMode()) return;
         for (IItem i : m_items) {
             i.toReadMode();
         }

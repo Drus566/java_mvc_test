@@ -99,21 +99,27 @@ public class OrientDBDriver {
 
             queries.add("CREATE CLASS DetailParameter IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)");
-//            queries.add("CREATE PROPERTY DetailParameter.info STRING (MANDATORY TRUE)");
+            queries.add("CREATE PROPERTY DetailParameter.info STRING");
             queries.add("CREATE PROPERTY DetailParameter.detail_id LINK Detail");
             queries.add("CREATE PROPERTY Detail.params LINKSET DetailParameter");
 
             queries.add("CREATE CLASS DetailParameterType IF NOT EXISTS");
-//            queries.add("CREATE PROPERTY DetailParameterType.custom_value BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.enum BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameterType.value_type STRING");
-            queries.add("CREATE PROPERTY DetailParameterType.busy BOOLEAN");
-            queries.add("CREATE PROPERTY DetailParameterType.busy_user LINK OUser");
 
             queries.add("CREATE CLASS DetailName IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailName.name STRING");
             queries.add("CREATE PROPERTY DetailParameter.type LINK DetailParameterType");
+
+//            CREATE INDEX addresses ON Employee (address) NOTUNIQUE METADATA {ignoreNullValues: true}
+
+            queries.add("CREATE INDEX Detail.decimal_number ON Detail (decimal_number) UNIQUE METADATA { \"ignoreNullValues\": true }");
+            queries.add("CREATE INDEX DetailName.name ON DetailName (name) UNIQUE");
+            queries.add("CREATE INDEX DetailParameterType.name ON DetailParameterType (name) UNIQUE");
+
+            queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
+
 
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }
 //            OrientDBDriver.getInstance().getSession().commit();

@@ -1,5 +1,6 @@
 package iplm.gui.window.detail;
 
+import iplm.data.types.Detail;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
 import iplm.gui.combobox.DefaultComboBox;
@@ -35,6 +36,7 @@ public class DetailControlWindow extends AWindow {
 
     private String m_detail_id;
     public void setDetailId(String id) { m_detail_id = id; }
+    public String getDetailId() { return m_detail_id; }
 
     private ArrayList<DetailParameterType> m_detail_parameter_type_list;
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_detail_parameter_type_list; }
@@ -84,7 +86,7 @@ public class DetailControlWindow extends AWindow {
     // Метка параметров
     private DefaultLabel m_parameters_label;
     // Создать параметр детали
-    private AddButton m_add_detail_parameter_btn;
+    private AddButton m_detail_parameter_add_btn;
     // Окно контроля параметров детали
     private EditButton m_detail_parameter_edit_btn;
     // Панель параметров
@@ -122,6 +124,11 @@ public class DetailControlWindow extends AWindow {
 
     public void updateParametersPanel() { m_parameters_panel.updateItems(m_detail_parameter_type_list); }
     public ArrayList<IItem> getParameterPanelItems() { return m_parameters_panel.getItems(); }
+
+    public void updateDetail(Detail detail) {
+        updateParametersPanel();
+//        m_detail_name_input
+    }
 
     private void buildTop() {
         Color background_detail = Color.white;
@@ -189,7 +196,7 @@ public class DetailControlWindow extends AWindow {
         m_detail_description_input = new InputTextArea();
         m_detail_parameter_control_panel = new SwitcherPanel();
         m_parameters_label = new DefaultLabel("Параметры");
-        m_add_detail_parameter_btn = new AddButton();
+        m_detail_parameter_add_btn = new AddButton();
         m_detail_parameter_edit_btn = new EditButton();
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
@@ -207,7 +214,7 @@ public class DetailControlWindow extends AWindow {
         read_mode_panel.add(new JLabel("Параметры"), "al center, push");
 
         write_mode_panel.add(m_parameters_label, "al center, split 3");
-        write_mode_panel.add(m_add_detail_parameter_btn);
+        write_mode_panel.add(m_detail_parameter_add_btn);
         write_mode_panel.add(m_detail_parameter_edit_btn);
 
         m_detail_parameter_control_panel.addPanel(read_mode_panel, SwitchPanels.READ_MODE.s());
@@ -215,7 +222,7 @@ public class DetailControlWindow extends AWindow {
 
         detail_parameter_panel_width = 160;
 
-        m_add_detail_parameter_btn.addAction(() -> {
+        m_detail_parameter_add_btn.addAction(() -> {
             m_parameters_panel.addParameter(new DetailParameterUI(detail_parameter_panel_width, m_detail_parameter_type_list));
             m_parameters_panel.updateGUI();
             updateGUI();
@@ -223,13 +230,13 @@ public class DetailControlWindow extends AWindow {
     }
 
     private void rememberLast() {
-        last_name = (String)m_detail_name_input.getSelectedItem();
+        last_name = m_detail_name_input.getText();
         last_decimal_number = m_detail_decimal_number_input.getText();
         last_description = m_detail_description_input.getTextArea().getText();
     }
 
     private void fillLast() {
-        m_detail_name_input.setSelectedItem(last_name);
+        m_detail_name_input.setText(last_name);
         m_detail_decimal_number_input.setText(last_decimal_number);
         m_detail_description_input.getTextArea().setText(last_description);
     }
@@ -308,11 +315,12 @@ public class DetailControlWindow extends AWindow {
             m_detail_control_btn_panel.showPanel(SwitchPanels.WRITE_MODE.s());
             m_detail_parameter_control_panel.showPanel(SwitchPanels.WRITE_MODE.s());
             m_parameters_panel.rememberItems();
+            rememberLast();
         }
     }
 
     private void setMode(boolean flag) {
-        m_add_detail_parameter_btn.setVisible(flag);
+        m_detail_parameter_add_btn.setVisible(flag);
         m_detail_parameter_edit_btn.setVisible(flag);
 
         m_detail_name_edit.setVisible(flag);

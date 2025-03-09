@@ -34,7 +34,9 @@ public class DetailService {
     public String addDetail(Detail detail) { return m_repository.addDetail(detail, m_repository_type); }
     public boolean deleteDetail(String id) { return m_repository.deleteDetail(id, m_repository_type); }
     public String updateDetail(Detail detail) { return m_repository.updateDetail(detail, m_repository_type); }
-    public ArrayList<Detail> getDetails() { return m_repository.getDetails(m_repository_type); }
+    public ArrayList<Detail> getAllDetails(boolean depends) { return m_repository.getAllDetails(depends, m_repository_type); }
+    public ArrayList<Detail> getDetails(String request, boolean depends) { return m_repository.getDetails(request, depends, m_repository_type); }
+    public Detail getDetailByID(String id, boolean depends) { return m_repository.getDetailByID(id, depends, m_repository_type); }
 
 
 //    public ArrayList<Detail> get(String request) { return m_repository.get(request, m_repository_type); }

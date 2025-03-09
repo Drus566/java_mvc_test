@@ -11,6 +11,8 @@ public class DetailParameter {
     public DetailParameterType type;
     /* Значение */
     public Object value;
+    /* Доп информация */
+    public String info;
 
     public DetailParameter() {}
 

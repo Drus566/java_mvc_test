@@ -12,6 +12,7 @@ import iplm.gui.panel.search_panel.components.ASearchPanelLine;
 import iplm.gui.panel.search_panel.SearchPanel;
 import iplm.gui.panel.search_panel.components.button.ICloseSearchPanelLineListener;
 import iplm.gui.table.DefaultTable;
+import iplm.gui.table.detail.HighlightRenderer;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.AWindow;
 import iplm.managers.WindowsManager;
@@ -75,9 +76,10 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     private void buildTable() {
         m_table = new DefaultTable();
-        // EXAMPLE DATA FILLs
-        m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Децимальный номер", "Наименование", "Описание")));
+        m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Децимальный номер", "Наименование", "Описание", "Цвет")));
         m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(0));
+        m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(3));
+        m_table.setRenderer(new HighlightRenderer(m_table.getTable()));
     }
 
     private void buildSearchPanel() {

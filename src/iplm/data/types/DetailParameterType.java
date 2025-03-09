@@ -31,13 +31,9 @@ public class DetailParameterType {
     /* Тип данных */
     public String type;
     /* Перечисление вариантов значения параметра */
-    public ArrayList<Object> vals_enum;
+//    public ArrayList<Object> vals_enum;
     /* Доступно ли кастомное значение */
-    public boolean custom_val;
+//    public boolean custom_val;
     /* Хранится ли вместо единичного значения перечисление значений */
     public boolean enumeration;
-    /* Занят ли параметр (например редактируется другим) */
-    public boolean busy;
-    /* Кем занят параметр */
-    public String user_busy;
 }

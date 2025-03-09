@@ -64,6 +64,12 @@ public class DetailParameterTypeControlWindow extends AWindow {
         m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Наименование параметра детали", "Тип данных значения параметра детали")));
         m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(0));
 
+        m_table.getTable().getSelectionModel().addListSelectionListener(e -> {
+            int sr = m_table.getTable().getSelectedRow();
+            if (sr == -1) return;
+            m_name.setText((String) m_table.getTableModel().getValueAt(sr, 1));
+        });
+
         for (DetailParameterType.Type dpp : DetailParameterType.Type.values()) {
             m_value_type.addItem(dpp.s());
         }

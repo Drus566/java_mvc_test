@@ -3,7 +3,9 @@ package iplm.gui.table;
 import com.formdev.flatlaf.FlatClientProperties;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class DefaultTable {
     private JTable m_table;
     private JScrollPane m_scroll_pane;
     private DefaultTableModel m_model;
+    private DefaultTableCellRenderer row_renderer;
 
     private int last_row = -1;
     private long last_click_time = 0;
@@ -59,6 +62,11 @@ public class DefaultTable {
                 }
             }
         });
+    }
+
+    public void setRenderer(DefaultTableCellRenderer render) {
+        row_renderer = render;
+        m_table.setDefaultRenderer(Object.class, row_renderer);
     }
 
     public JTable getTable() { return m_table; }
