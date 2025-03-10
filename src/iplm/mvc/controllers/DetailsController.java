@@ -275,8 +275,8 @@ public class DetailsController implements IController {
             else DialogUtility.showErrorIfExists();
 
             if (w.getDetailId() != null && !w.getDetailId().isEmpty()) {
+                // TODO: сделать подгрузку параметров и значений детали (имя, децимальнй номер, описание)
                 Detail detail = m_model.getDetailByID(w.getDetailId());
-
             }
         };
 
