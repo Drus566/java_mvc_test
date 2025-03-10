@@ -19,10 +19,10 @@ import iplm.gui.window.detail.DetailNameControlWindow;
 import iplm.gui.window.detail.DetailParameterTypeControlWindow;
 import iplm.gui.window.detail.DetailsWindow;
 import iplm.mvc.models.DetailModel;
-import iplm.mvc.views.DetailControlView;
-import iplm.mvc.views.DetailNameControlView;
-import iplm.mvc.views.DetailParameterTypeControlView;
-import iplm.mvc.views.DetailsView;
+import iplm.mvc.views.detail.DetailControlView;
+import iplm.mvc.views.detail.DetailNameControlView;
+import iplm.mvc.views.detail.DetailParameterTypeControlView;
+import iplm.mvc.views.detail.DetailsView;
 import iplm.utility.DialogUtility;
 
 import javax.swing.*;

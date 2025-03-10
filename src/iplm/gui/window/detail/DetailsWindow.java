@@ -140,10 +140,22 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     public void buildMenuBar() {
         m_menu_bar = new JMenuBar();
         JMenu menu = new JMenu("Меню");
-        JMenuItem params = new JMenuItem("Редактор параметров деталей");
+        JMenuItem m1 = new JMenuItem("Управление типами параметров деталей");
+        JMenuItem m2 = new JMenuItem("Управление наименованиями деталей");
+        JMenuItem m3 = new JMenuItem("Управление деталью");
+        JMenuItem m4 = new JMenuItem("Настройки");
+
         JMenuItem exit = new JMenuItem("Выход");
-        menu.add(params);
+        menu.add(m1);
+        menu.add(m2);
+        menu.add(m3);
+        menu.add(m4);
         menu.add(exit);
+
+        m1.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailParameterTypeControlWindow"));
+        m2.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailNameControlWindow"));
+        m3.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailControlWindow"));
+//        m4.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailParameterTypeControlWindow"));
 
         exit.addActionListener(e -> System.exit(0));
         m_menu_bar.add(menu);

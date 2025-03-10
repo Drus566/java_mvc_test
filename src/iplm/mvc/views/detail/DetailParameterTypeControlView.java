@@ -1,7 +1,8 @@
-package iplm.mvc.views;
+package iplm.mvc.views.detail;
 
 import iplm.gui.window.detail.DetailParameterTypeControlWindow;
 import iplm.managers.WindowsManager;
+import iplm.mvc.views.IView;
 
 public class DetailParameterTypeControlView implements IView {
     private DetailParameterTypeControlWindow m_detail_parameter_type_control_window;

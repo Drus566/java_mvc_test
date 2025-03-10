@@ -50,7 +50,7 @@ public class DetailParameterTypeControlWindow extends AWindow {
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
-        setTitle("Параметры деталей");
+        setTitle("Типы параметров деталей");
 
         m_update_btn = new UpdateButton();
         m_add_btn = new AddButton();

@@ -1,7 +1,8 @@
-package iplm.mvc.views;
+package iplm.mvc.views.detail;
 
 import iplm.gui.window.detail.DetailControlWindow;
 import iplm.managers.WindowsManager;
+import iplm.mvc.views.IView;
 
 public class DetailControlView implements IView {
     private DetailControlWindow m_detail_control_window;

@@ -1,9 +1,10 @@
-package iplm.mvc.views;
+package iplm.mvc.views.detail;
 
 import iplm.data.types.Detail;
 import iplm.gui.window.detail.DetailsWindow;
 import iplm.interfaces.observer.IObserver;
 import iplm.managers.WindowsManager;
+import iplm.mvc.views.IView;
 
 public class DetailsView implements IView, IObserver<Detail> {
     private DetailsWindow m_details_window;

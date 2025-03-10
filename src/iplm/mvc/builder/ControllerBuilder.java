@@ -8,10 +8,10 @@ import iplm.mvc.builder.component.ViewComponent;
 import iplm.mvc.controllers.DetailsController;
 import iplm.mvc.controllers.IController;
 import iplm.mvc.models.DetailModel;
-import iplm.mvc.views.DetailControlView;
-import iplm.mvc.views.DetailNameControlView;
-import iplm.mvc.views.DetailParameterTypeControlView;
-import iplm.mvc.views.DetailsView;
+import iplm.mvc.views.detail.DetailControlView;
+import iplm.mvc.views.detail.DetailNameControlView;
+import iplm.mvc.views.detail.DetailParameterTypeControlView;
+import iplm.mvc.views.detail.DetailsView;
 
 public class    ControllerBuilder {
     public IController build(ControllerComponent component, ModelsManager models_manager, ViewsManager views_manager) {

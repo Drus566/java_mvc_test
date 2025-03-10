@@ -2,6 +2,10 @@ package iplm.mvc.builder;
 
 import iplm.mvc.builder.component.ViewComponent;
 import iplm.mvc.views.*;
+import iplm.mvc.views.detail.DetailControlView;
+import iplm.mvc.views.detail.DetailNameControlView;
+import iplm.mvc.views.detail.DetailParameterTypeControlView;
+import iplm.mvc.views.detail.DetailsView;
 
 public class ViewBuilder {
     public IView build(ViewComponent component) {
