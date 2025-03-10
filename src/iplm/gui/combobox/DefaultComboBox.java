@@ -32,7 +32,11 @@ public class DefaultComboBox extends JComboBox<String> {
 //        tf.setText(text);
     }
 
-    public String getText() { return getSelectedItem().toString(); }
+    public String getText() {
+        String result = "";
+        if (getSelectedItem() != null) result = getSelectedItem().toString();
+        return result;
+    }
 
     public void setEnable(boolean flag) {
         setEnabled(flag);

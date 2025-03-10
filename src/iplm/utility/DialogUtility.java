@@ -21,4 +21,11 @@ public class DialogUtility {
             instance.setLastError("");
         }
     }
+
+    public static boolean showConfirmDialog() {
+        boolean result = false;
+        int response = JOptionPane.showConfirmDialog(null,"Вы уверены?", "Подтверждение",  JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) result = true;
+        return result;
+    }
 }

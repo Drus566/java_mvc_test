@@ -119,7 +119,7 @@ public class DetailsController implements IController {
                             }
                             else {
                                 DialogUtility.showDialog("Информация", "Деталь уже в режиме редактирования | создания", JOptionPane.INFORMATION_MESSAGE);
-                                dcw.show();
+//                                dcw.show();
                             }
                         });
 
@@ -165,6 +165,41 @@ public class DetailsController implements IController {
                 t.addLine(args);
             }
         });
+
+        t.addDoubleClickAction(() -> {
+            dcw.show();
+
+            // Действие при клике по строке
+            if (!dcw.isCreateMode() && !dcw.isEditMode()) {
+                int sr = t.getTable().getSelectedRow();
+                String id = (String) t.getTableModel().getValueAt(sr, 0);
+
+                sp.setVisible(false);
+                Detail detail = m_model.getDetailByIDWithDepends(id);
+                if (detail != null)  {
+                    ni.setText(detail.name);
+                    dni.setText(detail.decimal_number);
+                    di.getTextArea().setText(detail.description);
+
+                    pp.removeItems();
+                    if (detail.params != null) {
+                        for (DetailParameter dp : detail.params) {
+                            int detail_parameter_panel_width = 160;
+                            pp.addParameter(new DetailParameterUI(detail_parameter_panel_width, dp.type, dp.value, dcw.getDetailParameterTypes()));
+                        }
+                    }
+                    pp.updateGUI();
+                    dcw.updateGUI();
+                    dcw.setDetailId(detail.id);
+                    if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
+                }
+                else DialogUtility.showErrorIfExists();
+            }
+            else {
+                DialogUtility.showDialog("Информация", "Деталь уже в режиме редактирования | создания", JOptionPane.INFORMATION_MESSAGE);
+                dcw.show();
+            }
+        });
     }
 
     // ОКНО УПРАВЛЕНИЯ ДЕТАЛЬЮ
@@ -185,10 +220,12 @@ public class DetailsController implements IController {
         w.addVisibleAction(() -> {
             ArrayList<DetailName> result = m_model.getDetailNames();
             if (result != null) {
+                String current_text = in.getText();
                 in.removeAllItems();
                 for (DetailName t_dn : result) {
                     in.addItem(t_dn.name);
                 }
+                if (!current_text.isEmpty()) in.setText(current_text);
             }
             else DialogUtility.showErrorIfExists();
 
@@ -216,10 +253,12 @@ public class DetailsController implements IController {
             /* Подгрузка всех имен деталей */
             ArrayList<DetailName> detail_names_list = m_model.getDetailNames();
             if (detail_names_list != null) {
+                String current_text = in.getText();
                 in.removeAllItems();
                 for (DetailName t_dn : detail_names_list) {
                     in.addItem(t_dn.name);
                 }
+                if (!current_text.isEmpty()) in.setText(current_text);
             }
             else DialogUtility.showErrorIfExists();
 
@@ -303,7 +342,10 @@ public class DetailsController implements IController {
             detail.params = params;
 
             String result = m_model.addDetail(detail);
-            if (result != null) JOptionPane.showMessageDialog(null, "Деталь добавлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+            if (result != null) {
+                JOptionPane.showMessageDialog(null, "Деталь добавлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+                w.setDetailId(result);
+            }
             else DialogUtility.showErrorIfExists();
         };
 
@@ -318,9 +360,7 @@ public class DetailsController implements IController {
             detail.id = current_id;
             ArrayList<DetailParameter> params = null;
 
-            if (in.getSelectedItem() == null) detail.name = "";
-            else detail.name = in.getSelectedItem().toString();
-
+            detail.name = in.getText();
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
 
@@ -381,6 +421,35 @@ public class DetailsController implements IController {
 
         /* Подгрузка детали с БД */
         ub.addAction(() -> update_action.run());
+
+        db.addAction(() -> {
+            String current_id = w.getDetailId();
+            if (current_id == null || current_id.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Выберите деталь для удаления", "Информация", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            if (w.isCreateMode() || w.isEditMode()) {
+                JOptionPane.showMessageDialog(null, "Нельзя удалять в режиме редактирования | создания", "Информация", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            if (!DialogUtility.showConfirmDialog()) {
+                return;
+            }
+
+            boolean result = m_model.deleteDetail(current_id);
+            if (result) {
+                w.setDetailId("");
+                in.setText("");
+                dn.setText("");
+                di.getTextArea().setText("");
+                w.getParametersPanel().removeItems();
+                w.getParametersPanel().updateGUI();
+                JOptionPane.showMessageDialog(null, "Деталь удалена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else DialogUtility.showErrorIfExists();
+        });
     }
 
     // ОКНО ТИПА ПАРАМЕТРОВ ДЕТАЛЕЙ

@@ -327,11 +327,17 @@ public class OrientDBDetailHandler {
             }
         }
 
+        // Создание детали
+        try { detail_element.save(); }
+        catch (Exception e) {
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            return null;
+        }
+
         try {
             OrientDBDriver.getInstance().getSession().begin();
             ArrayList<ORecordId> param_ids = new ArrayList<>();
-            // Создание детали
-            detail_element.save();
+
             detail.id = detail_element.getIdentity().toString();
 
             if (param_elements != null) {
@@ -359,31 +365,86 @@ public class OrientDBDetailHandler {
     }
 
     public boolean deleteDetail(String id) {
+        boolean result = false;
+
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
-            return false;
+            return result;
         }
 
-        boolean result = false;
-//        StringBuilder query = new StringBuilder();
-//        query.append("DELETE FROM ").append(C.detail_parameter_type.s());
-//        query.append(" WHERE @rid = ").append(id);
-//
-//        try {
-//            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
-//            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query.toString());
-//
-//            while (rs.hasNext()) {
-//                OResult item = rs.next();
-//                long count = item.getProperty(P.count.s());
-//                if (count > 0) result = true;
-//                break;
-//            }
-//        }
-//        catch (OException e) { OrientDBDriver.getInstance().setLastError(e.getMessage()); }
+        OElement detail_element = null;
+        try { detail_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(id)); }
+        catch (Exception e) {
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            return result;
+        }
 
+        try {
+            OrientDBDriver.getInstance().getSession().begin();
+
+            detail_element.setProperty(P.deleted.s(), true);
+            detail_element.save();
+            result = true;
+
+            OrientDBDriver.getInstance().getSession().commit();
+        }
+        catch (Exception e) {
+            OrientDBDriver.getInstance().getSession().rollback();
+            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            result = false;
+        }
         return result;
     }
+
+
+//    public boolean dropDetail(String id) {
+//        boolean result = false;
+//
+//        if (!OrientDBDriver.getInstance().isConnect()) {
+//            OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
+//            return result;
+//        }
+//
+//        OElement detail_element = null;
+//        try { detail_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(id)); }
+//        catch (Exception e) {
+//            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            return result;
+//        }
+//
+//        ORecordLazySet lazy_set = detail_element.getProperty(P.params.s());
+//        ArrayList<ORecordId> params_ids = null;
+//        if (lazy_set != null && !lazy_set.isEmpty()) {
+//            if (params_ids == null) params_ids = new ArrayList<>();
+//            Iterator<OIdentifiable> iterator = lazy_set.iterator();
+//            while (iterator.hasNext()) {
+//                OIdentifiable element = iterator.next();
+//                params_ids.add((ORecordId) element.getRecord().getIdentity());
+//            }
+//        }
+//
+//        try {
+//            OrientDBDriver.getInstance().getSession().begin();
+//
+//            if (params_ids != null) {
+//                for (ORecordId ri : params_ids) {
+//                    OrientDBDriver.getInstance().getSession().delete(new ORecordId(ri));
+//                }
+//            }
+//
+//            OrientDBDriver.getInstance().getSession().delete(detail_element.getIdentity());
+//            result = true;
+//
+//            OrientDBDriver.getInstance().getSession().commit();
+//        }
+//        catch (Exception e) {
+//            OrientDBDriver.getInstance().getSession().rollback();
+//            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            result = false;
+//        }
+//        return result;
+//    }
+
 
     public String updateDetail(Detail detail) {
         if (!OrientDBDriver.getInstance().isConnect()) {
@@ -426,21 +487,27 @@ public class OrientDBDetailHandler {
             }
         }
 
-        ArrayList<ORecordId> last_params_ids = detail_element.getProperty(P.parameters.s());
+        ORecordLazySet lazy_set = detail_element.getProperty(P.params.s());
+        ArrayList<ORecordId> last_params_ids = null;
+        if (lazy_set != null && !lazy_set.isEmpty()) {
+            if (last_params_ids == null) last_params_ids = new ArrayList<>();
+            Iterator<OIdentifiable> iterator = lazy_set.iterator();
+            while (iterator.hasNext()) {
+                OIdentifiable element = iterator.next();
+                last_params_ids.add((ORecordId) element.getRecord().getIdentity());
+            }
+        }
 
         try {
             OrientDBDriver.getInstance().getSession().begin();
 
-            // удаление предыдущих параметров
-            for (ORecordId ri : last_params_ids) {
-                OrientDBDriver.getInstance().getSession().delete(ri);
+            if (last_params_ids != null) {
+                for (ORecordId ri : last_params_ids) {
+                    OrientDBDriver.getInstance().getSession().delete(new ORecordId(ri));
+                }
             }
 
             ArrayList<ORecordId> param_ids = new ArrayList<>();
-
-            //            // Обновление детали
-//            detail_element.save();
-//            detail.id = detail_element.getIdentity().toString();
 
             if (new_param_elements != null) {
                 for (int i = 0; i < new_param_elements.size(); i++) {
@@ -452,9 +519,9 @@ public class OrientDBDetailHandler {
                     param_ids.add((ORecordId) p.getIdentity());
                 }
                 detail_element.setProperty(P.params.s(), param_ids);
-                // Обновление детали (добавление связи с параметрами)
-                detail_element.save();
             }
+            // Обновление детали (добавление связи с параметрами)
+            detail_element.save();
             result = detail.id;
             OrientDBDriver.getInstance().getSession().commit();
         }
@@ -474,7 +541,7 @@ public class OrientDBDetailHandler {
 
         ArrayList<Detail> result = new ArrayList<>();
 
-        String query = "SELECT * FROM ?";
+        String query = "SELECT * FROM ? WHERE detail = false OR deleted IS NULL";
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
             OrientDBDriver.getInstance().getSession().begin();
@@ -553,12 +620,16 @@ public class OrientDBDetailHandler {
         ArrayList<Detail> result = new ArrayList<>();
 
         String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
+//        SELECT FROM Detail WHERE SEARCH_CLASS('deleted:true && шт~ || шт* || *шт* || шт') = true;
 
+        // SELECT FROM Detail WHERE SEARCH_CLASS("~ || * || *sad* || sad) = true
+        //
         StringBuilder sb = new StringBuilder();
-        sb.append(request).append("~").append(" || ");
+        sb.append("(").append(request).append("~").append(" || ");
         sb.append(request).append("*").append(" || ");
         sb.append("*").append(request).append("*").append(" || ");
-        sb.append(request);
+        sb.append(request).append(") AND ");
+        sb.append("-").append(P.deleted.s()).append(":").append("true");
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
@@ -635,23 +706,32 @@ public class OrientDBDetailHandler {
             return null;
         }
 
-        Detail result = new Detail();
-        OElement detail = null;
+        Detail result = null;
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
             OrientDBDriver.getInstance().getSession().begin();
 
-            detail = OrientDBDriver.getInstance().getSession().load(new ORecordId(id));
-            result.id = detail.getProperty(P.rid.s()).toString();
-            result.name = detail.getProperty(P.name.s()).toString();
-            result.decimal_number = detail.getProperty(P.decimal_number.s());
-            result.description = detail.getProperty(P.description.s());
-            result.busy = detail.getProperty(P.busy.s());
-            result.user_busy = detail.getProperty(P.user_busy.s());
-            result.created_at = detail.getProperty(P.created_at.s()).toString();
-            result.updated_at = detail.getProperty(P.updated_at.s()).toString();
-            ORecordLazySet lazy_set = detail.getProperty(P.params.s());
+            ORecordLazySet lazy_set = null;
+
+            String query = "SELECT * FROM ? WHERE @rid = " + id + " AND (deleted = false OR deleted IS NULL)";
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(query, C.detail.s());
+            while (rs.hasNext()) {
+                if (result == null) result = new Detail();
+                OResult item = rs.next();
+                result.id = item.getProperty(P.rid.s()).toString();
+                result.name = item.getProperty(P.name.s()).toString();
+                result.decimal_number = item.getProperty(P.decimal_number.s());
+                result.description = item.getProperty(P.description.s());
+                result.busy = item.getProperty(P.busy.s());
+                result.user_busy = item.getProperty(P.user_busy.s());
+                result.created_at = item.getProperty(P.created_at.s()).toString();
+                result.updated_at = item.getProperty(P.updated_at.s()).toString();
+                lazy_set = item.getProperty(P.params.s());
+                break;
+            }
+
+            if (result == null) return result;
 
             if (depends && lazy_set != null && !lazy_set.isEmpty()) {
                 ArrayList<ORecordId> ids = new ArrayList<>();

@@ -2,6 +2,7 @@ package iplm.data.db;
 
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.db.*;
+import com.orientechnologies.orient.core.record.OElement;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import iplm.data.repository.detail.OrientDBDetailHandler;
@@ -93,6 +94,7 @@ public class OrientDBDriver {
             queries.add("CREATE PROPERTY Detail.decimal_number STRING");
             queries.add("CREATE PROPERTY Detail.description STRING");
             queries.add("CREATE PROPERTY Detail.busy BOOLEAN (MANDATORY TRUE)");
+            queries.add("CREATE PROPERTY Detail.deleted BOOLEAN");
             queries.add("CREATE PROPERTY Detail.created_at DATETIME (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY Detail.updated_at DATETIME");
             queries.add("CREATE PROPERTY Detail.busy_user LINK OUser");
@@ -112,13 +114,11 @@ public class OrientDBDriver {
             queries.add("CREATE PROPERTY DetailName.name STRING");
             queries.add("CREATE PROPERTY DetailParameter.type LINK DetailParameterType");
 
-//            CREATE INDEX addresses ON Employee (address) NOTUNIQUE METADATA {ignoreNullValues: true}
-
             queries.add("CREATE INDEX Detail.decimal_number ON Detail (decimal_number) UNIQUE METADATA { \"ignoreNullValues\": true }");
             queries.add("CREATE INDEX DetailName.name ON DetailName (name) UNIQUE");
             queries.add("CREATE INDEX DetailParameterType.name ON DetailParameterType (name) UNIQUE");
 
-            queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
+            queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description, deleted) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
 
 
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }
@@ -126,12 +126,80 @@ public class OrientDBDriver {
         }
         catch (OException e) {
 //            OrientDBDriver.getInstance().getSession().rollback();
-            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            OrientDBDriver.getInstance().setLastError(e.getMessage());
             System.out.println(e.getMessage());
             result = false;
         }
         return result;
     }
+
+    public boolean fillDetailNameData() {
+        boolean result = true;
+        try {
+            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+            OrientDBDriver.getInstance().getSession().begin();
+
+            ArrayList<String> detail_names = new ArrayList<>();
+            detail_names.add("Каркас");
+            detail_names.add("Прокладка");
+            detail_names.add("Шпилька");
+            detail_names.add("Планка");
+            detail_names.add("Скобка");
+            detail_names.add("Штырек");
+            detail_names.add("Корпус");
+            detail_names.add("Пластина");
+            detail_names.add("Шина");
+
+            for (String name : detail_names) {
+                OElement e = OrientDBDriver.getInstance().getSession().newElement("DetailName");
+                e.setProperty("name", name);
+                e.save();
+            }
+            OrientDBDriver.getInstance().getSession().commit();
+        }
+        catch (OException e) {
+            OrientDBDriver.getInstance().getSession().rollback();
+//            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            System.out.println(e.getMessage());
+            result = false;
+        }
+        return result;
+    }
+
+//    public boolean fillDetailParameterType() {
+//        boolean result = true;
+//        try {
+//            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+//            OrientDBDriver.getInstance().getSession().begin();
+//
+//            ArrayList<String> detail_names = new ArrayList<>();
+//            detail_names.add("Каркас");
+//            detail_names.add("Прокладка");
+//            detail_names.add("Шпилька");
+//            detail_names.add("Планка");
+//            detail_names.add("Скобка");
+//            detail_names.add("Штырек");
+//            detail_names.add("Корпус");
+//            detail_names.add("Пластина");
+//            detail_names.add("Шина");
+//
+//            for (String name : detail_names) {
+//                OElement e = OrientDBDriver.getInstance().getSession().newElement("DetailName");
+//                e.setProperty("name", name);
+//                e.save();
+//            }
+//            OrientDBDriver.getInstance().getSession().commit();
+//        }
+//        catch (OException e) {
+//            OrientDBDriver.getInstance().getSession().rollback();
+////            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            System.out.println(e.getMessage());
+//            result = false;
+//        }
+//        return result;
+//    }
+
+
     // CREATE CLASS Detail
 //    CREATE PROPERTY Detail.description STRING
 //    CREATE PROPERTY Detail.decimal_number STRING
