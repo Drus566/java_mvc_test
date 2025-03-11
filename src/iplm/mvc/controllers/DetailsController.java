@@ -102,6 +102,11 @@ public class DetailsController implements IController {
         AddButton adb = w.getAddDetailButton();
 
         adb.addAction(() -> {
+            if (dcw.isEditMode() || dcw.isCreateMode()) {
+                DialogUtility.showDialog("Информация", "Деталь уже в режиме создания | редакитрования", JOptionPane.INFORMATION_MESSAGE);
+                WindowsManager.getInstance().showWindow("DetailControlWindow");
+                return;
+            }
             WindowsManager.getInstance().showWindow("DetailControlWindow");
             dcw.setDetailId("");
             ni.setText("");
