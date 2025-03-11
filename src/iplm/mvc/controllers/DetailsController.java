@@ -19,8 +19,11 @@ import iplm.managers.WindowsManager;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
+import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class DetailsController implements IController {
@@ -256,6 +259,26 @@ public class DetailsController implements IController {
         DeleteButton db = w.getDeleteDetailBtn();
         ConfirmButton cb = w.getConfirmButton();
         CancelButton canb = w.getCancelButton();
+        DirectoryButton ddb = w.getDownloadDetailBtn();
+
+        ddb.addAction(() -> {
+            if (w.getDetailId() == null || w.getDetailId().isEmpty()) {
+                DialogUtility.showDialog("Информация","Выберите деталь для открытия папки детали", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            String detail_dir_path = dn.getText() + " - " + in.getText();
+            String details_dir = m_model.getDetailsPath();
+            if (details_dir != null && !details_dir.isEmpty()) {
+                Path details_dir_path = null;
+                try { details_dir_path = Paths.get(details_dir).resolve(detail_dir_path); }
+                catch (Exception e) {
+                    DialogUtility.showDialog("Информация","Некорректное наименование или децимальный номер детали", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                FilesystemUtility.openDir(details_dir_path.toAbsolutePath().toString());
+            }
+            else DialogUtility.showDialog("Информация","Папка деталей неизестна, установите папку деталей в окне Настройки деталей", JOptionPane.INFORMATION_MESSAGE);
+        });
 
         /* Подгрузка всех имен деталей при появлении окна */
         w.addVisibleAction(() -> {
