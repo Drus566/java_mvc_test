@@ -7,10 +7,16 @@ import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import iplm.data.repository.detail.OrientDBDetailHandler;
 import iplm.data.types.DetailName;
+import iplm.utility.DateTimeUtility;
 import iplm.utility.DialogUtility;
+import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OrientDBDriver {
     private static OrientDBDriver INSTANCE;
@@ -120,7 +126,6 @@ public class OrientDBDriver {
 
             queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description, deleted) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
 
-
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }
 //            OrientDBDriver.getInstance().getSession().commit();
         }
@@ -133,38 +138,102 @@ public class OrientDBDriver {
         return result;
     }
 
-    public boolean fillDetailNameData() {
-        boolean result = true;
-        try {
-            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
-            OrientDBDriver.getInstance().getSession().begin();
+    public boolean initDetailData() {
+        // Получение имен;
+        String details_path = "C:\\База\\Детали";
+        Set<String> uniq_names = new HashSet<>();
 
-            ArrayList<String> detail_names = new ArrayList<>();
-            detail_names.add("Каркас");
-            detail_names.add("Прокладка");
-            detail_names.add("Шпилька");
-            detail_names.add("Планка");
-            detail_names.add("Скобка");
-            detail_names.add("Штырек");
-            detail_names.add("Корпус");
-            detail_names.add("Пластина");
-            detail_names.add("Шина");
+        HashMap<String, String> fullname_map = new HashMap<>();
 
-            for (String name : detail_names) {
-                OElement e = OrientDBDriver.getInstance().getSession().newElement("DetailName");
-                e.setProperty("name", name);
-                e.save();
+        ArrayList<String> fullnames = FilesystemUtility.getAllDirsNamesInDir(details_path);
+        for (String f : fullnames) {
+            String[] parts = f.split(" - ");
+            if (parts != null && parts.length > 1) {
+                String decimal_number = parts[0].trim();
+                String name = parts[1].trim();
+
+                fullname_map.put(decimal_number, name);
+                uniq_names.add(name);
             }
-            OrientDBDriver.getInstance().getSession().commit();
         }
-        catch (OException e) {
-            OrientDBDriver.getInstance().getSession().rollback();
-//            OrientDBDriver.getInstance().setLastError(e.getMessage());
-            System.out.println(e.getMessage());
-            result = false;
+
+        if (!uniq_names.isEmpty()) {
+            try {
+                OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+                OrientDBDriver.getInstance().getSession().begin();
+
+                for (String name : uniq_names) {
+                    OElement e = OrientDBDriver.getInstance().getSession().newElement("DetailName");
+                    e.setProperty("name", name);
+                    e.save();
+                }
+                OrientDBDriver.getInstance().getSession().commit();
+            }
+            catch (OException e) {
+                OrientDBDriver.getInstance().getSession().rollback();
+                System.out.println(e.getMessage());
+                return false;
+            }
         }
-        return result;
+
+        if (!fullname_map.isEmpty()) {
+            try {
+                OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+
+                for (HashMap.Entry<String,String> entry : fullname_map.entrySet()) {
+                    OElement e = OrientDBDriver.getInstance().getSession().newElement("Detail");
+                    e.setProperty("busy", false);
+                    e.setProperty("busy_user", null);
+                    e.setProperty("created_at", DateTimeUtility.timestamp());
+                    e.setProperty("decimal_number", entry.getKey());
+                    e.setProperty("deleted", false);
+                    e.setProperty("description", "");
+                    e.setProperty("name", entry.getValue());
+                    e.setProperty("params", "");
+                    e.setProperty("updated_at", DateTimeUtility.timestamp());
+                    e.save();
+                }
+            }
+            catch (OException e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+        }
+        return true;
     }
+
+//    public boolean fillDetailNameData() {
+//        boolean result = true;
+//        try {
+//            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+//            OrientDBDriver.getInstance().getSession().begin();
+//
+//            ArrayList<String> detail_names = new ArrayList<>();
+//            detail_names.add("Каркас");
+//            detail_names.add("Прокладка");
+//            detail_names.add("Шпилька");
+//            detail_names.add("Планка");
+//            detail_names.add("Скобка");
+//            detail_names.add("Штырек");
+//            detail_names.add("Корпус");
+//            detail_names.add("Пластина");
+//            detail_names.add("Шина");
+//
+//            for (String name : detail_names) {
+//                OElement e = OrientDBDriver.getInstance().getSession().newElement("DetailName");
+//                e.setProperty("name", name);
+//                e.save();
+//            }
+//            OrientDBDriver.getInstance().getSession().commit();
+//        }
+//        catch (OException e) {
+//            OrientDBDriver.getInstance().getSession().rollback();
+////            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            System.out.println(e.getMessage());
+//            result = false;
+//        }
+//        return result;
+//    }
 
 //    public boolean fillDetailParameterType() {
 //        boolean result = true;

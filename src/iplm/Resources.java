@@ -1,7 +1,7 @@
 package iplm;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import iplm.utility.FileUtility;
+import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public class Resources {
     }
 
     private void loadIcons() {
-        List<Path> result = FileUtility.getFilesPaths(Application.RESOURCES_ICONS);
+        List<Path> result = FilesystemUtility.getFilesPaths(Application.RESOURCES_ICONS);
         if (result != null && result.size() > 0) {
             for (int i = 0; i < result.size(); i++) {
                 Path path = result.get(i);

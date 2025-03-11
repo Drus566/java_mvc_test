@@ -35,8 +35,13 @@ public class DetailControlWindow extends AWindow {
     }
 
     private String m_detail_id;
+    private String m_detail_id_last;
     public void setDetailId(String id) { m_detail_id = id; }
     public String getDetailId() { return m_detail_id; }
+
+    public void setDetailIdLast(String id) { m_detail_id_last = id; }
+    public String getDetailIdLast() { return m_detail_id_last; }
+
 
     private ArrayList<DetailParameterType> m_detail_parameter_type_list;
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_detail_parameter_type_list; }
@@ -172,7 +177,6 @@ public class DetailControlWindow extends AWindow {
         m_detail_control_btn_panel.addPanel(write_mode_panel, SwitchPanels.WRITE_MODE.s());
 
         m_add_detail_btn.addAction(() -> doCreateMode());
-        m_edit_detail_btn.addAction(() -> doEditMode());
         m_cancel_btn.addAction(() -> {
             m_parameters_panel.fillLastItems();
             fillLast();
@@ -264,10 +268,10 @@ public class DetailControlWindow extends AWindow {
         int input_area_height = 80;
 
         m_panel.add(m_top_panel, "alignx center, aligny bottom, push, wrap");
-        m_panel.add(m_detail_name_panel, "al center, width " + label_width + ", split 2");
-        m_panel.add(m_detail_name_input, "id input_name, width " +  input_width + ", wrap");
-        m_panel.add(m_detail_decimal_number_label, "al center, width " + label_width + ", split 2");
-        m_panel.add(m_detail_decimal_number_input, "width " +  input_width + ", wrap");
+        m_panel.add(m_detail_name_panel, "al center, width " + label_width + "!, split 2");
+        m_panel.add(m_detail_name_input, "id input_name, width " +  input_width + "!, wrap");
+        m_panel.add(m_detail_decimal_number_label, "al center, width " + label_width + "!, split 2");
+        m_panel.add(m_detail_decimal_number_input, "width " +  input_width + "!, wrap");
         m_panel.add(m_detail_describe_label, "al center, gap top 10, wrap");
         m_panel.add(m_detail_description_input, "al center, width " + input_area_width + ", height " + input_area_height + "!, wrap");
         m_panel.add(m_detail_parameter_control_panel, "al center, wrap");

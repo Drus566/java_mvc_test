@@ -17,7 +17,7 @@ public class DefaultComboBox extends JComboBox<String> {
 
     public void setText(String text) {
         boolean found = false;
-        for (int i = 0; i < this.getComponentCount(); i++) {
+        for (int i = 0; i < this.getItemCount(); i++) {
             if (text.equalsIgnoreCase(getItemAt(i))) {
                 found = true;
                 setSelectedIndex(i);

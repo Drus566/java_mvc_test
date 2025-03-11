@@ -2,10 +2,7 @@ package iplm.mvc.builder;
 
 import iplm.mvc.builder.component.ViewComponent;
 import iplm.mvc.views.*;
-import iplm.mvc.views.detail.DetailControlView;
-import iplm.mvc.views.detail.DetailNameControlView;
-import iplm.mvc.views.detail.DetailParameterTypeControlView;
-import iplm.mvc.views.detail.DetailsView;
+import iplm.mvc.views.detail.*;
 
 public class ViewBuilder {
     public IView build(ViewComponent component) {
@@ -24,6 +21,10 @@ public class ViewBuilder {
         }
         else if (component == ViewComponent.DetailParameterTypeControlView) {
             result = new DetailParameterTypeControlView();
+            if (component.isInit()) result.init();
+        }
+        else if (component == ViewComponent.DetailSettingsView) {
+            result = new DetailSettingsView();
             if (component.isInit()) result.init();
         }
         return result;

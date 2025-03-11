@@ -121,7 +121,6 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     private void buildAddDetailButton() {
         m_add_detail_button = new AddButton();
         m_add_detail_button.setToolTipText("Добавить деталь");
-        m_add_detail_button.addAction(() -> WindowsManager.getInstance().showWindow("DetailControlWindow"));
     }
 
     private void buildUpdateButton() {
@@ -155,7 +154,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m1.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailParameterTypeControlWindow"));
         m2.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailNameControlWindow"));
         m3.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailControlWindow"));
-//        m4.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailParameterTypeControlWindow"));
+        m4.addActionListener(e -> WindowsManager.getInstance().showWindow("DetailSettingsWindow"));
 
         exit.addActionListener(e -> System.exit(0));
         m_menu_bar.add(menu);

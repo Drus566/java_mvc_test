@@ -16,8 +16,7 @@ public class DetailSettingsView implements IView {
     public void init() {
         if (m_detail_settings_window == null) {
             m_detail_settings_window = new DetailSettingsWindow();
-//            WindowsManager.getInstance().addWindow(m_detail_settings_window);
+            WindowsManager.getInstance().addWindow(m_detail_settings_window);
         }
     }
-
 }

@@ -24,7 +24,7 @@ public class JsonUtility {
 
     public static <T> T fromJson(String file_path, Type type) {
         T result = null;
-        if (!FileUtility.isFileExists(file_path)) {
+        if (!FilesystemUtility.isFileExists(file_path)) {
             System.out.println("File not found " + file_path);
             return result;
         }

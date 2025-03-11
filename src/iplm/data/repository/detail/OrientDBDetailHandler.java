@@ -541,7 +541,7 @@ public class OrientDBDetailHandler {
 
         ArrayList<Detail> result = new ArrayList<>();
 
-        String query = "SELECT * FROM ? WHERE detail = false OR deleted IS NULL";
+        String query = "SELECT * FROM ? WHERE deleted = false OR deleted IS NULL";
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
             OrientDBDriver.getInstance().getSession().begin();
@@ -621,21 +621,30 @@ public class OrientDBDetailHandler {
 
         String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
 //        SELECT FROM Detail WHERE SEARCH_CLASS('deleted:true && шт~ || шт* || *шт* || шт') = true;
+//        SELECT FROM Detail WHERE SEARCH_CLASS('(шина~ || шина* || *шина* || шина) AND -deleted:true', {
+//                "sort": [ { 'field': 'name', reverse:true, type:'STRING' }]
+//}) = true;
+//
 
+//        String q = "SELECT FROM Detail WHERE SEARCH_CLASS('(шина~ || шина* || *шина* || шина) AND -deleted:true', { \"sort\": [ { 'field': 'name', reverse:true, type:'STRING' }]}) = true;";
         // SELECT FROM Detail WHERE SEARCH_CLASS("~ || * || *sad* || sad) = true
         //
         StringBuilder sb = new StringBuilder();
-        sb.append("(").append(request).append("~").append(" || ");
+        sb.append("SELECT FROM Detail WHERE SEARCH_CLASS(");
+        sb.append("'(");
+        sb.append(request).append(" || ");
         sb.append(request).append("*").append(" || ");
         sb.append("*").append(request).append("*").append(" || ");
-        sb.append(request).append(") AND ");
-        sb.append("-").append(P.deleted.s()).append(":").append("true");
+        sb.append(request).append("~");
+        sb.append(") AND -").append(P.deleted.s()).append(":").append("true'");
+        sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
+        sb.append(") = true;");
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
             OrientDBDriver.getInstance().getSession().begin();
 
-            OResultSet rs = OrientDBDriver.getInstance().getSession().query(query, sb.toString());
+            OResultSet rs = OrientDBDriver.getInstance().getSession().command(sb.toString());
 
             while (rs.hasNext()) {
                 OResult item = rs.next();

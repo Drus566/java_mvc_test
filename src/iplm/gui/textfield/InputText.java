@@ -13,6 +13,9 @@ public class InputText extends JTextField {
     private ArrayList<Runnable> m_tap_actions;
     private ArrayList<Runnable> m_press_actions;
 
+    public void addPresAction(Runnable r) { m_press_actions.add(r); }
+    public void addTapAction(Runnable r) { m_tap_actions.add(r); }
+
     public InputText() {
         m_tap_actions = new ArrayList<>();
         m_press_actions = new ArrayList<>();
@@ -49,5 +52,4 @@ public class InputText extends JTextField {
             }
         });
     }
-
 }

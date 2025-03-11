@@ -14,15 +14,10 @@ import iplm.gui.table.DefaultTable;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
 import iplm.gui.textfield.SearchBar;
-import iplm.gui.window.detail.DetailControlWindow;
-import iplm.gui.window.detail.DetailNameControlWindow;
-import iplm.gui.window.detail.DetailParameterTypeControlWindow;
-import iplm.gui.window.detail.DetailsWindow;
+import iplm.gui.window.detail.*;
+import iplm.managers.WindowsManager;
 import iplm.mvc.models.DetailModel;
-import iplm.mvc.views.detail.DetailControlView;
-import iplm.mvc.views.detail.DetailNameControlView;
-import iplm.mvc.views.detail.DetailParameterTypeControlView;
-import iplm.mvc.views.detail.DetailsView;
+import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 
 import javax.swing.*;
@@ -34,23 +29,57 @@ public class DetailsController implements IController {
     private final DetailControlView m_detail_control_view;
     private final DetailNameControlView m_detail_name_control_view;
     private final DetailParameterTypeControlView m_detail_parameter_type_control_view;
+    private final DetailSettingsView m_detail_settings_view;
 
     public DetailsController(DetailModel model,
                              DetailsView detail_view,
                              DetailControlView detail_control_view,
                              DetailNameControlView detail_name_control_view,
-                             DetailParameterTypeControlView detail_parameter_type_control_view) {
+                             DetailParameterTypeControlView detail_parameter_type_control_view,
+                             DetailSettingsView detail_settings_view) {
         m_model = model;
         m_details_view = detail_view;
         m_detail_control_view = detail_control_view;
         m_detail_name_control_view = detail_name_control_view;
         m_detail_parameter_type_control_view = detail_parameter_type_control_view;
+        m_detail_settings_view = detail_settings_view;
+    }
 
-        bindActions();
-        bindDetailsWindowActions();
-        bindDetailNameControlActions();
-        bindDetailControlWindowActions();
-        bindDetailParameterTypeControl();
+    // ОКНО НАСТРОЕК ДЕТАЛЕЙ
+    private void bindDetailSettingsActions() {
+        DetailSettingsWindow w = m_detail_settings_view.getDetailSettingsWindow();
+        DirectoryButton db = w.getOpenDirButton();
+        DirectoryButton sdb = w.getSelectDirButton();
+        SearchButton sb = w.getSearchButton();
+        InputText sdpf = w.getSelectDirPathField();
+        JFileChooser fc = w.getSelectDirPanel();
+
+        db.addAction(() -> m_model.openDetailDir());
+
+
+        sb.addAction(() -> {
+            if (m_model.scanDetailDir()) {
+                sdpf.setText(m_model.getDetailsPath());
+                DialogUtility.showDialog("Успешно", "Директория найдена: " + sdpf.getText(), JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        sdb.addAction(() -> {
+            fc.setDialogTitle("Выбор директории");
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fc.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) JOptionPane.showMessageDialog(null, fc.getSelectedFile());
+        });
+
+        sdpf.addPresAction(() -> {
+            String path = sdpf.getText().trim();
+            if (path.isEmpty()) {
+                sdpf.setText("Путь к папке с деталями...");
+                return;
+            }
+            m_model.setDetailsPath(path);
+            DialogUtility.showDialog("Успешно", "Установлен путь к папки детали", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     // ОКНО ДЕТАЛЕЙ
@@ -66,6 +95,18 @@ public class DetailsController implements IController {
         InputText dni = dcw.getDecimalNumberInput();
         InputTextArea di = dcw.getDescriptionInput();
         ItemListPanel pp = dcw.getParametersPanel();
+
+        AddButton adb = w.getAddDetailButton();
+
+        adb.addAction(() -> {
+            WindowsManager.getInstance().showWindow("DetailControlWindow");
+            dcw.setDetailId("");
+            ni.setText("");
+            dni.setText("");
+            di.getTextArea().setText("");
+            pp.removeItems();
+            pp.updateGUI();
+        });
 
         sb.addTapAction(() -> {
             // Максимальное количество для отображения из БД
@@ -282,8 +323,6 @@ public class DetailsController implements IController {
 
         /* Добавление детали */
         Runnable add_action = () -> {
-            w.setDetailId("");
-
             Detail detail = new Detail();
             ArrayList<DetailParameter> params = null;
 
@@ -422,6 +461,7 @@ public class DetailsController implements IController {
         /* Подгрузка детали с БД */
         ub.addAction(() -> update_action.run());
 
+        /* Удаление детали */
         db.addAction(() -> {
             String current_id = w.getDetailId();
             if (current_id == null || current_id.isEmpty()) {
@@ -450,10 +490,20 @@ public class DetailsController implements IController {
             }
             else DialogUtility.showErrorIfExists();
         });
+
+        /* Кнопка редактировать */
+        eb.addAction(() -> {
+            String current_id = w.getDetailId();
+            if (current_id == null || current_id.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Выберите деталь для редактирования", "Информация", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            w.doEditMode();
+        });
     }
 
     // ОКНО ТИПА ПАРАМЕТРОВ ДЕТАЛЕЙ
-    private void bindDetailParameterTypeControl() {
+    private void bindDetailParameterTypeControlActions() {
         DetailParameterTypeControlWindow w = m_detail_parameter_type_control_view.getDetailNameControlWindow();
         UpdateButton ub = w.getUpdateButton();
         AddButton ab = w.getAddButton();
@@ -657,269 +707,12 @@ public class DetailsController implements IController {
         });
     }
 
-    public void getAll() {
-        /*
-        m_table_btn.addAction(
-            data = m_model.getALL();
-            m_table.fill(data);
-        )
-         */
-    }
-
-    public void bindActions() {
-//        m_details_view.getDetailsWindow().getSearchBar().addTapAction(() -> {
-//            SearchBar sb = m_details_view.getDetailsWindow().getSearchBar();
-//            SearchPanel sp = m_details_view.getDetailsWindow().getSearchPanel();
-//
-//            String search_text = sb.getSearchText();
-//            int MAX_TEXT_LENGTH = 100;
-//            if (search_text.length() > MAX_TEXT_LENGTH) return;
-//
-//            sp.removeLines();
-//
-//            /* Find in db */
-//            int MAX_COUNT = 5;
-//
-//            if (!search_text.isEmpty()) {
-//                ArrayList<Detail> details = m_model.get(search_text);
-//                if (details != null) {
-//                    for (Detail d : details) {
-//                        if (MAX_COUNT <= 0) break;
-//
-//                        sp.addActualLine(d.id, d.decimal_number + "  " + d.name + "  " + d.description, () -> {
-//                            DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
-//                            if (!dcw.isCreateMode()) {
-//                                Detail detail = m_model.getById(d.id);
-//                                sp.setVisible(false);
-//                                if (detail != null)  {
-////                                    dcw.m_detail_id = detail.id;
-////                                    dcw.m_name.setText(detail.name);
-////                                    dcw.m_decimal_name.setText(detail.decimal_number);
-////                                    dcw.m_description.setText(detail.description);
-//
-//                                    dcw.clearDetailParameterPanels();
-//
-//                                    for (DetailParameter dp : detail.params) {
-//                                        dcw.addParameter(dp.name,(String)dp.value);
-//                                    }
-//                                }
-//                            }
-//                            dcw.doNormalMode();
-//                            dcw.show();
-//                        });
-//
-//                        --MAX_COUNT;
-//                    }
-//                }
-//
-//                /* Find in cache */
-//                ArrayList<RequestHistory> request_history = StorageHistory.getInstance().search(StorageHistoryType.DETAILS, search_text);
-//                if (request_history != null) {
-//                    for (int i = 0; i < request_history.size(); i++) {
-//                        RequestHistory rh = request_history.get(i);
-//                        sp.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, m_details_view.getDetailsWindow());
-//                    }
-//                }
-//            }
-//            sp.updateLines();
-//            sp.updateSize(sb.getWidth());
-//        });
-//
-//        m_details_view.getDetailsWindow().getSearchBar().addEnterButtonAction(() -> {
-//            SearchBar sb = m_details_view.getDetailsWindow().getSearchBar();
-//            DefaultTable t = m_details_view.getDetailsWindow().getTable();
-//
-//            String search_text = sb.getSearchText();
-//
-//            ArrayList<Detail> details = null;
-//
-//            if (!search_text.isEmpty()) details = m_model.get(search_text);
-//            else details = m_model.getAll();
-//
-//            if (details != null) {
-//                t.clear();
-//                for (Detail d : details) {
-//                    ArrayList<String> args = new ArrayList<>();
-//                    args.add(d.id);
-//                    args.add(d.decimal_number);
-//                    args.add(d.name);
-//                    args.add(d.description);
-//                    t.addLine(args);
-//                }
-//            }
-//        });
-//
-//        m_details_view.getDetailsWindow().getUpdateButton().addAction(() -> {
-//            SearchBar sb = m_details_view.getDetailsWindow().getSearchBar();
-//            DefaultTable t = m_details_view.getDetailsWindow().getTable();
-//
-//            String search_text = sb.getSearchText();
-//
-//            ArrayList<Detail> details = null;
-//
-//            if (!search_text.isEmpty()) details = m_model.get(sb.getLastRequest());
-//            else details = m_model.getAll();
-//
-//            if (details != null) {
-//                t.clear();
-//                for (Detail d : details) {
-//                    ArrayList<String> args = new ArrayList<>();
-//                    args.add(d.id);
-//                    args.add(d.decimal_number);
-//                    args.add(d.name);
-//                    args.add(d.description);
-//                    t.addLine(args);
-//                }
-//            }
-//        });
-//
-//        /* Открыть окно создания детали */
-//        m_details_view.getDetailsWindow().getAddDetailButton().addAction(() -> {
-//            //            WindowsManager.getInstance().showWindow(m_detail_control_view.getDetailControlWindow().getName());
-//            DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
-//            dcw.doCreateMode();
-//            dcw.show();
-//        });
-//
-//        /* Создать деталь */
-//        DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
-//        JButton create_button = dcw.getCreateButton();
-//        create_button.addActionListener(e -> {
-//            if (!dcw.isCreateMode()) return;
-//
-//            Detail detail = new Detail();
-//            detail.name = dcw.m_name.getText().trim();
-//            detail.decimal_number = dcw.m_decimal_name.getText().trim();
-//            detail.description = dcw.m_description.getText().trim();
-//            detail.created_at = DateTimeUtility.timestamp();
-////            detail.updated_at = DateTimeUtility.timestamp();
-//
-//            for (DetailParameterPanel dpp : dcw.m_detail_parameters) {
-//                DetailParameter dp = new DetailParameter();
-//                dp.busy = false;
-//                dp.custom_val = false;
-//                dp.deleted = false;
-//                dp.name = dpp.getKey();
-//                dp.enumeration = false;
-//                dp.type = DetailParameter.Type.STRING.s();
-//                dp.value = dpp.getValue();
-//                detail.params.add(dp);
-//            }
-//            String result = m_model.add(detail);
-//            if (result == null || result.isEmpty()) {
-//                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                dcw.m_detail_id = result;
-//            }
-//            else JOptionPane.showMessageDialog(null, "Успешно");
-//        });
-//
-//        dcw.getRemoveButton().addActionListener(e -> {
-//            if (dcw.isCreateMode() || dcw.isEditMode()) return;
-//            String rid = dcw.m_detail_id;
-//            if (rid == null || rid.isEmpty()) {
-//                JOptionPane.showMessageDialog(null, "Выберите деталь для удаления");
-//                return;
-//            }
-//
-//            String result = m_model.delete(rid);
-//            if (result != null && !result.isEmpty()) {
-//                dcw.m_decimal_name.setText("");
-//                dcw.m_name.setText("");
-//
-//                JPanel dcw_panel = dcw.getPanel();
-//                for (DetailParameterPanel dpp : dcw.m_detail_parameters) {
-//                    dcw_panel.remove(dpp);
-//                    dcw_panel.revalidate();
-//                    dcw_panel.repaint();
-//                }
-//                dcw.m_detail_parameters.clear();
-//                JOptionPane.showMessageDialog(null, "Успешно");
-//                dcw.m_detail_id = "";
-//            }
-//            else JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//
-//        });
-//
-//        dcw.getEditButton().addActionListener(e -> {
-//            if (!dcw.isEditMode()) return;
-//
-//            Detail detail = new Detail();
-//            detail.id = dcw.m_detail_id;
-//            detail.name = dcw.m_name.getText().trim();
-//            detail.decimal_number = dcw.m_decimal_name.getText().trim();
-//            detail.description = dcw.m_description.getText().trim();
-//            detail.created_at = DateTimeUtility.timestamp();
-////            detail.updated_at = DateTimeUtility.timestamp();
-//
-//            for (DetailParameterPanel dpp : dcw.m_detail_parameters) {
-//                DetailParameter dp = new DetailParameter();
-//                dp.busy = false;
-//                dp.custom_val = false;
-//                dp.deleted = false;
-//                dp.name = dpp.getKey();
-//                dp.enumeration = false;
-//                dp.type = DetailParameter.Type.STRING.s();
-//                dp.value = dpp.getValue();
-//                detail.params.add(dp);
-//            }
-//            String result = m_model.update(detail);
-//            if (result == null || result.isEmpty()) {
-//                JOptionPane.showMessageDialog(null, OrientDBDriver.getInstance().getLastError(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-//                dcw.m_detail_id = result;
-//            }
-//            else {
-//                JOptionPane.showMessageDialog(null, "Успешно");
-//                Runnable rebuild_index_action = () -> {
-//                    boolean result1 = m_model.rebuildIndex();
-//                    if (result1) JOptionPane.showMessageDialog(null, "Индекс успешно обновлен");
-//                    else JOptionPane.showMessageDialog(null, "Ошибка перестроения индекса");
-//                };
-//                Thread rebuild_index = new Thread(rebuild_index_action);
-//                rebuild_index.start();
-//            }
-//        });
-//
-//
-//        m_details_view.getDetailsWindow().getTable().addDoubleClickAction(new Runnable() {
-//            @Override
-//            public void run() {
-////                System.out.println("DOUBLE CLICK");
-//
-//                DetailControlWindow dcw = m_detail_control_view.getDetailControlWindow();
-//                if (!dcw.isCreateMode()) {
-//                    Detail detail = m_model.getById(m_details_view.getDetailsWindow().getTable().getStringFromSelectedRowColumn(0));
-//                    if (detail != null)  {
-//                        dcw.m_detail_id = detail.id;
-//                        dcw.m_name.setText(detail.name);
-//                        dcw.m_decimal_name.setText(detail.decimal_number);
-//                        dcw.m_description.setText(detail.description);
-//
-//                        dcw.clearDetailParameterPanels();
-//
-//                        for (DetailParameter dp : detail.params) {
-//                            dcw.addParameter(dp.name,(String)dp.value);
-//                        }
-//                    }
-//                }
-//                dcw.doNormalMode();
-//                dcw.show();
-//
-//            }
-//        });
-
-    }
-
-
-    public void show() {
-
-    }
-
-    public void create() {
-
-    }
-
     @Override
     public void init() {
-
+        bindDetailsWindowActions();
+        bindDetailNameControlActions();
+        bindDetailControlWindowActions();
+        bindDetailParameterTypeControlActions();
+        bindDetailSettingsActions();
     }
 }

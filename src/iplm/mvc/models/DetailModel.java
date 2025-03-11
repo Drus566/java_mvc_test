@@ -7,13 +7,49 @@ import iplm.data.types.DetailParameterType;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
 import iplm.data.service.DetailService;
+import iplm.utility.DialogUtility;
+import iplm.utility.FilesystemUtility;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailModel implements IModel, IObservable<Detail> {
     private List<IObserver<Detail>> m_observers = new ArrayList<>();
     private DetailService m_service;
+    private String m_details_path;
+    private final String m_svn_repo_path = "База";
+    private final String m_detail_name_path = "Детали";
+
+    public void setDetailsPath(String path) { m_details_path = path; }
+    public String getDetailsPath() { return m_details_path; }
+
+    public boolean openDetailDir() {
+        if (m_details_path == null || m_details_path.isEmpty()) {
+            DialogUtility.showErrorDialog("Путь к детали не указан");
+            return false;
+        }
+        FilesystemUtility.openDir(getDetailsPath());
+        return true;
+    }
+
+    public boolean scanDetailDir() {
+        ArrayList<Path> roots = FilesystemUtility.getRootDirs();
+        for (Path r : roots) {
+            r = r.resolve(Paths.get(m_svn_repo_path));
+            r = r.resolve(Paths.get(m_detail_name_path));
+
+            String path = r.toAbsolutePath().toString();
+            if (FilesystemUtility.isDirExists(path)) {
+                setDetailsPath(path);
+//                System.out.println(FilesystemUtility.getAllDirsNamesInDir(getDetailsPath()));
+//                System.out.println(FilesystemUtility.getAllDirsNamesInDir(getDetailsPath()).get(0));
+                return true;
+            }
+        }
+        return false;
+    }
 
     public DetailModel() { m_service = new DetailService(RepositoryType.ORIENTDB); }
 

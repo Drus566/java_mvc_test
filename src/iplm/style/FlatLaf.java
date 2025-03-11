@@ -51,6 +51,31 @@ public class FlatLaf {
         UIManager.put("OptionPane.noButtonText", "Нет");
         UIManager.put("OptionPane.cancelButtonText", "Отмена");
         UIManager.put("OptionPane.okButtonText", "Готово");
+
+//        UIManager.put("FileChooser.saveButtonText", "Сохранить");
+//        UIManager.put("FileChooser.cancelButtonText", "Отмена");
+//        UIManager.put("FileChooser.fileNameLabelText", "Наименование файла");
+//        UIManager.put("FileChooser.filesOfTypeLabelText", "Типы файлов");
+//        UIManager.put("FileChooser.lookInLabelText", "Директория");
+//        UIManager.put("FileChooser.saveInLabelText", "Сохранить в директории");
+//        UIManager.put("FileChooser.folderNameLabelText", "Путь директории");
+
+        UIManager.getDefaults().put("FileChooser.lookInLabelText", "Директория");
+        UIManager.getDefaults().put("FileChooser.openButtonText", "Выбрать");
+        UIManager.getDefaults().put("FileChooser.cancelButtonText", "Отмена");
+        UIManager.getDefaults().put("FileChooser.fileNameLabelText", "Путь к файлу");
+        UIManager.getDefaults().put("FileChooser.filesOfTypeLabelText", "Формат");
+        UIManager.getDefaults().put("FileChooser.upFolderToolTipText", "Вверх");
+        UIManager.getDefaults().put("FileChooser.homeFolderToolTipText", "Домашняя папка");
+        UIManager.getDefaults().put("FileChooser.newFolderToolTipText", "Создать папку");
+        UIManager.getDefaults().put("FileChooser.listViewButtonToolTipText", "Список");
+        UIManager.getDefaults().put("FileChooser.detailsViewButtonToolTipText", "Плитка");
+//        UIManager.getDefaults().put("FileChooser.fileNameHeaderText", "fileNameHeaderText");
+//        UIManager.getDefaults().put("FileChooser.fileSizeHeaderText", "fileSizeHeaderText");
+//        UIManager.getDefaults().put("FileChooser.fileTypeHeaderText", "fileTypeHeaderText");
+//        UIManager.getDefaults().put("FileChooser.fileDateHeaderText", "fileDateHeaderText");
+        UIManager.getDefaults().put("FileChooser.folderNameLabelText", "Путь к директории");
+
         UIManager.put("TitlePane.centerTitle", true);
 
         // remember active look and feel
