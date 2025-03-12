@@ -5,7 +5,7 @@ import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.combobox.DefaultComboBox;
+import iplm.gui.combobox.StringComboBox;
 import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.panel.item_list_panel.IItem;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
@@ -13,6 +13,7 @@ import iplm.gui.panel.search_panel.SearchPanel;
 import iplm.gui.table.DefaultTable;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
+import iplm.gui.textfield.RowSelectionList;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.detail.*;
 import iplm.managers.WindowsManager;
@@ -25,6 +26,7 @@ import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class DetailsController implements IController {
     private final DetailModel m_model;
@@ -94,7 +96,7 @@ public class DetailsController implements IController {
         SearchBar sb = w.getSearchBar();
         DefaultTable t = w.getTable();
 
-        DefaultComboBox ni = dcw.getNameInput();
+        RowSelectionList ni = dcw.getNameInput();
         InputText dni = dcw.getDecimalNumberInput();
         InputTextArea di = dcw.getDescriptionInput();
         ItemListPanel pp = dcw.getParametersPanel();
@@ -109,7 +111,7 @@ public class DetailsController implements IController {
             }
             WindowsManager.getInstance().showWindow("DetailControlWindow");
             dcw.setDetailId("");
-            ni.setText("");
+            ni.setValue("");
             dni.setText("");
             di.getTextArea().setText("");
             pp.removeItems();
@@ -147,7 +149,7 @@ public class DetailsController implements IController {
                                 sp.setVisible(false);
                                 Detail detail = m_model.getDetailByIDWithDepends(d.id);
                                 if (detail != null)  {
-                                    ni.setText(detail.name);
+                                    ni.setValue(detail.name);
                                     dni.setText(detail.decimal_number);
                                     di.getTextArea().setText(detail.description);
 
@@ -226,7 +228,7 @@ public class DetailsController implements IController {
                 sp.setVisible(false);
                 Detail detail = m_model.getDetailByIDWithDepends(id);
                 if (detail != null)  {
-                    ni.setText(detail.name);
+                    ni.setValue(detail.name);
                     dni.setText(detail.decimal_number);
                     di.getTextArea().setText(detail.description);
 
@@ -254,7 +256,7 @@ public class DetailsController implements IController {
     // ОКНО УПРАВЛЕНИЯ ДЕТАЛЬЮ
     private void bindDetailControlWindowActions() {
         DetailControlWindow w = m_detail_control_view.getDetailControlWindow();
-        DefaultComboBox in = w.getNameInput();
+        RowSelectionList ni = w.getNameInput();
         InputText dn = w.getDecimalNumberInput();
         InputTextArea di = w.getDescriptionInput();
 
@@ -271,7 +273,7 @@ public class DetailsController implements IController {
                 DialogUtility.showDialog("Информация","Выберите деталь для открытия папки детали", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-            String detail_dir_path = dn.getText() + " - " + in.getText();
+            String detail_dir_path = dn.getText() + " - " + ni.getValue();
             String details_dir = m_model.getDetailsPath();
             if (details_dir != null && !details_dir.isEmpty()) {
                 Path details_dir_path = null;
@@ -289,16 +291,10 @@ public class DetailsController implements IController {
         w.addVisibleAction(() -> {
             ArrayList<DetailName> result = m_model.getDetailNames();
             if (result != null) {
-                String current_text = in.getText();
-                in.removeAllItems();
-                for (DetailName t_dn : result) {
-                    in.addItem(t_dn.name);
-                }
-                if (!current_text.isEmpty()) in.setText(current_text);
+                ArrayList<String> names = (ArrayList<String>) result.stream().map(DetailName::getName).collect(Collectors.toList());
+                ni.updateData(names);
             }
             else DialogUtility.showErrorIfExists();
-
-//            if (!w.isCreateMode() && !w.isEditMode()) w.doReadMode();
         });
 
         /* Подгрузка всех типов параметров деталей при появлении окна */
@@ -322,12 +318,8 @@ public class DetailsController implements IController {
             /* Подгрузка всех имен деталей */
             ArrayList<DetailName> detail_names_list = m_model.getDetailNames();
             if (detail_names_list != null) {
-                String current_text = in.getText();
-                in.removeAllItems();
-                for (DetailName t_dn : detail_names_list) {
-                    in.addItem(t_dn.name);
-                }
-                if (!current_text.isEmpty()) in.setText(current_text);
+                ArrayList<String> names = (ArrayList<String>) detail_names_list.stream().map(DetailName::getName).collect(Collectors.toList());
+                ni.updateData(names);
             }
             else DialogUtility.showErrorIfExists();
 
@@ -354,8 +346,7 @@ public class DetailsController implements IController {
             Detail detail = new Detail();
             ArrayList<DetailParameter> params = null;
 
-            if (in.getSelectedItem() == null) detail.name = "";
-            else detail.name = in.getSelectedItem().toString();
+            detail.name = ni.getValue();
 
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
@@ -427,7 +418,7 @@ public class DetailsController implements IController {
             detail.id = current_id;
             ArrayList<DetailParameter> params = null;
 
-            detail.name = in.getText();
+            detail.name = ni.getValue();
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
 
@@ -509,7 +500,7 @@ public class DetailsController implements IController {
             boolean result = m_model.deleteDetail(current_id);
             if (result) {
                 w.setDetailId("");
-                in.setText("");
+                ni.setValue("");
                 dn.setText("");
                 di.getTextArea().setText("");
                 w.getParametersPanel().removeItems();

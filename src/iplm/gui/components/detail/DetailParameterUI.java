@@ -4,11 +4,13 @@ import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.panel.item_list_panel.items.ComboBoxInputItem;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class DetailParameterUI extends ComboBoxInputItem {
     private ArrayList<DetailParameterType> detail_parameter_type_list;
     private DetailParameterType current_type;
+    private JTextField current_text_input;
 
     public DetailParameterType getCurrentType() { return current_type; }
 

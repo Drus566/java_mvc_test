@@ -35,6 +35,7 @@ public class ComboBoxInput extends JPanel {
 
     public void setEditable(boolean flag) {
         m_name.setEnabled(flag);
+        m_name.setEditable(flag);
         m_value.setEditable(flag);
         setVisibleDeleteButton(flag);
     }

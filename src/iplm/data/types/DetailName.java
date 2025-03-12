@@ -10,4 +10,6 @@ public class DetailName {
         this.id = id;
         this.name = name;
     }
+
+    public String getName() { return name; }
 }

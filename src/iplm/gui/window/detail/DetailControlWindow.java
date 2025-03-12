@@ -3,7 +3,7 @@ package iplm.gui.window.detail;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.combobox.DefaultComboBox;
+import iplm.gui.combobox.StringComboBox;
 import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
@@ -11,14 +11,20 @@ import iplm.gui.layer.intercept.InterceptLayer;
 import iplm.gui.panel.SwitcherPanel;
 import iplm.gui.panel.item_list_panel.IItem;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
+import iplm.gui.popup.RowListPopup;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
+import iplm.gui.textfield.RowSelectionList;
 import iplm.gui.window.AWindow;
 import iplm.managers.WindowsManager;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
@@ -77,7 +83,7 @@ public class DetailControlWindow extends AWindow {
     // Метка имени детали
     private DefaultLabel m_detail_name_label;
     // Ввод имени детали
-    private DefaultComboBox m_detail_name_input;
+    private RowSelectionList m_detail_name_input;
     // Метка децимального номера детали
     private DefaultLabel m_detail_decimal_number_label;
     // Ввод децимального номера детали
@@ -117,7 +123,7 @@ public class DetailControlWindow extends AWindow {
     public CancelButton getCancelButton() { return m_cancel_btn; }
 
     // BODY
-    public DefaultComboBox getNameInput() { return m_detail_name_input; }
+    public RowSelectionList getNameInput() { return m_detail_name_input; }
     public InputText getDecimalNumberInput() { return m_detail_decimal_number_input; }
     public InputTextArea getDescriptionInput() { return m_detail_description_input; }
     public AddButton getAddDetailParameterBtn() { return m_add_detail_btn; }
@@ -193,7 +199,7 @@ public class DetailControlWindow extends AWindow {
         m_detail_name_panel = new JPanel(new MigLayout("inset 0, gap rel -2"));
         m_detail_name_edit = new EditButton();
         m_detail_name_label = new DefaultLabel("Наименование");
-        m_detail_name_input = new DefaultComboBox();
+        m_detail_name_input = new RowSelectionList();
         m_detail_decimal_number_label = new DefaultLabel("Децимальный номер");
         m_detail_decimal_number_input = new InputText();
         m_detail_describe_label = new DefaultLabel("Примечание");
@@ -234,13 +240,13 @@ public class DetailControlWindow extends AWindow {
     }
 
     private void rememberLast() {
-        last_name = m_detail_name_input.getText();
+        last_name = m_detail_name_input.getValue();
         last_decimal_number = m_detail_decimal_number_input.getText();
         last_description = m_detail_description_input.getTextArea().getText();
     }
 
     private void fillLast() {
-        m_detail_name_input.setText(last_name);
+        m_detail_name_input.setValue(last_name);
         m_detail_decimal_number_input.setText(last_decimal_number);
         m_detail_description_input.getTextArea().setText(last_description);
     }
@@ -328,8 +334,8 @@ public class DetailControlWindow extends AWindow {
         m_detail_parameter_edit_btn.setVisible(flag);
 
         m_detail_name_edit.setVisible(flag);
-
         m_detail_name_input.setEnable(flag);
+        m_detail_name_input.setEditable(flag);
 
         m_detail_decimal_number_input.setEditable(flag);
         m_detail_description_input.setEditable(flag);
