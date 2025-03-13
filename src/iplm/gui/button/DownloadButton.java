@@ -12,11 +12,26 @@ public class DownloadButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public DownloadButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public DownloadButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
     }
+
+    public DownloadButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
+    }
+
 
     public DownloadButton() {
         init(WIDTH, HEIGHT);

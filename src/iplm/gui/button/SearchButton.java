@@ -12,10 +12,24 @@ public class SearchButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public SearchButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public SearchButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public SearchButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public SearchButton() {

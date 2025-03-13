@@ -36,4 +36,6 @@ public class DetailParameterType {
 //    public boolean custom_val;
     /* Хранится ли вместо единичного значения перечисление значений */
     public boolean enumeration;
+
+    public String getName() { return name; }
 }

@@ -12,10 +12,24 @@ public class ConfirmButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public ConfirmButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public ConfirmButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public ConfirmButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public ConfirmButton() {

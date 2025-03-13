@@ -33,6 +33,7 @@ public class DetailSettingsWindow extends AWindow {
 
     @Override
     public void build() {
+        setTitle("Настройки");
         m_panel = new JPanel(new MigLayout("inset 10, fill"));
 
         Color border_color = new Color(211, 211, 211);

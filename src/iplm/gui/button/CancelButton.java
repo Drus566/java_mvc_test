@@ -12,10 +12,24 @@ public class CancelButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public CancelButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public CancelButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public CancelButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public CancelButton() {

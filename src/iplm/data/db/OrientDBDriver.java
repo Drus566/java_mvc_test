@@ -106,7 +106,8 @@ public class OrientDBDriver {
             queries.add("CREATE PROPERTY Detail.busy_user LINK OUser");
 
             queries.add("CREATE CLASS DetailParameter IF NOT EXISTS");
-            queries.add("CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)");
+//            queries.add("CREATE PROPERTY DetailParameter.value ANY (MANDATORY TRUE)");
+            queries.add("CREATE PROPERTY DetailParameter.value STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameter.info STRING");
             queries.add("CREATE PROPERTY DetailParameter.detail_id LINK Detail");
             queries.add("CREATE PROPERTY Detail.params LINKSET DetailParameter");
@@ -125,6 +126,7 @@ public class OrientDBDriver {
             queries.add("CREATE INDEX DetailParameterType.name ON DetailParameterType (name) UNIQUE");
 
             queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description, deleted) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
+            queries.add("CREATE INDEX DetailParameter.all_search ON DetailParameter(value, info) FULLTEXT ENGINE LUCENE METADATA {\"allowLeadingWildcard\":true }");
 
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }
 //            OrientDBDriver.getInstance().getSession().commit();

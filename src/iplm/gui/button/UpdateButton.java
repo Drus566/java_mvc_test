@@ -12,10 +12,24 @@ public class UpdateButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public UpdateButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public UpdateButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public UpdateButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public UpdateButton() {

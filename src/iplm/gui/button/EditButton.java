@@ -12,10 +12,24 @@ public class EditButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public EditButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public EditButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public EditButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public EditButton() {

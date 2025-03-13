@@ -34,6 +34,25 @@ public class DetailModel implements IModel, IObservable<Detail> {
         return true;
     }
 
+    public boolean deleteDetailDir() {
+        if (m_details_path == null || m_details_path.isEmpty()) {
+            DialogUtility.showErrorDialog("Путь к детали не указан");
+            return false;
+        }
+        FilesystemUtility.openDir(getDetailsPath());
+        return true;
+    }
+
+    public boolean renameDetailDir() {
+        if (m_details_path == null || m_details_path.isEmpty()) {
+            DialogUtility.showErrorDialog("Путь к детали не указан");
+            return false;
+        }
+        FilesystemUtility.openDir(getDetailsPath());
+        return true;
+    }
+
+
     public boolean scanDetailDir() {
         ArrayList<Path> roots = FilesystemUtility.getRootDirs();
         for (Path r : roots) {

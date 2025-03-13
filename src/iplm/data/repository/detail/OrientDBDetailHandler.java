@@ -322,7 +322,7 @@ public class OrientDBDetailHandler {
                 if (param_elements == null) param_elements = new ArrayList<>();
                 OElement parameter = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
                 parameter.setProperty(P.value.s(), p.value);
-                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
+//                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
                 param_elements.add(parameter);
             }
         }
@@ -343,7 +343,7 @@ public class OrientDBDetailHandler {
             if (param_elements != null) {
                 for (int i = 0; i < param_elements.size(); i++) {
                     OElement p = param_elements.get(i);
-                    p.setProperty(P.detail_id.s(), new ORecordId(detail.id));
+//                    p.setProperty(P.detail_id.s(), new ORecordId(detail.id));
                     // Создание параметра
                     p.save();
                     detail.params.get(i).id = p.getIdentity().toString();
@@ -358,7 +358,9 @@ public class OrientDBDetailHandler {
         }
         catch (Exception e) {
             OrientDBDriver.getInstance().getSession().rollback();
-            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            String error_message = e.getMessage();
+            if (error_message == null) error_message = e.toString();
+            OrientDBDriver.getInstance().setLastError(error_message);
             result = null;
         }
         return result;

@@ -12,10 +12,24 @@ public class AddButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public AddButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public AddButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public AddButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public AddButton() {

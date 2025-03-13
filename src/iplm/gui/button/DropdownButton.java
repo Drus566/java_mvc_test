@@ -12,10 +12,24 @@ public class DropdownButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public DropdownButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public DropdownButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public DropdownButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public DropdownButton() {

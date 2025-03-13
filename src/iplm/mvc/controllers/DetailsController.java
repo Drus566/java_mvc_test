@@ -5,7 +5,6 @@ import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.combobox.StringComboBox;
 import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.panel.item_list_panel.IItem;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
@@ -346,13 +345,18 @@ public class DetailsController implements IController {
             Detail detail = new Detail();
             ArrayList<DetailParameter> params = null;
 
-            detail.name = ni.getValue();
+            detail.name = ni.getText().trim();
 
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
 
             if (detail.name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!ni.isExistsValue(detail.name)) {
+                JOptionPane.showMessageDialog(null, "Можно использовать наименование только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -403,6 +407,7 @@ public class DetailsController implements IController {
             if (result != null) {
                 JOptionPane.showMessageDialog(null, "Деталь добавлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
                 w.setDetailId(result);
+                ni.setValue(detail.name);
             }
             else DialogUtility.showErrorIfExists();
         };
@@ -418,12 +423,19 @@ public class DetailsController implements IController {
             detail.id = current_id;
             ArrayList<DetailParameter> params = null;
 
-            detail.name = ni.getValue();
+            detail.name = ni.getText().trim();
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
 
             if (detail.name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                w.fillLast();
+                return;
+            }
+
+            if (!ni.isExistsValue(detail.name)) {
+                JOptionPane.showMessageDialog(null, "Можно использовать наименование только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                w.fillLast();
                 return;
             }
 
@@ -438,6 +450,7 @@ public class DetailsController implements IController {
                 String value = dp.getValue();
                 if (value.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    w.fillLast();
                     return;
                 }
 
@@ -449,6 +462,7 @@ public class DetailsController implements IController {
                     }
                     catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        w.fillLast();
                         return;
                     }
                 }
@@ -459,6 +473,7 @@ public class DetailsController implements IController {
                     }
                     catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть число с плавающей точкой", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        w.fillLast();
                         return;
                     }
                 }
@@ -466,7 +481,10 @@ public class DetailsController implements IController {
             detail.params = params;
 
             String result = m_model.updateDetail(detail);
-            if (result != null) JOptionPane.showMessageDialog(null, "Деталь обновлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+            if (result != null) {
+                JOptionPane.showMessageDialog(null, "Деталь обновлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+                ni.setValue(detail.name);
+            }
             else DialogUtility.showErrorIfExists();
         };
 

@@ -12,10 +12,24 @@ public class DirectoryButton extends ASVGButton {
     private static final int WIDTH = 24;
     private static final int HEIGHT = 24;
 
+    public DirectoryButton(String text, int width, int height) {
+        init(width, height);
+        build();
+        buildActions();
+        setText(text);
+    }
+
     public DirectoryButton(int width, int height) {
         init(width, height);
         build();
         buildActions();
+    }
+
+    public DirectoryButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
     }
 
     public DirectoryButton() {

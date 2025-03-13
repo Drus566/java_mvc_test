@@ -3,7 +3,6 @@ package iplm.gui.window.detail;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.combobox.StringComboBox;
 import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
@@ -11,7 +10,6 @@ import iplm.gui.layer.intercept.InterceptLayer;
 import iplm.gui.panel.SwitcherPanel;
 import iplm.gui.panel.item_list_panel.IItem;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
-import iplm.gui.popup.RowListPopup;
 import iplm.gui.textarea.InputTextArea;
 import iplm.gui.textfield.InputText;
 import iplm.gui.textfield.RowSelectionList;
@@ -20,11 +18,7 @@ import iplm.managers.WindowsManager;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
@@ -114,7 +108,7 @@ public class DetailControlWindow extends AWindow {
 
     // TOP
     public UpdateButton getUpdateButton() { return m_update_btn; }
-    public RoundIconLabel getDetailIcon() { return m_detail_icon; }
+//    public RoundIconLabel getDetailIcon() { return m_detail_icon; }
     public AddButton getAddDetailBtn() { return m_add_detail_btn; }
     public EditButton getEditDetailBtn() { return m_edit_detail_btn; }
     public DeleteButton getDeleteDetailBtn() { return  m_delete_detail_btn; };
@@ -147,22 +141,22 @@ public class DetailControlWindow extends AWindow {
         int size_icon = 64;
 
         m_top_panel = new JPanel(new MigLayout("inset 4"));
-        m_update_btn = new UpdateButton();
-        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
+        m_update_btn = new UpdateButton("Редактировать деталь");
+//        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
 
         buildModeBtnPanel();
 
-        m_top_panel.add(m_update_btn, "split 3");
-        m_top_panel.add(m_detail_icon);
+        m_top_panel.add(m_update_btn, "split 2");
+//        m_top_panel.add(m_detail_icon);
         m_top_panel.add(m_detail_control_btn_panel, "wrap");
     }
 
     private void buildModeBtnPanel() {
         m_detail_control_btn_panel = new SwitcherPanel();
 
-        m_add_detail_btn = new AddButton();
-        m_edit_detail_btn = new EditButton();
-        m_delete_detail_btn = new DeleteButton();
+        m_add_detail_btn = new AddButton("Добавить деталь");
+        m_edit_detail_btn = new EditButton("Редактировать деталь");
+        m_delete_detail_btn = new DeleteButton("Удалить деталь");
         m_directory_detail_btn = new DirectoryButton();
 
         m_confirm_btn = new ConfirmButton();
@@ -206,8 +200,8 @@ public class DetailControlWindow extends AWindow {
         m_detail_description_input = new InputTextArea();
         m_detail_parameter_control_panel = new SwitcherPanel();
         m_parameters_label = new DefaultLabel("Параметры");
-        m_detail_parameter_add_btn = new AddButton();
-        m_detail_parameter_edit_btn = new EditButton();
+        m_detail_parameter_add_btn = new AddButton("Добавить параметр детали");
+        m_detail_parameter_edit_btn = new EditButton("Управление параметра детали");
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
         m_parameters_panel_scroll_pane.setBorder(null);
@@ -245,7 +239,7 @@ public class DetailControlWindow extends AWindow {
         last_description = m_detail_description_input.getTextArea().getText();
     }
 
-    private void fillLast() {
+    public void fillLast() {
         m_detail_name_input.setValue(last_name);
         m_detail_decimal_number_input.setText(last_decimal_number);
         m_detail_description_input.getTextArea().setText(last_description);

@@ -11,10 +11,11 @@ public class FilterButton extends ASVGButton {
     private static final int WIDTH = 18;
     private static final int HEIGHT = 18;
 
-    public FilterButton() {
-        init(WIDTH, HEIGHT);
+    public FilterButton(String text, int width, int height) {
+        init(width, height);
         build();
         buildActions();
+        setText(text);
     }
 
     public FilterButton(int width, int height) {
@@ -22,6 +23,20 @@ public class FilterButton extends ASVGButton {
         build();
         buildActions();
     }
+
+    public FilterButton(String text) {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+        setText(text);
+    }
+
+    public FilterButton() {
+        init(WIDTH, HEIGHT);
+        build();
+        buildActions();
+    }
+
 
     private void init(int w, int h) {
         color_filter = new FlatSVGIcon.ColorFilter(c -> new Color(128, 140, 145));

@@ -23,6 +23,7 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
     public void setValue(String value) {
         data.add(value);
         setText(value);
+        selected_row = value;
     }
 
     public String getValue() { return getSelectedRow(); }
@@ -33,6 +34,17 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         popup.addListener(this);
         buildActions();
         putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(Color.white));
+    }
+
+    public boolean isExistsValue(String value) {
+        boolean result = false;
+        for (String d : data) {
+            if (d.equals(value)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     public void setEnable(boolean flag) {
