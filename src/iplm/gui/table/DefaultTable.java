@@ -22,12 +22,19 @@ public class DefaultTable {
     private long last_click_time = 0;
     private ArrayList<Runnable> double_click_action;
 
+    private JPopupMenu m_popup_menu;
+
+    public void addMenuItem(JMenuItem item) {
+        m_popup_menu.add(item);
+    }
+
     public void setSelectedRowText(int col, String text) {
         int sr = m_table.getSelectedRow();
         m_model.setValueAt(text, sr, col);
     }
 
     public DefaultTable() {
+        m_popup_menu = new JPopupMenu();
         double_click_action = new ArrayList<>();
 
         m_table = new JTable() {
@@ -48,6 +55,15 @@ public class DefaultTable {
         m_table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    int row = m_table.rowAtPoint(e.getPoint());
+                    if (row >= 0 && row < m_table.getRowCount()) {
+                        m_table.setRowSelectionInterval(row, row);
+                        if (m_popup_menu.getComponents().length > 0) m_popup_menu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                    return;
+                }
+
                 int row = m_table.rowAtPoint(e.getPoint());
                 if (row != -1) {
                     if (System.currentTimeMillis() - last_click_time < 300 && row == last_row) {

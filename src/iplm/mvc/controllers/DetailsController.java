@@ -23,6 +23,8 @@ import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -220,6 +222,32 @@ public class DetailsController implements IController {
                 t.addLine(args);
             }
         });
+
+        JMenuItem to_detail_control_window = new JMenuItem("Управление деталью");
+        to_detail_control_window.addActionListener(e -> {
+            String id = t.getStringFromSelectedRowColumn(0);
+            Detail detail = m_model.getDetailByIDWithDepends(id);
+            if (detail != null)  {
+                ni.setValue(detail.name);
+                dni.setText(detail.decimal_number);
+                di.getTextArea().setText(detail.description);
+
+                pp.removeItems();
+                if (detail.params != null) {
+                    for (DetailParameter dp : detail.params) {
+                        int detail_parameter_panel_width = 160;
+                        pp.addParameter(new DetailParameterUI(detail_parameter_panel_width, dp.type, dp.value, dcw.getDetailParameterTypes()));
+                    }
+                }
+                pp.updateGUI();
+                dcw.updateGUI();
+                dcw.setDetailId(detail.id);
+                if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
+                dcw.show();
+            }
+            else DialogUtility.showErrorIfExists();
+        });
+        t.addMenuItem(to_detail_control_window);
 
         t.addDoubleClickAction(() -> {
 //            dcw.show();

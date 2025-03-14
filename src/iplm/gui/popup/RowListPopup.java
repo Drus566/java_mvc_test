@@ -78,6 +78,7 @@ public class RowListPopup extends JPopupMenu {
 //    }
 
     public void addItem(String item) {
+        if (item == null) return;
         JMenuItem mi = new JMenuItem(item);
         mi.addActionListener(e -> {
             if (listener != null) listener.clickPopupRowAction(mi.getText());
