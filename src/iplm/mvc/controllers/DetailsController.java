@@ -1,5 +1,6 @@
 package iplm.mvc.controllers;
 
+import iplm.data.config.Config;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
@@ -58,13 +59,16 @@ public class DetailsController implements IController {
         InputText sdpf = w.getSelectDirPathField();
         JFileChooser fc = w.getSelectDirPanel();
 
-        db.addAction(() -> m_model.openDetailDir());
+        String details_path = m_model.getDetailsPath();
+        if (details_path != null && !details_path.isEmpty()) sdpf.setText(details_path);
 
+        db.addAction(() -> m_model.openDetailDir());
 
         sb.addAction(() -> {
             if (m_model.scanDetailDir()) {
                 sdpf.setText(m_model.getDetailsPath());
                 DialogUtility.showDialog("Успешно", "Директория найдена: " + sdpf.getText(), JOptionPane.INFORMATION_MESSAGE);
+                Config.getInstance().writeSVNPath(m_model.getDetailsPath());
             }
         });
 
@@ -83,6 +87,7 @@ public class DetailsController implements IController {
             }
             m_model.setDetailsPath(path);
             DialogUtility.showDialog("Успешно", "Установлен путь к папки детали", JOptionPane.INFORMATION_MESSAGE);
+            Config.getInstance().writeSVNPath(path);
         });
     }
 
@@ -593,7 +598,6 @@ public class DetailsController implements IController {
             DetailParameterType dpt = new DetailParameterType();
             dpt.name = new_name;
             dpt.type = (String) vt.getSelectedItem();
-            dpt.enumeration = false;
 
             String id = m_model.addDetailParameterType(dpt);
             if (id == null) {

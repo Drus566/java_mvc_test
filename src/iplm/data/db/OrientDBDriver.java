@@ -3,16 +3,10 @@ package iplm.data.db;
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.record.OElement;
-import com.orientechnologies.orient.core.sql.executor.OResult;
-import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import iplm.data.repository.detail.OrientDBDetailHandler;
-import iplm.data.types.DetailName;
 import iplm.utility.DateTimeUtility;
-import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -113,7 +107,6 @@ public class OrientDBDriver {
             queries.add("CREATE PROPERTY Detail.params LINKSET DetailParameter");
 
             queries.add("CREATE CLASS DetailParameterType IF NOT EXISTS");
-            queries.add("CREATE PROPERTY DetailParameterType.enum BOOLEAN");
             queries.add("CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)");
             queries.add("CREATE PROPERTY DetailParameterType.value_type STRING");
 
@@ -127,6 +120,7 @@ public class OrientDBDriver {
 
             queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description, deleted) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
             queries.add("CREATE INDEX DetailParameter.all_search ON DetailParameter(value, info) FULLTEXT ENGINE LUCENE METADATA {\"allowLeadingWildcard\":true }");
+            queries.add("CREATE INDEX DetailParameterType.all_search ON DetailParameterType(name, value_type) FULLTEXT ENGINE LUCENE METADATA {\"allowLeadingWildcard\":true }");
 
             for (String query : queries) { OrientDBDriver.getInstance().getSession().command(query); }
 //            OrientDBDriver.getInstance().getSession().commit();

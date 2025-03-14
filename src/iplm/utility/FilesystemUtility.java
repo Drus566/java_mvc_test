@@ -149,4 +149,14 @@ public class FilesystemUtility {
         catch (IOException e) { DialogUtility.showErrorDialog(e.getMessage()); }
         return result;
     }
+
+    public static boolean createFile(String path) {
+        Path file_path = Paths.get(path);
+        try { if (!Files.exists(file_path)) Files.createFile(file_path); }
+        catch (IOException e) {
+            DialogUtility.showErrorDialog(e.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

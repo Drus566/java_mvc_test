@@ -1,5 +1,6 @@
 package iplm.mvc.models;
 
+import iplm.data.config.Config;
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
@@ -34,24 +35,23 @@ public class DetailModel implements IModel, IObservable<Detail> {
         return true;
     }
 
-    public boolean deleteDetailDir() {
-        if (m_details_path == null || m_details_path.isEmpty()) {
-            DialogUtility.showErrorDialog("Путь к детали не указан");
-            return false;
-        }
-        FilesystemUtility.openDir(getDetailsPath());
-        return true;
-    }
-
-    public boolean renameDetailDir() {
-        if (m_details_path == null || m_details_path.isEmpty()) {
-            DialogUtility.showErrorDialog("Путь к детали не указан");
-            return false;
-        }
-        FilesystemUtility.openDir(getDetailsPath());
-        return true;
-    }
-
+//    public boolean deleteDetailDir() {
+//        if (m_details_path == null || m_details_path.isEmpty()) {
+//            DialogUtility.showErrorDialog("Путь к детали не указан");
+//            return false;
+//        }
+//        FilesystemUtility.openDir(getDetailsPath());
+//        return true;
+//    }
+//
+//    public boolean renameDetailDir() {
+//        if (m_details_path == null || m_details_path.isEmpty()) {
+//            DialogUtility.showErrorDialog("Путь к детали не указан");
+//            return false;
+//        }
+//        FilesystemUtility.openDir(getDetailsPath());
+//        return true;
+//    }
 
     public boolean scanDetailDir() {
         ArrayList<Path> roots = FilesystemUtility.getRootDirs();
@@ -70,7 +70,11 @@ public class DetailModel implements IModel, IObservable<Detail> {
         return false;
     }
 
-    public DetailModel() { m_service = new DetailService(RepositoryType.ORIENTDB); }
+    public DetailModel() {
+        m_service = new DetailService(RepositoryType.ORIENTDB);
+        /* Подгружаем путь к деталям из конфига */
+        setDetailsPath(Config.getInstance().readSVNPath());
+    }
 
     public String addDetailName(String name) { return m_service.addDetailName(name); }
     public boolean deleteDetailName(String id) { return m_service.deleteDetailName(id); }

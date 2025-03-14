@@ -193,9 +193,7 @@ public class OrientDBDetailHandler {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO ").append(C.detail_parameter_type.s());
         query.append(" CONTENT { name: '");
-        query.append(detail_parameter_type.name).append("', value_type: '");
-        query.append(detail_parameter_type.type).append("', enum: ");
-        query.append(detail_parameter_type.enumeration).append("}");
+        query.append(detail_parameter_type.name).append("', value_type: '}");
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
@@ -250,7 +248,6 @@ public class OrientDBDetailHandler {
         query.append("UPDATE ").append(C.detail_parameter_type.s());
         query.append(" SET ").append(P.name.s()).append(" = '").append(detail_parameter_type.name);
         query.append("', ").append(P.value_type).append(" = '").append(detail_parameter_type.type);
-        query.append("', ").append(P.enumeration).append(" = ").append(detail_parameter_type.enumeration);
         query.append(" RETURN AFTER @rid WHERE @rid = ").append(detail_parameter_type.id);
 
         try {
@@ -288,7 +285,6 @@ public class OrientDBDetailHandler {
                 dpt.id = item.getProperty(P.rid.s()).toString();
                 dpt.name = item.getProperty(P.name.s()).toString();
                 dpt.type = item.getProperty(P.value_type.s()).toString();
-                dpt.enumeration = item.getProperty(P.enumeration.s());
                 result.add(dpt);
             }
         }
@@ -590,7 +586,6 @@ public class OrientDBDetailHandler {
                             // Получить тип параметра детали по ID
                             OElement pt_element = OrientDBDriver.getInstance().getSession().load(t_id.getRecord().getIdentity());
                             DetailParameterType dpt = new DetailParameterType();
-                            dpt.enumeration = pt_element.getProperty(P.enumeration.s());
                             dpt.name = pt_element.getProperty(P.name.s());
                             dpt.type = pt_element.getProperty(P.value_type.s()).toString();
 
@@ -687,7 +682,6 @@ public class OrientDBDetailHandler {
                             // Получить тип параметра детали по ID
                             OElement pt_element = OrientDBDriver.getInstance().getSession().load(t_id.getRecord().getIdentity());
                             DetailParameterType dpt = new DetailParameterType();
-                            dpt.enumeration = pt_element.getProperty(P.enumeration.s());
                             dpt.name = pt_element.getProperty(P.name.s());
                             dpt.type = pt_element.getProperty(P.value_type.s()).toString();
 
@@ -770,7 +764,6 @@ public class OrientDBDetailHandler {
                         OElement pt_element = OrientDBDriver.getInstance().getSession().load(t_id.getRecord().getIdentity());
                         DetailParameterType dpt = new DetailParameterType();
                         dpt.id = pt_element.getProperty(P.rid.s()).toString();
-                        dpt.enumeration = pt_element.getProperty(P.enumeration.s());
                         dpt.name = pt_element.getProperty(P.name.s());
                         dpt.type = pt_element.getProperty(P.value_type.s()).toString();
 

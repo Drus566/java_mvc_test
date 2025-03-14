@@ -103,7 +103,7 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
         m_search_bar = new SearchBar();
 
         m_filter_button = new FilterButton();
-        m_search_bar.addTrailingComponent(m_filter_button);
+//        m_search_bar.addTrailingComponent(m_filter_button);
 
         m_enter_btn_action = () -> {
             String search_text = m_search_bar.getSearchText();

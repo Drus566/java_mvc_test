@@ -141,7 +141,7 @@ public class DetailControlWindow extends AWindow {
         int size_icon = 64;
 
         m_top_panel = new JPanel(new MigLayout("inset 4"));
-        m_update_btn = new UpdateButton("Редактировать деталь");
+        m_update_btn = new UpdateButton("Обновить деталь");
 //        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
 
         buildModeBtnPanel();
@@ -157,17 +157,17 @@ public class DetailControlWindow extends AWindow {
         m_add_detail_btn = new AddButton("Добавить деталь");
         m_edit_detail_btn = new EditButton("Редактировать деталь");
         m_delete_detail_btn = new DeleteButton("Удалить деталь");
-        m_directory_detail_btn = new DirectoryButton();
+        m_directory_detail_btn = new DirectoryButton("Открыть деталь");
 
-        m_confirm_btn = new ConfirmButton();
-        m_cancel_btn = new CancelButton();
+        m_confirm_btn = new ConfirmButton("Подтвердить");
+        m_cancel_btn = new CancelButton("Отменить");
 
         JPanel read_mode_panel = new JPanel(new MigLayout());
-        JPanel write_mode_panel = new JPanel(new MigLayout());
+        JPanel write_mode_panel = new JPanel(new MigLayout("al center"));
 
-        read_mode_panel.add(m_add_detail_btn, "split 4");
-        read_mode_panel.add(m_edit_detail_btn);
-        read_mode_panel.add(m_directory_detail_btn);
+        read_mode_panel.add(m_add_detail_btn, "split 2");
+        read_mode_panel.add(m_edit_detail_btn, "wrap");
+        read_mode_panel.add(m_directory_detail_btn, "split 2");
         read_mode_panel.add(m_delete_detail_btn);
 
         write_mode_panel.add(m_confirm_btn, "split 2");
@@ -200,8 +200,8 @@ public class DetailControlWindow extends AWindow {
         m_detail_description_input = new InputTextArea();
         m_detail_parameter_control_panel = new SwitcherPanel();
         m_parameters_label = new DefaultLabel("Параметры");
-        m_detail_parameter_add_btn = new AddButton("Добавить параметр детали");
-        m_detail_parameter_edit_btn = new EditButton("Управление параметра детали");
+        m_detail_parameter_add_btn = new AddButton();
+        m_detail_parameter_edit_btn = new EditButton();
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
         m_parameters_panel_scroll_pane.setBorder(null);
