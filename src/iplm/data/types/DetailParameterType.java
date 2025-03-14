@@ -3,9 +3,9 @@ package iplm.data.types;
 public class DetailParameterType {
     /* Тип данных параметра */
     public enum Type {
+        STRING("Строка"),
         DEC("Число"),
-        FLOAT("Число с плавающей точкой"),
-        STRING("Строка");
+        FLOAT("Число с плавающей точкой");
 
         private String m_string;
         Type(String string) { m_string = string; }
@@ -14,14 +14,7 @@ public class DetailParameterType {
 
     public DetailParameterType() {}
 
-    public DetailParameterType(String id, String name, String type) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        alias = "";
-    }
-
-    public DetailParameterType(String id, String name, String type, String alias) {
+    public DetailParameterType(String id, String name, String alias, String type) {
         this.id = id;
         this.name = name;
         this.type = type;

@@ -59,7 +59,7 @@ public class DetailParameterUI extends ComboBoxInputItem {
     @Override
     public void updateItem(Object detail_parameter_type_list) {
         DetailParameterType temp = null;
-        if (current_type != null) temp = new DetailParameterType(current_type.id, current_type.name, current_type.type);
+        if (current_type != null) temp = new DetailParameterType(current_type.id, current_type.name, current_type.alias, current_type.type);
         this.detail_parameter_type_list = (ArrayList<DetailParameterType>) detail_parameter_type_list;
         m_name.removeAllItems();
         for (DetailParameterType dpt : this.detail_parameter_type_list) {

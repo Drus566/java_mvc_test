@@ -54,6 +54,7 @@ public class OrientDBDetailHandler {
         value("value"),
         count("count"),
         value_type("value_type"),
+        alias("alias"),
         detail_id("detail_id"),
         params("params"),
         info("info"),
@@ -195,6 +196,8 @@ public class OrientDBDetailHandler {
         query.append(" CONTENT { name: '").append(detail_parameter_type.name).append("'");
         query.append(",");
         query.append("value_type: '").append(detail_parameter_type.type).append("'");
+        query.append(",");
+        query.append("alias: '").append(detail_parameter_type.alias).append("'");
         query.append("}");
 
         try {
@@ -250,6 +253,7 @@ public class OrientDBDetailHandler {
         query.append("UPDATE ").append(C.detail_parameter_type.s());
         query.append(" SET ").append(P.name.s()).append(" = '").append(detail_parameter_type.name);
         query.append("', ").append(P.value_type).append(" = '").append(detail_parameter_type.type);
+        query.append("', ").append(P.alias).append(" = '").append(detail_parameter_type.alias);
         query.append(" RETURN AFTER @rid WHERE @rid = ").append(detail_parameter_type.id);
 
         try {
@@ -287,6 +291,8 @@ public class OrientDBDetailHandler {
                 dpt.id = item.getProperty(P.rid.s()).toString();
                 dpt.name = item.getProperty(P.name.s()).toString();
                 dpt.type = item.getProperty(P.value_type.s()).toString();
+                dpt.alias = item.getProperty(P.alias.s()).toString();
+
                 result.add(dpt);
             }
         }
@@ -588,6 +594,7 @@ public class OrientDBDetailHandler {
                             OElement pt_element = OrientDBDriver.getInstance().getSession().load(t_id.getRecord().getIdentity());
                             DetailParameterType dpt = new DetailParameterType();
                             dpt.name = pt_element.getProperty(P.name.s());
+                            dpt.alias = pt_element.getProperty(P.alias.s());
                             dpt.type = pt_element.getProperty(P.value_type.s()).toString();
 
                             dp.type = dpt;
@@ -617,7 +624,7 @@ public class OrientDBDetailHandler {
 
         ArrayList<Detail> result = new ArrayList<>();
 
-        String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
+//        String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
 //        SELECT FROM Detail WHERE SEARCH_CLASS('deleted:true && шт~ || шт* || *шт* || шт') = true;
 //        SELECT FROM Detail WHERE SEARCH_CLASS('(шина~ || шина* || *шина* || шина) AND -deleted:true', {
 //                "sort": [ { 'field': 'name', reverse:true, type:'STRING' }]
@@ -683,6 +690,7 @@ public class OrientDBDetailHandler {
                             OElement pt_element = OrientDBDriver.getInstance().getSession().load(t_id.getRecord().getIdentity());
                             DetailParameterType dpt = new DetailParameterType();
                             dpt.name = pt_element.getProperty(P.name.s());
+                            dpt.alias = pt_element.getProperty(P.alias.s());
                             dpt.type = pt_element.getProperty(P.value_type.s()).toString();
 
                             dp.type = dpt;

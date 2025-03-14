@@ -1,6 +1,8 @@
 package iplm.gui.textfield;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import iplm.Resources;
+import iplm.gui.panel.IconContainer;
 import iplm.gui.popup.IRowListPopupListener;
 import iplm.gui.popup.RowListPopup;
 import iplm.utility.ColorUtility;
@@ -35,6 +37,8 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
     public String getValue() { return getSelectedRow(); }
 
     public RowSelectionList() {
+        JLabel search_icon = new JLabel(Resources.getSVGIcon("search.svg").derive(16,16));
+        putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_COMPONENT, new IconContainer(30,search_icon.getHeight(),search_icon));
         callbacks = new ArrayList<>();
         data = new HashSet<>();
         popup = new RowListPopup();

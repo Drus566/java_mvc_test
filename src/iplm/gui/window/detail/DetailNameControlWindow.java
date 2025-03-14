@@ -78,7 +78,9 @@ public class DetailNameControlWindow extends AWindow {
         m_panel.add(m_edit_btn);
         m_panel.add(m_delete_btn, "wrap");
 
-        m_panel.add(m_name_list, "al center, pushx, width 50%, wrap");
+        m_panel.add(new JLabel("Наименование"), "al center, width 100!, split 2");
+        m_panel.add(m_name_list, " pushx, width 50%, wrap");
+
         m_panel.add(m_table.getScrollPane(), "al center, push, growy, width 90%");
     }
 }

@@ -23,12 +23,9 @@ import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class DetailsController implements IController {
@@ -347,7 +344,7 @@ public class DetailsController implements IController {
                 ArrayList<DetailParameterType> dpt_list = w.getDetailParameterTypes();
                 dpt_list.clear();
                 for (DetailParameterType dpt : result) {
-                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.type));
+                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
                 }
                 w.updateParametersPanel();
             }
@@ -372,7 +369,7 @@ public class DetailsController implements IController {
                 ArrayList<DetailParameterType> dpt_list = w.getDetailParameterTypes();
                 dpt_list.clear();
                 for (DetailParameterType dpt : result) {
-                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.type));
+                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
                 }
                 w.updateParametersPanel();
             }
@@ -606,7 +603,8 @@ public class DetailsController implements IController {
         AddButton ab = w.getAddButton();
         EditButton eb = w.getEditButton();
         DeleteButton db = w.getDeleteButton();
-        InputText ni = w.getInputText();
+        InputText ai = w.getAliasInput();
+        RowSelectionList ni = w.getNameInput();
         JComboBox vt = w.getValueType();
         DefaultTable t = w.getTable();
 
@@ -615,12 +613,15 @@ public class DetailsController implements IController {
             ArrayList<DetailParameterType> result = m_model.getDetailParameterTypes();
             if (result != null) {
                 t.clear();
+                ni.clearData();
                 for (DetailParameterType dpt : result) {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dpt.id);
                     row.add(dpt.name);
                     row.add(dpt.type);
                     t.addLine(row);
+
+                    ni.addData(dpt.name);
                 }
             }
             else DialogUtility.showErrorIfExists();
@@ -631,12 +632,15 @@ public class DetailsController implements IController {
             ArrayList<DetailParameterType> result = m_model.getDetailParameterTypes();
             if (result != null) {
                 t.clear();
+                ni.clearData();
                 for (DetailParameterType dpt : result) {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dpt.id);
                     row.add(dpt.name);
                     row.add(dpt.type);
                     t.addLine(row);
+
+                    ni.addData(dpt.name);
                 }
             }
             else DialogUtility.showErrorIfExists();
@@ -652,6 +656,7 @@ public class DetailsController implements IController {
 
             DetailParameterType dpt = new DetailParameterType();
             dpt.name = new_name;
+            dpt.alias = ai.getText().trim();
             dpt.type = (String) vt.getSelectedItem();
 
             String id = m_model.addDetailParameterType(dpt);
@@ -659,8 +664,10 @@ public class DetailsController implements IController {
                 DialogUtility.showErrorIfExists();
                 return;
             }
-            t.addLine(id, new_name, dpt.type);
+            ni.addData(new_name);
+            t.addLine(id, new_name, dpt.alias, dpt.type);
             t.getTable().setRowSelectionInterval(0, 0);
+
             JOptionPane.showMessageDialog(null, "Тип параметра детали добавлен", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
 
@@ -676,14 +683,15 @@ public class DetailsController implements IController {
                 JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            id = m_model.updateDetailParameterType(new DetailParameterType(id, new_name, (String) vt.getSelectedItem()));
+            id = m_model.updateDetailParameterType(new DetailParameterType(id, new_name, ai.getText().trim(), (String) vt.getSelectedItem()));
             if (id == null) {
                 DialogUtility.showErrorIfExists();
                 return;
             }
-            ni.setText(new_name);
+            ni.setValue(new_name);
             t.setSelectedRowText(1, new_name);
-            t.setSelectedRowText(2, (String) vt.getSelectedItem());
+            t.setSelectedRowText(2, ai.getText().trim());
+            t.setSelectedRowText(3, (String) vt.getSelectedItem());
             JOptionPane.showMessageDialog(null, "Тип параметра детали обновлен", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
 
@@ -699,7 +707,8 @@ public class DetailsController implements IController {
                 DialogUtility.showErrorIfExists();
                 return;
             }
-            ni.setText("");
+            ni.setValue("");
+            ai.setText("");
             t.getTableModel().removeRow(t.getTable().getSelectedRow());
             JOptionPane.showMessageDialog(null, "Наименование детали удалено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
