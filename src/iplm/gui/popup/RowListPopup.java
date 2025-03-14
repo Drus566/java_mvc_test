@@ -71,12 +71,6 @@ public class RowListPopup extends JPopupMenu {
         }
     }
 
-//    public void removeItems() {
-//        for (int i = 0; i < getComponentCount(); i++) {
-//            remove(i);
-//        }
-//    }
-
     public void addItem(String item) {
         if (item == null) return;
         JMenuItem mi = new JMenuItem(item);

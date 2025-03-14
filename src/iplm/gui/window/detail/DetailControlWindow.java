@@ -44,7 +44,6 @@ public class DetailControlWindow extends AWindow {
     public void setDetailIdLast(String id) { m_detail_id_last = id; }
     public String getDetailIdLast() { return m_detail_id_last; }
 
-
     private ArrayList<DetailParameterType> m_detail_parameter_type_list;
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_detail_parameter_type_list; }
 //    public void addDetailParameterType(DetailParameterType type) { m_detail_parameter_type_list.add(type); }
