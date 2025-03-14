@@ -121,7 +121,7 @@ public class DetailControlWindow extends AWindow {
     public RowSelectionList getNameInput() { return m_detail_name_input; }
     public InputText getDecimalNumberInput() { return m_detail_decimal_number_input; }
     public InputTextArea getDescriptionInput() { return m_detail_description_input; }
-    public AddButton getAddDetailParameterBtn() { return m_add_detail_btn; }
+    public AddButton getAddDetailParameterBtn() { return m_detail_parameter_add_btn; }
     public EditButton getEditDetailParameterBtn() { return m_detail_parameter_edit_btn; }
     public ItemListPanel getParametersPanel() { return m_parameters_panel; }
 

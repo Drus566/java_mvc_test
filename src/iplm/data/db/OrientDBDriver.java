@@ -107,6 +107,7 @@ public class OrientDBDriver {
 
             queries.add("CREATE CLASS DetailParameterType IF NOT EXISTS");
             queries.add("CREATE PROPERTY DetailParameterType.name STRING (MANDATORY TRUE)");
+            queries.add("CREATE PROPERTY DetailParameterType.alias STRING");
             queries.add("CREATE PROPERTY DetailParameterType.value_type STRING");
 
             queries.add("CREATE CLASS DetailName IF NOT EXISTS");

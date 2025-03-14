@@ -47,6 +47,28 @@ public class ItemListPanel extends JPanel implements IItemListener, IItemListPan
         write_mode = false;
     }
 
+    public boolean isItemNameExists(String name) {
+        boolean result = false;
+        for (IItem i : m_items) {
+            if (i.getPayload().equals(name)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public boolean isItemExists(IItem item) {
+        boolean result = false;
+        for (IItem i : m_items) {
+            if (i.getPayload().equals(item.getPayload())) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
     public void addParameter(IItem item) {
         item.addItemListener(this);
         m_items.add(item);

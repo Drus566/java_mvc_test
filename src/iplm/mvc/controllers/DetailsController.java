@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class DetailsController implements IController {
@@ -442,6 +443,22 @@ public class DetailsController implements IController {
                         JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть число с плавающей точкой", "Ошибка", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+                }
+            }
+
+            // проверка одинаковых значений типов параметров
+            if (params != null && !params.isEmpty()) {
+                ArrayList<String> exists = new ArrayList<>();
+                for (DetailParameter dp : params) {
+                    DetailParameterType dpt  = dp.type;
+
+                    for (String s : exists) {
+                        if (s.equals(dpt.getName())) {
+                            JOptionPane.showMessageDialog(null, "Нельзя добавлять два параметра одинакового типа", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                    exists.add(dpt.name);
                 }
             }
             detail.params = params;

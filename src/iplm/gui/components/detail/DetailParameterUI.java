@@ -68,6 +68,11 @@ public class DetailParameterUI extends ComboBoxInputItem {
         if (temp != null) m_name.setSelectedItem(temp.name);
     }
 
+    @Override
+    public String getPayload() {
+        return getCurrentType().name;
+    }
+
     private void setType(String type_name) {
         for (DetailParameterType dpt : detail_parameter_type_list) {
             if (dpt.name.equalsIgnoreCase(type_name)) {

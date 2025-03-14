@@ -192,8 +192,10 @@ public class OrientDBDetailHandler {
         String result = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO ").append(C.detail_parameter_type.s());
-        query.append(" CONTENT { name: '");
-        query.append(detail_parameter_type.name).append("', value_type: '}");
+        query.append(" CONTENT { name: '").append(detail_parameter_type.name).append("'");
+        query.append(",");
+        query.append("value_type: '").append(detail_parameter_type.type).append("'");
+        query.append("}");
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
