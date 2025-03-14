@@ -28,6 +28,25 @@ public class DefaultTable {
         m_popup_menu.add(item);
     }
 
+    public void scrollToSelectedRow() {
+        int index = m_table.getSelectedRow();
+        Rectangle rect = m_table.getCellRect(index, 0, true);
+        m_table.scrollRectToVisible(rect);
+    }
+
+    public boolean selectRowWhere(String template, int column) {
+        boolean result = false;
+        for (int i = 0; i < m_table.getModel().getRowCount(); i++) {
+            String val = (String)m_table.getModel().getValueAt(i, column);
+            if (val.equals(template)) {
+                m_table.setRowSelectionInterval(i,i);
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
     public void setSelectedRowText(int col, String text) {
         int sr = m_table.getSelectedRow();
         m_model.setValueAt(text, sr, col);

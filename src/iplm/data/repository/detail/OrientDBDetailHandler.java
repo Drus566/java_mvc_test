@@ -320,7 +320,7 @@ public class OrientDBDetailHandler {
                 if (param_elements == null) param_elements = new ArrayList<>();
                 OElement parameter = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
                 parameter.setProperty(P.value.s(), p.value);
-//                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
+                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
                 param_elements.add(parameter);
             }
         }
@@ -341,7 +341,7 @@ public class OrientDBDetailHandler {
             if (param_elements != null) {
                 for (int i = 0; i < param_elements.size(); i++) {
                     OElement p = param_elements.get(i);
-//                    p.setProperty(P.detail_id.s(), new ORecordId(detail.id));
+                    p.setProperty(P.detail_id.s(), new ORecordId(detail.id));
                     // Создание параметра
                     p.save();
                     detail.params.get(i).id = p.getIdentity().toString();
@@ -581,7 +581,6 @@ public class OrientDBDetailHandler {
                             OElement p_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(rid));
                             dp.id = p_element.getProperty(P.rid.s()).toString();
                             dp.detail_id = p_element.getProperty(P.detail_id.s()).toString();
-                            dp.info = p_element.getProperty(P.info.s());
                             dp.value = p_element.getProperty(P.value.s());
 
                             OIdentifiable t_id = p_element.getProperty(P.type.s());
@@ -677,7 +676,6 @@ public class OrientDBDetailHandler {
                             OElement p_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(rid));
                             dp.id = p_element.getProperty(P.rid.s()).toString();
                             dp.detail_id = p_element.getProperty(P.detail_id.s()).toString();
-                            dp.info = p_element.getProperty(P.info.s());
                             dp.value = p_element.getProperty(P.value.s());
 
                             OIdentifiable t_id = p_element.getProperty(P.type.s());
@@ -758,7 +756,6 @@ public class OrientDBDetailHandler {
                         OElement p_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(rid));
                         dp.id = p_element.getProperty(P.rid.s()).toString();
                         dp.detail_id = p_element.getProperty(P.detail_id.s()).toString();
-                        dp.info = p_element.getProperty(P.info.s());
                         dp.value = p_element.getProperty(P.value.s());
 
                         OIdentifiable t_id = p_element.getProperty(P.type.s());
@@ -780,7 +777,9 @@ public class OrientDBDetailHandler {
         }
         catch (OException e) {
             OrientDBDriver.getInstance().getSession().rollback();
-            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            String error = e.getMessage();
+            if (error == null) error = e.toString();
+            OrientDBDriver.getInstance().setLastError(error);
             result = null;
         }
 

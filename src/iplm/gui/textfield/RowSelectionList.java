@@ -19,16 +19,23 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
     private RowListPopup popup;
     private String selected_row;
     private boolean select = false;
+    private boolean method = false;
+    private ArrayList<Runnable> callbacks;
 
     public void setValue(String value) {
+        method = true;
         data.add(value);
         setText(value);
         selected_row = value;
+        method = false;
     }
+
+    public void addCallback(Runnable r) { callbacks.add(r); }
 
     public String getValue() { return getSelectedRow(); }
 
     public RowSelectionList() {
+        callbacks = new ArrayList<>();
         data = new HashSet<>();
         popup = new RowListPopup();
         popup.addListener(this);
@@ -75,7 +82,7 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
     }
 
     private void typeAction() {
-        if (select) return;
+        if (select || method) return;
 
         SwingUtilities.invokeLater(() -> {
             String text = getText().trim();
@@ -122,6 +129,20 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
 
     public void removeData(String data) { this.data.remove(data); }
 
+    public void changeData(String old, String name) {
+        removeData(old);
+        addData(name);
+    }
+
+    public boolean isDataExists(String data) {
+        boolean result = false;
+        for (String s : this.data) {
+            if (data.equals(s)) result = true;
+            break;
+        }
+        return result;
+    }
+
     public void clearData() {
         this.data.clear();
         if (popup.isVisible()) {
@@ -142,6 +163,10 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         setText(text);
         setCaretPosition(0);
         select = false;
+
+        for (Runnable r : callbacks) {
+            r.run();
+        }
     }
 }
 

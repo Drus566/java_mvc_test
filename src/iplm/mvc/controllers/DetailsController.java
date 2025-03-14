@@ -714,18 +714,21 @@ public class DetailsController implements IController {
         EditButton eb = w.getEditButton();
         DeleteButton db = w.getDeleteButton();
         UpdateButton ub = w.getUpdateButton();
-        JTextField ni = w.getNameInput();
+        RowSelectionList nl = w.getNameList();
 
         /* Подгрузка всех имен деталей при появлении окна */
         w.addVisibleAction(() -> {
             ArrayList<DetailName> result = m_model.getDetailNames();
             if (result != null) {
                 t.clear();
+                nl.clearData();
                 for (DetailName dn : result) {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dn.id);
                     row.add(dn.name);
                     t.addLine(row);
+
+                    nl.addData(dn.name);
                 }
             }
             else DialogUtility.showErrorIfExists();
@@ -736,11 +739,15 @@ public class DetailsController implements IController {
             ArrayList<DetailName> result = m_model.getDetailNames();
             if (result != null) {
                 t.clear();
+                nl.clearData();
+
                 for (DetailName dn : result) {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dn.id);
                     row.add(dn.name);
                     t.addLine(row);
+
+                    nl.addData(dn.name);
                 }
             }
             else DialogUtility.showErrorIfExists();
@@ -748,7 +755,7 @@ public class DetailsController implements IController {
 
         /* Добавление нового имени в список имен деталей */
         ab.addAction(() -> {
-            String new_name = ni.getText().trim();
+            String new_name = nl.getText().trim();
             if (new_name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -758,6 +765,8 @@ public class DetailsController implements IController {
                 DialogUtility.showErrorIfExists();
                 return;
             }
+            nl.addData(new_name);
+            nl.setValue(new_name);
             t.addLine(id, new_name);
             t.getTable().setRowSelectionInterval(0, 0);
             JOptionPane.showMessageDialog(null, "Наименование детали добавлено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
@@ -770,7 +779,7 @@ public class DetailsController implements IController {
                 JOptionPane.showMessageDialog(null, "Выберите наименование детали", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-            String new_name = ni.getText().trim();
+            String new_name = nl.getText().trim();
             if (new_name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -780,7 +789,13 @@ public class DetailsController implements IController {
                 DialogUtility.showErrorIfExists();
                 return;
             }
-            ni.setText(new_name);
+
+            if (!nl.isDataExists(new_name)) {
+                String old_name = t.getStringFromSelectedRowColumn(1);
+                nl.removeData(old_name);
+                nl.setValue(new_name);
+            }
+
             t.setSelectedRowText(1, new_name);
             JOptionPane.showMessageDialog(null, "Наименование детали обновлено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -797,8 +812,10 @@ public class DetailsController implements IController {
                 DialogUtility.showErrorIfExists();
                 return;
             }
-            ni.setText("");
+            String d_name = t.getStringFromSelectedRowColumn(1);
             t.getTableModel().removeRow(t.getTable().getSelectedRow());
+            nl.removeData(d_name);
+            nl.setValue("");
             JOptionPane.showMessageDialog(null, "Наименование детали удалено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
     }
