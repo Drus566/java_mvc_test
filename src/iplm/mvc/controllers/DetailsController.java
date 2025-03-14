@@ -21,7 +21,6 @@ import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
-import iplm.utility.ThreadUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -63,7 +62,7 @@ public class DetailsController implements IController {
         String details_path = m_model.getDetailsPath();
         if (details_path != null && !details_path.isEmpty()) sdpf.setText(details_path);
 
-        db.addAction(() -> m_model.openDetailDir());
+        db.addAction(() -> m_model.openDetailsDir());
 
         sb.addAction(() -> {
             if (m_model.scanDetailDir()) {
@@ -223,7 +222,7 @@ public class DetailsController implements IController {
         });
 
         t.addDoubleClickAction(() -> {
-            dcw.show();
+//            dcw.show();
 
             // Действие при клике по строке
             if (!dcw.isCreateMode() && !dcw.isEditMode()) {
@@ -231,8 +230,17 @@ public class DetailsController implements IController {
                 String id = (String) t.getTableModel().getValueAt(sr, 0);
 
                 sp.setVisible(false);
+
+
+
                 Detail detail = m_model.getDetailByIDWithDepends(id);
                 if (detail != null)  {
+                    // true open pdf
+                    String detail_fullname = detail.decimal_number + " - " + detail.name;
+                    boolean opened = m_model.openDetailPdf(detail_fullname);
+                    if (!opened) opened = m_model.openDetailDir(detail_fullname);
+                    if (opened) return;
+
                     ni.setValue(detail.name);
                     dni.setText(detail.decimal_number);
                     di.getTextArea().setText(detail.description);
@@ -248,6 +256,7 @@ public class DetailsController implements IController {
                     dcw.updateGUI();
                     dcw.setDetailId(detail.id);
                     if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
+                    dcw.show();
                 }
                 else DialogUtility.showErrorIfExists();
             }

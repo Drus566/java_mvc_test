@@ -11,6 +11,7 @@ import iplm.data.service.DetailService;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,13 +27,43 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public void setDetailsPath(String path) { m_details_path = path; }
     public String getDetailsPath() { return m_details_path; }
 
-    public boolean openDetailDir() {
+    public boolean openDetailPdf(String detail_name) {
+        if (m_details_path != null && !m_details_path.isEmpty()) {
+            Path name = Paths.get(detail_name);
+            Path path = Paths.get(m_details_path);
+            Path detail_name_dir_path = path.resolve(name);
+            if (FilesystemUtility.isDirExists(detail_name_dir_path.toAbsolutePath().toString())) {
+                ArrayList<Path> files = FilesystemUtility.getFilesEndsWith(detail_name_dir_path.toAbsolutePath().toString(), ".pdf");
+                if (files != null) {
+                    String f_path = files.get(0).toAbsolutePath().toString();
+                    FilesystemUtility.openFile(f_path);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean openDetailsDir() {
         if (m_details_path == null || m_details_path.isEmpty()) {
             DialogUtility.showErrorDialog("Путь к детали не указан");
             return false;
         }
         FilesystemUtility.openDir(getDetailsPath());
         return true;
+    }
+
+    public boolean openDetailDir(String detail_name) {
+        if (m_details_path != null && !m_details_path.isEmpty()) {
+            Path name = Paths.get(detail_name);
+            Path path = Paths.get(m_details_path);
+            Path detail_name_dir_path = path.resolve(name);
+            if (FilesystemUtility.isDirExists(detail_name_dir_path.toAbsolutePath().toString())) {
+                FilesystemUtility.openDir(detail_name_dir_path.toAbsolutePath().toString());
+                return true;
+            }
+        }
+        return false;
     }
 
 //    public boolean deleteDetailDir() {

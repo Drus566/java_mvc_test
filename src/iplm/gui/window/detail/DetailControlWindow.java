@@ -19,6 +19,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class DetailControlWindow extends AWindow {
@@ -253,12 +255,23 @@ public class DetailControlWindow extends AWindow {
     @Override
     public void build() {
         m_panel = new JPanel(new MigLayout("inset 10"));
+
         m_detail_parameter_type_list = new ArrayList<>();
         setTitle("Управление деталью");
         buildTop();
         buildBody();
         doReadMode();
         arrangeComponents();
+
+        m_frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                m_parameters_panel.fillLastItems();
+                fillLast();
+                doReadMode();
+            }
+        });
     }
 
     public void arrangeComponents() {
@@ -281,7 +294,7 @@ public class DetailControlWindow extends AWindow {
     }
 
     public void doReadMode() {
-        setTitle("Управления деталью");
+        setTitle("Управление деталью");
         setMode(false);
         m_edit_mode = false;
         m_create_mode = false;
@@ -295,7 +308,7 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         if (!isEditMode()) {
-            setTitle("Управления деталью | Редактирование");
+            setTitle("Управление деталью | Редактирование");
             setMode(true);
             m_edit_mode = true;
             m_create_mode = false;
@@ -312,7 +325,7 @@ public class DetailControlWindow extends AWindow {
             return;
         }
         else if (!isCreateMode()) {
-            setTitle("Управления деталью | Создание");
+            setTitle("Управление деталью | Создание");
             setMode(true);
             m_edit_mode = false;
             m_create_mode = true;

@@ -116,6 +116,23 @@ public class FilesystemUtility {
         return result;
     }
 
+    public static boolean openFile(String path) {
+        Path file_path = Paths.get(path);
+        if (Files.exists(file_path) && Files.isRegularFile(file_path)) {
+            try {
+                File file = new File(file_path.toAbsolutePath().toString());
+                if (Desktop.isDesktopSupported()) Desktop.getDesktop().open(file);
+                else DialogUtility.showErrorDialog("Другие способы открытия файла не поддерживаются");
+            }
+            catch (IOException e) {
+                DialogUtility.showErrorDialog(e.getMessage());
+                return false;
+            }
+        }
+        else return false;
+        return true;
+    }
+
     public static void openDir(String path) {
         Path directory = Paths.get(path);
 
@@ -158,5 +175,20 @@ public class FilesystemUtility {
             return false;
         }
         return true;
+    }
+
+    public static ArrayList<Path> getFilesEndsWith(String dir_path, String template) {
+        ArrayList<Path> result;
+        Path directory = Paths.get(dir_path);
+        try {
+            result = (ArrayList<Path>) Files.list(directory)
+                    .filter(path -> path.toString().endsWith(".pdf"))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            DialogUtility.showErrorDialog(e.getMessage());
+            return null;
+        }
+        if (result.isEmpty()) return null;
+        return result;
     }
 }
