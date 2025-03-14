@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import iplm.Resources;
 import iplm.gui.panel.IconContainer;
 import iplm.utility.FontUtility;
+import iplm.utility.ThreadUtility;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -95,7 +96,7 @@ public class SearchBar extends JTextField {
                     if (fast_enter) return;
                     for (Runnable function : enter_btn_actions) {
                         if (!getSearchText().isEmpty()) last_enter_request = getSearchText();
-                        function.run();
+                        ThreadUtility.getInstance().execute(function);
                     }
                 }
             }
@@ -139,7 +140,7 @@ public class SearchBar extends JTextField {
     private void reactOnChange() {
         if (fast_enter) return;
         for (Runnable function : tap_actions) {
-            function.run();
+            ThreadUtility.getInstance().execute(function);
         }
     }
 

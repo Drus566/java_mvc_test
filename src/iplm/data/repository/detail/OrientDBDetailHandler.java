@@ -73,7 +73,7 @@ public class OrientDBDetailHandler {
     }
 
     /******* Detail Name ************/
-    public String addDetailName(String name) {
+    synchronized public String addDetailName(String name) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -100,7 +100,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public boolean deleteDetailName(String id) {
+    synchronized public boolean deleteDetailName(String id) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return false;
@@ -127,7 +127,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public String updateDetailName(DetailName detail_name) {
+    synchronized public String updateDetailName(DetailName detail_name) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -154,7 +154,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public ArrayList<DetailName> getDetailNames() {
+    synchronized public ArrayList<DetailName> getDetailNames() {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -183,7 +183,7 @@ public class OrientDBDetailHandler {
 
     /************** Detail Parameter Type ********************/
 
-    public String addDetailParameterType(DetailParameterType detail_parameter_type) {
+    synchronized public String addDetailParameterType(DetailParameterType detail_parameter_type) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -210,7 +210,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public boolean deleteDetailParameterType(String id) {
+    synchronized public boolean deleteDetailParameterType(String id) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return false;
@@ -237,7 +237,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public String updateDetailParameterType(DetailParameterType detail_parameter_type) {
+    synchronized public String updateDetailParameterType(DetailParameterType detail_parameter_type) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -265,7 +265,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public ArrayList<DetailParameterType> getDetailParameterTypes() {
+    synchronized public ArrayList<DetailParameterType> getDetailParameterTypes() {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -295,7 +295,7 @@ public class OrientDBDetailHandler {
 
     /************** Detail ********************/
 
-    public String addDetail(Detail detail) {
+    synchronized public String addDetail(Detail detail) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -362,7 +362,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public boolean deleteDetail(String id) {
+    synchronized public boolean deleteDetail(String id) {
         boolean result = false;
 
         if (!OrientDBDriver.getInstance().isConnect()) {
@@ -444,7 +444,7 @@ public class OrientDBDetailHandler {
 //    }
 
 
-    public String updateDetail(Detail detail) {
+    synchronized public String updateDetail(Detail detail) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -531,7 +531,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public ArrayList<Detail> getAllDetails(boolean depends) {
+    synchronized public ArrayList<Detail> getAllDetails(boolean depends) {
         if (!OrientDBDriver.getInstance().isConnect()) {
             OrientDBDriver.getInstance().setLastError("Нет соединения с базой данных");
             return null;
@@ -608,7 +608,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public ArrayList<Detail> getDetails(String request, boolean depends) {
+    synchronized public ArrayList<Detail> getDetails(String request, boolean depends) {
         if (OrientDBDriver.getInstance().getSession() == null) {
             OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
             return null;
@@ -705,7 +705,7 @@ public class OrientDBDetailHandler {
         return result;
     }
 
-    public Detail getDetailByID(String id, boolean depends) {
+    synchronized public Detail getDetailByID(String id, boolean depends) {
         if (OrientDBDriver.getInstance().getSession() == null) {
             OrientDBDriver.getInstance().setLastError("Нет подключения к БД");
             return null;

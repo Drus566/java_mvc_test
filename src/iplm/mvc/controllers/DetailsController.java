@@ -21,6 +21,7 @@ import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
+import iplm.utility.ThreadUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -198,8 +199,8 @@ public class DetailsController implements IController {
 
         sb.addEnterButtonAction(() -> {
             String search_text = sb.getSearchText();
-            ArrayList<Detail> details;
 
+            ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
             else details = m_model.getAllDetailsWithDepends();
 
