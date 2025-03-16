@@ -21,6 +21,7 @@ import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
+import iplm.utility.StringUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -130,6 +131,8 @@ public class DetailsController implements IController {
 
             // Если слишком длинное сообщение, не обрабатываем его
             String search_text = sb.getSearchText();
+            search_text = StringUtility.cutToChar(search_text, '[');
+
             if (search_text.length() > MAX_TEXT_LENGTH) return;
 
             // Очищаем панель
@@ -198,6 +201,21 @@ public class DetailsController implements IController {
 
         sb.addEnterButtonAction(() -> {
             String search_text = sb.getSearchText();
+
+//            SELECT * FROM DetailParameter
+//            WHERE detail_id IN (SELECT @rid FROM Detail WHERE SEARCH_CLASS("name: Пластина") = true) AND type IN (SELECT @rid FROM DetailParameterType WHERE SEARCH_CLASS("name: String") = true)
+
+//            SELECT * FROM DetailParameter
+//            WHERE detail_id IN (SELECT @rid FROM Detail WHERE SEARCH_CLASS("name: Пластина") = true) AND type IN (SELECT @rid FROM DetailParameterType WHERE SEARCH_CLASS("name: String") = true)
+
+            // Пластина [длина=23,высота=45(3),материал=Олово]
+            // SELECT FROM Detail WHERE
+            //
+            //
+            // parse
+//            if (!search_text.isEmpty()) {
+//
+//            }
 
             ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
@@ -378,6 +396,11 @@ public class DetailsController implements IController {
             if (w.getDetailId() != null && !w.getDetailId().isEmpty()) {
                 // TODO: сделать подгрузку параметров и значений детали (имя, децимальнй номер, описание)
                 Detail detail = m_model.getDetailByID(w.getDetailId());
+                ni.setValue(detail.name);
+                dn.setText(detail.decimal_number);
+                di.getTextArea().setText(detail.description);
+
+                // TODO: Проверка параметров
             }
         };
 
@@ -408,6 +431,18 @@ public class DetailsController implements IController {
 
                 DetailParameterUI dp = (DetailParameterUI) i.getComponent();
                 DetailParameterType dpt = dp.getCurrentType();
+
+                String key = dp.getKey();
+                if (key.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Параметр не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!dp.isRowExists(key)) {
+                    JOptionPane.showMessageDialog(null, "Значение параметра может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    w.fillLast();
+                    return;
+                }
 
                 String value = dp.getValue();
                 if (value.isEmpty()) {
@@ -504,10 +539,26 @@ public class DetailsController implements IController {
                 DetailParameterUI dp = (DetailParameterUI) i.getComponent();
                 DetailParameterType dpt = dp.getCurrentType();
 
+                String key = dp.getKey();
+                if (key.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Параметр не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!dp.isRowExists(key)) {
+                    JOptionPane.showMessageDialog(null, "Значение параметра может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    w.fillLast();
+                    return;
+                }
+
                 String value = dp.getValue();
                 if (value.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    w.fillLast();
+                    return;
+                }
+
+                if (dpt == null) {
+                    JOptionPane.showMessageDialog(null, "Тип параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -618,6 +669,7 @@ public class DetailsController implements IController {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dpt.id);
                     row.add(dpt.name);
+                    row.add(dpt.alias);
                     row.add(dpt.type);
                     t.addLine(row);
 
@@ -637,6 +689,7 @@ public class DetailsController implements IController {
                     ArrayList<String> row = new ArrayList<>();
                     row.add(dpt.id);
                     row.add(dpt.name);
+                    row.add(dpt.alias);
                     row.add(dpt.type);
                     t.addLine(row);
 

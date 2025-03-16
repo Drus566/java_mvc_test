@@ -169,3 +169,49 @@ public class Application {
 
 
 
+
+
+
+SELECT * FROM Detail WHERE params IN (SELECT @rid FROM DetailParameter WHERE type IN (SELECT @rid FROM DetailParameterType WHERE name='String')) AND SEARCH_CLASS('-deleted:true') = true
+
+SELECT * FROM Detail
+WHERE
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Длина')
+      AND SEARCH_CLASS('value:[12 TO 123]') = true
+  )
+AND deleted = false
+
+SELECT * FROM Detail
+WHERE
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Длина')
+      AND SEARCH_CLASS('value:123') = true
+  )
+AND
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Материал')
+      AND SEARCH_CLASS('value:Серебро') = true
+  )
+AND
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Высота')
+      AND SEARCH_CLASS('value:3') = true
+  )
+AND deleted = false
+
+
+
+
+
+
+
+

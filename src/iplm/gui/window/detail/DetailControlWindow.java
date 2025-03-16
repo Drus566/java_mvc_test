@@ -231,6 +231,7 @@ public class DetailControlWindow extends AWindow {
             m_parameters_panel.addParameter(new DetailParameterUI(detail_parameter_panel_width, m_detail_parameter_type_list));
             m_parameters_panel.updateGUI();
             updateGUI();
+            m_parameters_panel.toWriteMode();
         });
     }
 

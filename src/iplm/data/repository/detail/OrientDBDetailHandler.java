@@ -254,7 +254,7 @@ public class OrientDBDetailHandler {
         query.append(" SET ").append(P.name.s()).append(" = '").append(detail_parameter_type.name);
         query.append("', ").append(P.value_type).append(" = '").append(detail_parameter_type.type);
         query.append("', ").append(P.alias).append(" = '").append(detail_parameter_type.alias);
-        query.append(" RETURN AFTER @rid WHERE @rid = ").append(detail_parameter_type.id);
+        query.append("' RETURN AFTER @rid WHERE @rid = ").append(detail_parameter_type.id);
 
         try {
             OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
@@ -315,9 +315,11 @@ public class OrientDBDetailHandler {
         detail_element.setProperty(P.busy.s(), false);
         detail_element.setProperty(P.user_busy.s(), null);
         detail_element.setProperty(P.created_at.s(), DateTimeUtility.timestamp());
-        if (!detail.decimal_number.isEmpty()) detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
+        if (!detail.decimal_number.trim().isEmpty()) detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
+        else detail_element.setProperty(P.decimal_number.s(), null);
         detail_element.setProperty(P.name.s(), detail.name);
         detail_element.setProperty(P.description.s(), detail.description);
+        detail_element.setProperty(P.deleted.s(), detail.deleted);
         detail_element.setProperty(P.updated_at.s(), DateTimeUtility.timestamp());
 
         ArrayList<OElement> param_elements = null;
@@ -481,6 +483,7 @@ public class OrientDBDetailHandler {
         detail_element.setProperty(P.name.s(), detail.name);
         detail_element.setProperty(P.description.s(), detail.description);
         detail_element.setProperty(P.updated_at.s(), DateTimeUtility.timestamp());
+        detail_element.setProperty(P.deleted.s(), detail.deleted);
 
         ArrayList<OElement> new_param_elements = null;
         if (detail.params != null) {

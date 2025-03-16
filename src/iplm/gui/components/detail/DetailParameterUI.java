@@ -1,16 +1,13 @@
 package iplm.gui.components.detail;
 
-import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
-import iplm.gui.panel.item_list_panel.items.ComboBoxInputItem;
+import iplm.gui.panel.item_list_panel.items.RowListInputItem;
 
-import javax.swing.*;
 import java.util.ArrayList;
 
-public class DetailParameterUI extends ComboBoxInputItem {
+public class DetailParameterUI extends RowListInputItem {
     private ArrayList<DetailParameterType> detail_parameter_type_list;
     private DetailParameterType current_type;
-    private JTextField current_text_input;
 
     public DetailParameterType getCurrentType() { return current_type; }
 
@@ -22,22 +19,22 @@ public class DetailParameterUI extends ComboBoxInputItem {
         this.detail_parameter_type_list = detail_parameter_type_list;
 
         for (DetailParameterType dpt : this.detail_parameter_type_list) {
-            m_name.addItem(dpt.name);
+            m_name.addData(dpt.name);
         }
-        m_name.addItemListener(e -> setType(e.getItem().toString()));
+        m_name.addCallback(() -> setType(m_name.getValue()));
 
         if (detail_parameter_type_list != null && !detail_parameter_type_list.isEmpty()) {
             boolean found = false;
             for (DetailParameterType dpt : detail_parameter_type_list) {
                 if (dpt.name.equalsIgnoreCase(this.current_type.name)) {
-                    m_name.setSelectedItem(this.current_type.name);
+                    m_name.setValue(this.current_type.name);
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                m_name.addItem(this.current_type.name);
-                m_name.setSelectedItem(this.current_type.name);
+                m_name.addData(this.current_type.name);
+                m_name.setValue(this.current_type.name);
             }
         }
     }
@@ -47,10 +44,10 @@ public class DetailParameterUI extends ComboBoxInputItem {
         this.detail_parameter_type_list = detail_parameter_type_list;
 
         for (DetailParameterType dpt : this.detail_parameter_type_list) {
-            m_name.addItem(dpt.name);
+            m_name.addData(dpt.name);
         }
 //        m_name.setSelectedIndex(0);
-        m_name.addItemListener(e -> setType(e.getItem().toString()));
+        m_name.addCallback(() -> setType(m_name.getValue()));
         if (detail_parameter_type_list != null && !detail_parameter_type_list.isEmpty()) {
             current_type = detail_parameter_type_list.get(0);
         }
@@ -61,11 +58,11 @@ public class DetailParameterUI extends ComboBoxInputItem {
         DetailParameterType temp = null;
         if (current_type != null) temp = new DetailParameterType(current_type.id, current_type.name, current_type.alias, current_type.type);
         this.detail_parameter_type_list = (ArrayList<DetailParameterType>) detail_parameter_type_list;
-        m_name.removeAllItems();
+        m_name.clearData();
         for (DetailParameterType dpt : this.detail_parameter_type_list) {
-            m_name.addItem(dpt.name);
+            m_name.addData(dpt.name);
         }
-        if (temp != null) m_name.setSelectedItem(temp.name);
+        if (temp != null) m_name.setValue(temp.name);
     }
 
     @Override

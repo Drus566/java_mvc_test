@@ -71,7 +71,9 @@ public class DetailParameterTypeControlWindow extends AWindow {
         m_table.getTable().getSelectionModel().addListSelectionListener(e -> {
             int sr = m_table.getTable().getSelectedRow();
             if (sr == -1) return;
-            m_alias_input.setText((String) m_table.getTableModel().getValueAt(sr, 1));
+            m_name_input.setValue((String) m_table.getTableModel().getValueAt(sr, 1));
+            m_alias_input.setText((String) m_table.getTableModel().getValueAt(sr, 2));
+            m_value_type.setSelectedItem((String) m_table.getTableModel().getValueAt(sr, 3));
         });
 
         for (DetailParameterType.Type dpp : DetailParameterType.Type.values()) {

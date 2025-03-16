@@ -81,6 +81,8 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
                 if (!isEditable()) return;
                 if (popup.getItemsCount() < data.size()) popup.updateItems(data);
                 showPopup();
+//                if (popup.isVisible()) hidePopup();
+//                else showPopup();
             }
         });
     }
@@ -114,9 +116,7 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         for (String s : data) {
             this.data.add(s);
         }
-        if (popup.isVisible()) {
-            showPopup();
-        }
+        if (popup.isVisible()) showPopup();
     }
 
     public void updateData(ArrayList<String> data) {
@@ -124,9 +124,7 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         for (String s : data) {
             this.data.add(s);
         }
-        if (popup.isVisible()) {
-            showPopup();
-        }
+        if (popup.isVisible()) showPopup();
     }
 
     public void addData(String data) { this.data.add(data); }
@@ -141,8 +139,10 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
     public boolean isDataExists(String data) {
         boolean result = false;
         for (String s : this.data) {
-            if (data.equals(s)) result = true;
-            break;
+            if (data.equals(s)) {
+                result = true;
+                break;
+            }
         }
         return result;
     }
