@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /*
 1. Недавние запросы - текст (иконка времени, кнопка удалить) -> при нажатии выдает список деталей в таблицу
@@ -28,13 +29,13 @@ import java.util.ArrayList;
 public class SearchPanel extends JPanel {
     private int current_height;
     private Color border_color = new Color(147, 179, 255);
-    private ArrayList<ASearchPanelLine> search_panel_lines;
+    private CopyOnWriteArrayList<ASearchPanelLine> search_panel_lines;
 
     public SearchPanel() {
         setLayout(new MigLayout("inset 8 0 8 0, gap rel -2"));
         setBackground(Color.white);
         putClientProperty(FlatClientProperties.STYLE, "arc: 30");
-        search_panel_lines = new ArrayList<>();
+        search_panel_lines = new CopyOnWriteArrayList<>();
         setBorder(new FlatLineBorder(new Insets(0,0,0,0), border_color, 1, 30));
         setOpaque(false);
         setVisible(false);
@@ -92,7 +93,7 @@ public class SearchPanel extends JPanel {
         this.repaint();
     }
 
-    public void updateLines() {
+    synchronized public void updateLines() {
         removeAll();
         current_height = 0;
         int line_info_height = 44;

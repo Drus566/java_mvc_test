@@ -165,12 +165,13 @@ public class Application {
 (ВЫПОЛНЕНО) * Правой кнопкой мыши по таблице открыть окно управления
 (ВЫПОЛНЕНО) * Добавить тред пул
 (ВЫПОЛНЕНО) * Добавить новый компонент (для удобного поиска) в редактор наименований детали
-* Добавить новый компонент (для удобного поиска) в редактор типа параметров деталей
+(ВЫПОЛНЕНО) * Добавить новый компонент (для удобного поиска) в редактор типа параметров деталей
+* Добавить в таблицу столбец параметры
+* Добавить автодополнение
 
 
 
-
-
+[Материал="олово",длина=3]
 
 SELECT * FROM Detail WHERE params IN (SELECT @rid FROM DetailParameter WHERE type IN (SELECT @rid FROM DetailParameterType WHERE name='String')) AND SEARCH_CLASS('-deleted:true') = true
 
@@ -207,11 +208,99 @@ AND
       AND SEARCH_CLASS('value:3') = true
   )
 AND deleted = false
+AND SEARCH_CLASS('шт~ || шт* || *шт* || шт') = true;
+
+
+x длина y ширина z высота
+l длина s толщина
+Обозначение="ТИДЖ.745512.596" Наименование="Уголок" X1X2=898,000000000001 Y1Y2=50 Z1Z2=50,0000000000001 L=898 S=3
+Обозначение="ТИДЖ.745512.596-01" Наименование="Уголок" X1X2=898,000000000001 Y1Y2=50 Z1Z2=50,0000000000001 L=898 S=3
+Обозначение="ТИДЖ.745512.596-02" Наименование="Уголок" X1X2=898 Y1Y2=45 Z1Z2=30,0000000000001 L=898 S=3
 
 
 
 
+//    public boolean rebuildIndex() {
+//        boolean result = true;
+//        try {
+//            OrientDBDriver.getInstance().getSession().activateOnCurrentThread();
+//            OrientDBDriver.getInstance().getSession().command("REBUILD INDEX *");
+//        }
+//        catch (OException e) {
+//            OrientDBDriver.getInstance().setLastError(e.getMessage());
+//            result = false;
+//        }
+//        return result;
+//    }
 
+//        String query = "SELECT FROM Detail WHERE SEARCH_CLASS(?) = true;";
+//        SELECT FROM Detail WHERE SEARCH_CLASS('deleted:true && шт~ || шт* || *шт* || шт') = true;
+//        SELECT FROM Detail WHERE SEARCH_CLASS('(шина~ || шина* || *шина* || шина) AND -deleted:true', {
+//                "sort": [ { 'field': 'name', reverse:true, type:'STRING' }]
+//}) = true;
+//
+
+//        String q = "SELECT FROM Detail WHERE SEARCH_CLASS('(шина~ || шина* || *шина* || шина) AND -deleted:true', { \"sort\": [ { 'field': 'name', reverse:true, type:'STRING' }]}) = true;";
+        // SELECT FROM Detail WHERE SEARCH_CLASS("~ || * || *sad* || sad) = true
+        //
+
+
+SELECT FROM Detail
+WHERE
+SEARCH_CLASS('балка || балка* || *балка* || балка~', { "sort": [{ 'field': 'name', reverse:false, type:'STRING' }]}) = true
+AND
+    params IN (
+        SELECT @rid FROM DetailParameter
+        WHERE
+            type IN (SELECT @rid FROM DetailParameterType WHERE name='длина')
+            AND SEARCH_CLASS('value:33) = true) AND deleted = false
+
+
+SELECT FROM Detail
+WHERE
+SEARCH_CLASS('балка || балка* || *балка* || балка~', { "sort": [{ 'field': 'name', reverse:false, type:'STRING' }]}) = true
+AND
+    params IN (
+        SELECT @rid FROM DetailParameter
+        WHERE
+            type IN (SELECT @rid FROM DetailParameterType WHERE name='Длина')
+            AND SEARCH_CLASS('value:') = true) AND deleted = false
+
+SELECT FROM Detail
+WHERE
+SEARCH_CLASS('Балка || Балка* || *Балка* || Балка~', { "sort": [{ 'field': 'name', reverse:false, type:'STRING' }]}) = true
+AND
+    params IN ( SELECT @rid FROM DetailParameter
+    WHERE
+        type IN (SELECT @rid FROM DetailParameterType WHERE name='Длина')
+        AND SEARCH_CLASS('value:[197 TO 203]') = true) AND deleted = false
+
+
+SELECT * FROM Detail
+WHERE
+SEARCH_CLASS('шт~ || шт* || *шт* || шт') = true;
+AND
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Длина')
+      AND SEARCH_CLASS('value:123') = true
+  )
+AND
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Материал')
+      AND SEARCH_CLASS('value:Серебро') = true
+  )
+AND
+  params IN (
+    SELECT @rid FROM DetailParameter
+    WHERE
+      type IN (SELECT @rid FROM DetailParameterType WHERE name='Высота')
+      AND SEARCH_CLASS('value:3') = true
+  )
+AND deleted = false
 
 
 
