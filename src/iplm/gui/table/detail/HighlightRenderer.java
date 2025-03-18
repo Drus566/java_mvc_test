@@ -8,7 +8,7 @@ public class HighlightRenderer extends DefaultTableCellRenderer {
 //        private int[] center_columns = { 0, 3, 4 };
 //        private int[] left_columns = { 1, 2 };
     private JTable m_table;
-    private int COLOR_COLUMN = 4;
+    private int COLOR_COLUMN = 5;
 
     private Color highlight_color = new Color(0xFFB8B8);
     private Color select_color = UIManager.getColor("Table.selectionBackground");
@@ -41,6 +41,8 @@ public class HighlightRenderer extends DefaultTableCellRenderer {
                 else cell.setBackground(select_inactive_color);
             }
         }
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, is_selected, has_focus, row, column);
+        label.setToolTipText(value != null ? value.toString() : "");
         return cell;
     }
 }

@@ -202,21 +202,6 @@ public class DetailsController implements IController {
         sb.addEnterButtonAction(() -> {
             String search_text = sb.getSearchText();
 
-//            SELECT * FROM DetailParameter
-//            WHERE detail_id IN (SELECT @rid FROM Detail WHERE SEARCH_CLASS("name: Пластина") = true) AND type IN (SELECT @rid FROM DetailParameterType WHERE SEARCH_CLASS("name: String") = true)
-
-//            SELECT * FROM DetailParameter
-//            WHERE detail_id IN (SELECT @rid FROM Detail WHERE SEARCH_CLASS("name: Пластина") = true) AND type IN (SELECT @rid FROM DetailParameterType WHERE SEARCH_CLASS("name: String") = true)
-
-            // Пластина [длина=23,высота=45(3),материал=Олово]
-            // SELECT FROM Detail WHERE
-            //
-            //
-            // parse
-//            if (!search_text.isEmpty()) {
-//
-//            }
-
             ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
             else details = m_model.getAllDetailsWithDepends();
@@ -227,16 +212,28 @@ public class DetailsController implements IController {
             }
 
             t.clear();
-            for (Detail d : details) {
+            for (int i = details.size() - 1; i >= 0; --i) {
                 ArrayList<String> args = new ArrayList<>();
-                args.add(d.id);
-                args.add(d.decimal_number);
-                args.add(d.name);
-                args.add(d.description);
-                if (d.params == null || d.params.isEmpty()) args.add(Boolean.TRUE.toString());
+                args.add(details.get(i).id);
+                args.add(details.get(i).decimal_number);
+                args.add(details.get(i).name);
+                args.add(details.get(i).description);
+                args.add(details.get(i).paramsToString());
+                if (details.get(i).params == null || details.get(i).params.isEmpty()) args.add(Boolean.TRUE.toString());
                 else args.add(Boolean.FALSE.toString());
                 t.addLine(args);
             }
+//            for (Detail d : details) {
+//                ArrayList<String> args = new ArrayList<>();
+//                args.add(d.id);
+//                args.add(d.decimal_number);
+//                args.add(d.name);
+//                args.add(d.description);
+//                args.add(d.paramsToString());
+//                if (d.params == null || d.params.isEmpty()) args.add(Boolean.TRUE.toString());
+//                else args.add(Boolean.FALSE.toString());
+//                t.addLine(args);
+//            }
         });
 
         JMenuItem to_detail_control_window = new JMenuItem("Управление деталью");

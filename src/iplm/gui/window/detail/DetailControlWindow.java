@@ -15,6 +15,7 @@ import iplm.gui.textfield.InputText;
 import iplm.gui.textfield.RowSelectionList;
 import iplm.gui.window.AWindow;
 import iplm.managers.WindowsManager;
+import iplm.utility.FontUtility;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -50,6 +51,8 @@ public class DetailControlWindow extends AWindow {
 
     // TOP
     private JPanel m_top_panel;
+    // Индикатор выбрана ли деталь
+    private DefaultLabel m_select_detail_label;
     // Обновить данные детали
     private UpdateButton m_update_btn;
     // Иконка детали
@@ -108,6 +111,7 @@ public class DetailControlWindow extends AWindow {
     private String last_name, last_decimal_number, last_description;
 
     // TOP
+    public DefaultLabel getSelectDetailLabel() { return m_select_detail_label; }
     public UpdateButton getUpdateButton() { return m_update_btn; }
 //    public RoundIconLabel getDetailIcon() { return m_detail_icon; }
     public AddButton getAddDetailBtn() { return m_add_detail_btn; }
@@ -136,6 +140,10 @@ public class DetailControlWindow extends AWindow {
 //        m_detail_name_input
     }
 
+    public void setSelectDetailLabel() {
+
+    }
+
     private void buildTop() {
         Color background_detail = Color.white;
         Color border_detail = new Color(217, 217, 217);
@@ -143,10 +151,13 @@ public class DetailControlWindow extends AWindow {
 
         m_top_panel = new JPanel(new MigLayout("inset 4"));
         m_update_btn = new UpdateButton("Обновить деталь");
+        m_select_detail_label = new DefaultLabel("Просмотр");
+        FontUtility.multResize(m_select_detail_label, 1.5f);
 //        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
 
         buildModeBtnPanel();
 
+        m_top_panel.add(m_select_detail_label, "al center, wrap");
         m_top_panel.add(m_update_btn, "split 2");
 //        m_top_panel.add(m_detail_icon);
         m_top_panel.add(m_detail_control_btn_panel, "wrap");
@@ -206,6 +217,10 @@ public class DetailControlWindow extends AWindow {
         m_parameters_panel = new ItemListPanel();
         m_parameters_panel_scroll_pane = new JScrollPane(m_parameters_panel);
         m_parameters_panel_scroll_pane.setBorder(null);
+
+        m_detail_name_edit.setToolTipText("Открыть окно управления наименованиями деталей");
+        m_detail_parameter_add_btn.setToolTipText("Добавить параметр детали");
+        m_detail_parameter_edit_btn.setToolTipText("Открыть окно управления типами параметров деталей");
 
         m_detail_name_panel.add(m_detail_name_label);
         m_detail_name_panel.add(m_detail_name_edit);

@@ -25,6 +25,22 @@ public class Detail {
     /* Таймстамп обновления */
     public String updated_at;
 
+    public String paramsToString() {
+        StringBuilder sb = new StringBuilder();
+        if (params != null) {
+            int counter = 0;
+            for (DetailParameter dp : params) {
+                sb.append(dp.type.name);
+                sb.append(": ");
+                sb.append(dp.value);
+                if (counter < params.size() - 1) sb.append(", ");
+                ++counter;
+            }
+        }
+
+        return sb.toString();
+    }
+
     public Detail() {
         params = new ArrayList<>();
     }

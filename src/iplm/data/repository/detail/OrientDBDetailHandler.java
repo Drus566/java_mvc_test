@@ -663,7 +663,7 @@ public class OrientDBDetailHandler {
             sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
             sb.append(") = true");
 
-            if (request.indexOf('[') == -1) {
+            if (request.indexOf('[') != -1) {
                 sb.append(" AND ");
             }
         }
@@ -672,67 +672,100 @@ public class OrientDBDetailHandler {
 
         // Есть ли запрос с параметрами
         if (request.contains("[")) {
-            String params_str = StringUtility.getBetweenChars(request, '[', ']');
+            String params_str = StringUtility.getBetweenChars(request, '[', ']').trim();
             if (params_str != null && !params_str.isEmpty()) {
-                String[] params = params_str.split(",");
-                for (String param : params) {
-                    String[] key_val = param.trim().split("=");
-                    if (key_val.length == 2) {
-                        String key = key_val[0].trim();
-                        String val = key_val[1].trim();
+                if (params_str.equals("!")) {
+                    if (!first) sb.append(" AND ");
+                    sb.append(" params != [] and params != null");
+                }
+                else {
+                    String[] params = params_str.split(",");
+                    for (String param : params) {
+                        String[] key_val = param.trim().split("=");
+                        if (key_val.length == 2) {
+                            String key = key_val[0].trim();
+                            String val = key_val[1].trim();
 
-                        boolean is_range = val.indexOf('(') == -1 ? false : true;
-                        boolean is_string = val.indexOf("\"") == -1 ? false : true;
+                            boolean is_range = val.indexOf('(') == -1 ? false : true;
+                            boolean is_string = val.indexOf("\"") == -1 ? false : true;
 
-                        String dec_str = val;
-                        int range_val = -1;
-                        String range_str = StringUtility.getBetweenChars(val, '(', ')');
-                        if (range_str != null) {
-                            try {
-                                range_val = Integer.parseInt(range_str);
-                                dec_str = StringUtility.cutToChar(val, '(');
-                            }
-                            catch(Exception e) {}
-                        }
-
-                        if (!first) sb.append(" AND ");
-                        else first = false;
-
-                        sb.append(" params IN (");
-                        sb.append(" SELECT @rid FROM DetailParameter ");
-                        sb.append(" WHERE ");
-                        sb.append("type IN (SELECT @rid FROM DetailParameterType WHERE name='").append(key).append("')");
-                        sb.append(" AND SEARCH_CLASS('value:");
-                        if (is_string) sb.append(val);
-                        else {
-                            try {
-                                int i = Integer.parseInt(dec_str, 10);
-
-                                if (is_range) {
-                                    int min = i - range_val;
-                                    int max = i + range_val;
-                                    sb.append("[").append(min).append(" TO ");
-                                    sb.append(max).append("]");
-                                }
-                                else sb.append(val);
-                            }
-                            catch (Exception e) {
+                            String dec_str = val;
+                            int range_val = -1;
+                            String range_str = StringUtility.getBetweenChars(val, '(', ')');
+                            if (range_str != null) {
                                 try {
-                                    float f = Float.parseFloat(dec_str);
+                                    range_val = Integer.parseInt(range_str);
+                                    dec_str = StringUtility.cutToChar(val, '(');
+                                }
+                                catch(Exception e) {}
+                            }
+
+                            if (!first) sb.append(" AND ");
+                            else first = false;
+
+                            sb.append(" params IN (");
+                            sb.append(" SELECT @rid FROM DetailParameter ");
+                            sb.append(" WHERE ");
+                            sb.append("type IN (SELECT @rid FROM DetailParameterType WHERE ");
+                            sb.append("SEARCH_CLASS(");
+                            sb.append("'");
+                            sb.append(key).append(" || ");
+                            sb.append(key).append("*").append(" || ");
+                            sb.append("*").append(key).append("*").append(" || ");
+                            sb.append(key).append("~");
+                            sb.append("'");
+//                        if (n_request.isEmpty()) sb.append(", { \"sort\": [{ 'field': 'е', reverse:false, type:'STRING' }]}");
+                            sb.append(") = true)");
+
+
+                            if (is_string) {
+                                String str_val = val.replace("\"", "");
+//                            sb.append(" AND SEARCH_CLASS('value:");
+                                sb.append("AND SEARCH_CLASS(");
+                                sb.append("'");
+                                sb.append(str_val).append(" || ");
+                                sb.append(str_val).append("*").append(" || ");
+                                sb.append("*").append(str_val).append("*").append(" || ");
+                                sb.append(str_val).append("~");
+//                            sb.append("'");
+//                            sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
+//                            sb.append(") = true)");
+                            }
+                            else {
+                                sb.append(" AND SEARCH_CLASS('value:");
+                                try {
+                                    int i = Integer.parseInt(dec_str, 10);
+
                                     if (is_range) {
-                                        int min = (int) (f - range_val);
-                                        int max = (int) (f + range_val);
+                                        int min = i - range_val;
+                                        int max = i + range_val;
                                         sb.append("[").append(min).append(" TO ");
                                         sb.append(max).append("]");
                                     }
                                     else sb.append(val);
                                 }
-                                catch (Exception ee) {}
+                                catch (Exception e) {
+                                    try {
+                                        float f = Float.parseFloat(dec_str);
+                                        if (is_range) {
+                                            int min = (int) (f - range_val);
+                                            int max = (int) (f + range_val);
+                                            sb.append("[").append(min).append(" TO ");
+                                            sb.append(max).append("]");
+                                        }
+                                        else sb.append(val);
+                                    }
+                                    catch (Exception ee) {}
+                                }
                             }
+                            sb.append("') = true)");
                         }
-                        sb.append("') = true)");
                     }
                 }
+            }
+            else if (params_str != null && params_str.isEmpty()) {
+                if (!first) sb.append(" AND ");
+                sb.append(" params = [] or params = null");
             }
         }
 

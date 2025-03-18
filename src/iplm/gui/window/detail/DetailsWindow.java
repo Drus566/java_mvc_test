@@ -77,9 +77,9 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
 
     private void buildTable() {
         m_table = new DefaultTable();
-        m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Децимальный номер", "Наименование", "Описание", "Цвет")));
+        m_table.addColumns(new ArrayList<>(Arrays.asList("ID", "Децимальный номер", "Наименование", "Описание", "Параметры", "Цвет")));
         m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(0));
-        m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(3));
+        m_table.getTable().removeColumn(m_table.getTable().getColumnModel().getColumn(4));
         m_table.setRenderer(new HighlightRenderer(m_table.getTable()));
     }
 
