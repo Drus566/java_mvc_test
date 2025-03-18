@@ -6,8 +6,8 @@ import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.panel.item_list_panel.IItem;
+import iplm.gui.panel.item_list_panel.Item;
 import iplm.gui.panel.item_list_panel.ItemListPanel;
 import iplm.gui.panel.search_panel.SearchPanel;
 import iplm.gui.table.DefaultTable;
@@ -164,7 +164,8 @@ public class DetailsController implements IController {
                                     if (detail.params != null) {
                                         for (DetailParameter dp : detail.params) {
                                             int detail_parameter_panel_width = 160;
-                                            pp.addParameter(new DetailParameterUI(detail_parameter_panel_width, dp.type, dp.value, dcw.getDetailParameterTypes()));
+                                            Item item = new Item(detail_parameter_panel_width);
+                                            pp.addParameter(item);
                                         }
                                     }
                                     pp.updateGUI();
@@ -249,7 +250,8 @@ public class DetailsController implements IController {
                 if (detail.params != null) {
                     for (DetailParameter dp : detail.params) {
                         int detail_parameter_panel_width = 160;
-                        pp.addParameter(new DetailParameterUI(detail_parameter_panel_width, dp.type, dp.value, dcw.getDetailParameterTypes()));
+                        Item item = new Item(detail_parameter_panel_width);
+                        pp.addParameter(item);
                     }
                 }
                 pp.updateGUI();
@@ -290,7 +292,8 @@ public class DetailsController implements IController {
                     if (detail.params != null) {
                         for (DetailParameter dp : detail.params) {
                             int detail_parameter_panel_width = 160;
-                            pp.addParameter(new DetailParameterUI(detail_parameter_panel_width, dp.type, dp.value, dcw.getDetailParameterTypes()));
+                            Item item = new Item(detail_parameter_panel_width);
+                            pp.addParameter(item);
                         }
                     }
                     pp.updateGUI();
@@ -426,26 +429,25 @@ public class DetailsController implements IController {
             for (IItem i : items) {
                 if (params == null) params = new ArrayList<>();
 
-                DetailParameterUI dp = (DetailParameterUI) i.getComponent();
-                DetailParameterType dpt = dp.getCurrentType();
-
-                String key = dp.getKey();
+                Item item = (Item) i.getComponent();
+                String key = item.getKey();
                 if (key.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Параметр не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (!dp.isRowExists(key)) {
+                if (!item.isRowExists(key)) {
                     JOptionPane.showMessageDialog(null, "Значение параметра может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     w.fillLast();
                     return;
                 }
 
-                String value = dp.getValue();
+                String value = item.getValue();
                 if (value.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
 
                 if (dpt == null) {
                     JOptionPane.showMessageDialog(null, "Тип параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);

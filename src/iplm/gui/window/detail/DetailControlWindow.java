@@ -3,7 +3,6 @@ package iplm.gui.window.detail;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailParameterType;
 import iplm.gui.button.*;
-import iplm.gui.components.detail.DetailParameterUI;
 import iplm.gui.label.DefaultLabel;
 import iplm.gui.label.RoundIconLabel;
 import iplm.gui.layer.intercept.InterceptLayer;

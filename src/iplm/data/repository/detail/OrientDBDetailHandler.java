@@ -20,11 +20,6 @@ import iplm.utility.StringUtility;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//SELECT name
-//        FROM Detail
-//        WHERE name LIKE '%ш%%и%'
-//        LIMIT 5;
-
 public class OrientDBDetailHandler {
     enum C {
         detail("Detail"),
@@ -61,9 +56,7 @@ public class OrientDBDetailHandler {
         value_type("value_type"),
         alias("alias"),
         detail_id("detail_id"),
-        params("params"),
-        info("info"),
-        custom_val("custom_val");
+        params("params");
 
         private String m_string;
 
