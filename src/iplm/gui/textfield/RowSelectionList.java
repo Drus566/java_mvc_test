@@ -32,6 +32,8 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         method = false;
     }
 
+    public void setMaximumVisibleRows(int count) { popup.setMaximumVisibleRows(count); }
+
     public void addCallback(Runnable r) { callbacks.add(r); }
 
     public String getValue() { return getSelectedRow(); }
@@ -116,6 +118,7 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         for (String s : data) {
             this.data.add(s);
         }
+        setValue(getSelectedRow());
         if (popup.isVisible()) showPopup();
     }
 
@@ -124,12 +127,15 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         for (String s : data) {
             this.data.add(s);
         }
+        setValue(getSelectedRow());
         if (popup.isVisible()) showPopup();
     }
 
     public void addData(String data) { this.data.add(data); }
 
     public void removeData(String data) { this.data.remove(data); }
+
+    public void updatePopupData() { popup.updateItems(this.data); }
 
     public void changeData(String old, String name) {
         removeData(old);

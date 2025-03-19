@@ -25,6 +25,18 @@ public class Detail {
     /* Таймстамп обновления */
     public String updated_at;
 
+    public Detail() {
+        id = "";
+        name = "";
+        decimal_number = "";
+        description = "";
+        params = new ArrayList<>();
+        busy = false;
+        user_busy = null;
+        created_at = null;
+        updated_at = null;
+    }
+
     public String paramsToString() {
         StringBuilder sb = new StringBuilder();
         if (params != null) {
@@ -39,9 +51,5 @@ public class Detail {
         }
 
         return sb.toString();
-    }
-
-    public Detail() {
-        params = new ArrayList<>();
     }
 }

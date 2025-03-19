@@ -9,6 +9,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Item extends JPanel implements IItem {
     private IItemListener m_item_listener;
@@ -37,6 +38,9 @@ public class Item extends JPanel implements IItem {
         setVisibleDeleteButton(flag);
     }
 
+    public void updateData(HashSet<String> data) { m_list.updateData(data); }
+    public void updateData(ArrayList<String> data) { m_list.updateData(data); }
+
     public Item(int width_name) {
         Color disabled_background = new Color(255, 255, 255, 255);
         Color disabled_text = new Color(0, 0, 0, 255);
@@ -49,6 +53,7 @@ public class Item extends JPanel implements IItem {
         m_value = new JTextField();
 
         m_list.setEditable(false);
+        m_list.setMaximumVisibleRows(4);
 
 //        m_name.putClientProperty(FlatClientProperties.STYLE, "disabledBackground: " + ColorUtility.colourToString(disabled_background) + "; disabledForeground: " + ColorUtility.colourToString(disabled_text));
         m_value.putClientProperty(FlatClientProperties.STYLE, "inactiveBackground: " + ColorUtility.colourToString(disabled_background));
@@ -88,6 +93,11 @@ public class Item extends JPanel implements IItem {
             }
         }
         return result;
+    }
+    @Override
+    public void updateItem(Object data) {
+        HashSet<String> set = (HashSet<String>) data;
+        m_list.updateData(set);
     }
 
     @Override

@@ -30,6 +30,7 @@ public class DetailService {
     public boolean deleteDetailParameterType(String id) { return m_repository.deleteDetailParameterType(id, m_repository_type); }
     public String updateDetailParameterType(DetailParameterType detail_parameter_type) { return m_repository.updateDetailParameterType(detail_parameter_type, m_repository_type); }
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_repository.getDetailParameterTypes(m_repository_type); }
+    public ArrayList<String> getDetailParameterTypeReferences(String detail_parameter_type_rid) { return m_repository.getDetailParameterTypeReferences(detail_parameter_type_rid, m_repository_type); }
 
     public String addDetail(Detail detail) { return m_repository.addDetail(detail, m_repository_type); }
     public boolean deleteDetail(String id) { return m_repository.deleteDetail(id, m_repository_type); }

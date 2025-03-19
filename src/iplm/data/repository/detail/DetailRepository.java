@@ -116,6 +116,18 @@ public class DetailRepository {
         return result;
     }
 
+    public ArrayList<String> getDetailParameterTypeReferences(String detail_parameter_type_rid, RepositoryType type) {
+        ArrayList<String> result = null;
+        switch (type) {
+            case ORIENTDB:
+                result = m_orient_db_handler.getDetailParameterTypeReferences(detail_parameter_type_rid);
+                break;
+            case MYSQL:
+                break;
+        }
+        return result;
+    }
+
 
     /* Детали */
     public String addDetail(Detail detail, RepositoryType type) {

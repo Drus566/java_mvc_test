@@ -39,6 +39,15 @@ public class DetailsWindow extends AWindow implements ICloseSearchPanelLineListe
     private Runnable m_update_search_panel_action;
     private Runnable m_enter_btn_action;
 
+    private String m_last_request;
+    public String getLastRequest() {
+        if (m_last_request == null) m_last_request = "";
+        return m_last_request;
+    }
+    public void setLastRequest(String request) {
+        m_last_request = request;
+    }
+
     public DetailsWindow() {
         build();
         afterBuild();

@@ -77,7 +77,7 @@ public class RowListPopup extends JPopupMenu {
         mi.addActionListener(e -> {
             if (listener != null) listener.clickPopupRowAction(mi.getText());
         });
-        if (item.length() > 28) mi.setToolTipText(item);
+        mi.setToolTipText(item);
         add(mi);
     }
 

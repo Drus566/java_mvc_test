@@ -153,4 +153,15 @@ public class SearchBar extends JTextField {
         if (result.equalsIgnoreCase(SEARCH_STRING_PLACEHOLDER)) result = "";
         return result;
     }
+
+    public void setSearchText(String text) {
+        if (text.trim().isEmpty()) {
+            setText(SEARCH_STRING_PLACEHOLDER);
+            setForeground(Color.GRAY);
+        }
+        else {
+            setForeground(default_color);
+            setText(text);
+        }
+    }
 }

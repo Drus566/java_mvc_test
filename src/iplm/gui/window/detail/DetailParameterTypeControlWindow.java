@@ -23,6 +23,13 @@ public class DetailParameterTypeControlWindow extends AWindow {
         return result;
     }
 
+    public String getTypeName() {
+        String result = null;
+        int sr = m_table.getTable().getSelectedRow();
+        if (sr != -1) result = (String) m_table.getTableModel().getValueAt(sr, 1);
+        return result;
+    }
+
     private UpdateButton m_update_btn;
     private AddButton m_add_btn;
     private EditButton m_edit_btn;

@@ -27,6 +27,7 @@ import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class DetailsController implements IController {
@@ -100,22 +101,23 @@ public class DetailsController implements IController {
         SearchPanel sp = w.getSearchPanel();
         SearchBar sb = w.getSearchBar();
         DefaultTable t = w.getTable();
+        UpdateButton ub = w.getUpdateButton();
 
         RowSelectionList ni = dcw.getNameInput();
         InputText dni = dcw.getDecimalNumberInput();
         InputTextArea di = dcw.getDescriptionInput();
         ItemListPanel pp = dcw.getParametersPanel();
 
-        AddButton adb = w.getAddDetailButton();
+        AddButton ab = w.getAddDetailButton();
 
-        adb.addAction(() -> {
+        ab.addAction(() -> {
             if (dcw.isEditMode() || dcw.isCreateMode()) {
                 DialogUtility.showDialog("Информация", "Деталь уже в режиме создания | редакитрования", JOptionPane.INFORMATION_MESSAGE);
                 WindowsManager.getInstance().showWindow("DetailControlWindow");
                 return;
             }
             WindowsManager.getInstance().showWindow("DetailControlWindow");
-            dcw.setDetailId("");
+//            dcw.getCurrentDetail();
             ni.setValue("");
             dni.setText("");
             di.getTextArea().setText("");
@@ -165,14 +167,14 @@ public class DetailsController implements IController {
                                         for (DetailParameter dp : detail.params) {
                                             int detail_parameter_panel_width = 160;
                                             Item item = new Item(detail_parameter_panel_width);
+                                            item.updateData(dcw.getDetailParameterTypeListStrings());
                                             pp.addParameter(item);
                                         }
                                     }
                                     pp.updateGUI();
                                     dcw.updateGUI();
-                                    dcw.setDetailId(detail.id);
+                                    dcw.setCurrentDetail(detail);
                                     if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
-
                                 }
                                 else DialogUtility.showErrorIfExists();
                             }
@@ -200,8 +202,9 @@ public class DetailsController implements IController {
             sp.updateSize(sb.getWidth());
         });
 
-        sb.addEnterButtonAction(() -> {
+        Runnable enter_btn_action = () -> {
             String search_text = sb.getSearchText();
+            w.setLastRequest(search_text);
 
             ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
@@ -224,18 +227,9 @@ public class DetailsController implements IController {
                 else args.add(Boolean.FALSE.toString());
                 t.addLine(args);
             }
-//            for (Detail d : details) {
-//                ArrayList<String> args = new ArrayList<>();
-//                args.add(d.id);
-//                args.add(d.decimal_number);
-//                args.add(d.name);
-//                args.add(d.description);
-//                args.add(d.paramsToString());
-//                if (d.params == null || d.params.isEmpty()) args.add(Boolean.TRUE.toString());
-//                else args.add(Boolean.FALSE.toString());
-//                t.addLine(args);
-//            }
-        });
+        };
+
+        sb.addEnterButtonAction(enter_btn_action);
 
         JMenuItem to_detail_control_window = new JMenuItem("Управление деталью");
         to_detail_control_window.addActionListener(e -> {
@@ -251,22 +245,21 @@ public class DetailsController implements IController {
                     for (DetailParameter dp : detail.params) {
                         int detail_parameter_panel_width = 160;
                         Item item = new Item(detail_parameter_panel_width);
+//                        item.updateData(dcw.getDetailParameterTypeListStrings());
                         pp.addParameter(item);
                     }
                 }
                 pp.updateGUI();
                 dcw.updateGUI();
-                dcw.setDetailId(detail.id);
+                dcw.setCurrentDetail(detail);
                 if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
                 dcw.show();
             }
             else DialogUtility.showErrorIfExists();
         });
+
         t.addMenuItem(to_detail_control_window);
-
         t.addDoubleClickAction(() -> {
-//            dcw.show();
-
             // Действие при клике по строке
             if (!dcw.isCreateMode() && !dcw.isEditMode()) {
                 int sr = t.getTable().getSelectedRow();
@@ -293,12 +286,13 @@ public class DetailsController implements IController {
                         for (DetailParameter dp : detail.params) {
                             int detail_parameter_panel_width = 160;
                             Item item = new Item(detail_parameter_panel_width);
+                            item.updateData(dcw.getDetailParameterTypeListStrings());
                             pp.addParameter(item);
                         }
                     }
                     pp.updateGUI();
                     dcw.updateGUI();
-                    dcw.setDetailId(detail.id);
+                    dcw.setCurrentDetail(detail);
                     if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
                     dcw.show();
                 }
@@ -309,6 +303,9 @@ public class DetailsController implements IController {
                 dcw.show();
             }
         });
+
+        ub.addAction(() -> sb.setSearchText(w.getLastRequest()));
+        ub.addAction(enter_btn_action);
     }
 
     // ОКНО УПРАВЛЕНИЯ ДЕТАЛЬЮ
@@ -326,8 +323,10 @@ public class DetailsController implements IController {
         CancelButton canb = w.getCancelButton();
         DirectoryButton ddb = w.getDownloadDetailBtn();
 
+        HashSet<DetailParameterType> dpt_list = w.getDetailParameterTypeList();
+
         ddb.addAction(() -> {
-            if (w.getDetailId() == null || w.getDetailId().isEmpty()) {
+            if (w.getCurrentDetail().id.isEmpty()) {
                 DialogUtility.showDialog("Информация","Выберите деталь для открытия папки детали", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -346,20 +345,19 @@ public class DetailsController implements IController {
         });
 
         /* Подгрузка всех имен деталей при появлении окна */
-        w.addVisibleAction(() -> {
+        Runnable update_detail_names = () -> {
             ArrayList<DetailName> result = m_model.getDetailNames();
             if (result != null) {
                 ArrayList<String> names = (ArrayList<String>) result.stream().map(DetailName::getName).collect(Collectors.toList());
                 ni.updateData(names);
             }
             else DialogUtility.showErrorIfExists();
-        });
+        };
 
         /* Подгрузка всех типов параметров деталей при появлении окна */
-        w.addVisibleAction(() -> {
+        Runnable update_detail_params_type = () -> {
             ArrayList<DetailParameterType> result = m_model.getDetailParameterTypes();
             if (result != null) {
-                ArrayList<DetailParameterType> dpt_list = w.getDetailParameterTypes();
                 dpt_list.clear();
                 for (DetailParameterType dpt : result) {
                     dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
@@ -367,41 +365,19 @@ public class DetailsController implements IController {
                 w.updateParametersPanel();
             }
             else DialogUtility.showErrorIfExists();
-
-//            if (!w.isCreateMode() && !w.isEditMode()) w.doReadMode();
-        });
+        };
 
         /* Подгрузка всех параметров и полей деталей */
-        Runnable update_action = () -> {
-            /* Подгрузка всех имен деталей */
-            ArrayList<DetailName> detail_names_list = m_model.getDetailNames();
-            if (detail_names_list != null) {
-                ArrayList<String> names = (ArrayList<String>) detail_names_list.stream().map(DetailName::getName).collect(Collectors.toList());
-                ni.updateData(names);
-            }
-            else DialogUtility.showErrorIfExists();
-
-            /* Подгрузка всех типов параметров деталей */
-            ArrayList<DetailParameterType> result = m_model.getDetailParameterTypes();
-            if (result != null) {
-                ArrayList<DetailParameterType> dpt_list = w.getDetailParameterTypes();
-                dpt_list.clear();
-                for (DetailParameterType dpt : result) {
-                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
+        Runnable update_detail_action = () -> {
+            if (!w.getCurrentDetail().id.isEmpty()) {
+                Detail detail = m_model.getDetailByID(w.getCurrentDetail().id);
+                if (detail != null) {
+                    w.setCurrentDetail(detail);
+                    w.fillCurrentDetailGUI();
                 }
-                w.updateParametersPanel();
+                else DialogUtility.showErrorIfExists();
             }
-            else DialogUtility.showErrorIfExists();
-
-            if (w.getDetailId() != null && !w.getDetailId().isEmpty()) {
-                // TODO: сделать подгрузку параметров и значений детали (имя, децимальнй номер, описание)
-                Detail detail = m_model.getDetailByID(w.getDetailId());
-                ni.setValue(detail.name);
-                dn.setText(detail.decimal_number);
-                di.getTextArea().setText(detail.description);
-
-                // TODO: Проверка параметров
-            }
+            else DialogUtility.showDialog("Информация", "Выберите деталь для обновления", JOptionPane.INFORMATION_MESSAGE);
         };
 
         /* Добавление детали */
@@ -410,7 +386,6 @@ public class DetailsController implements IController {
             ArrayList<DetailParameter> params = null;
 
             detail.name = ni.getText().trim();
-
             detail.decimal_number = dn.getText();
             detail.description = di.getTextArea().getText();
 
@@ -437,8 +412,7 @@ public class DetailsController implements IController {
                 }
 
                 if (!item.isRowExists(key)) {
-                    JOptionPane.showMessageDialog(null, "Значение параметра может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    w.fillLast();
+                    JOptionPane.showMessageDialog(null, "Параметр может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -448,9 +422,9 @@ public class DetailsController implements IController {
                     return;
                 }
 
-
+                DetailParameterType dpt = w.getDetailParameterTypeByName(key);
                 if (dpt == null) {
-                    JOptionPane.showMessageDialog(null, "Тип параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Параметр не найден", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -481,7 +455,7 @@ public class DetailsController implements IController {
             if (params != null && !params.isEmpty()) {
                 ArrayList<String> exists = new ArrayList<>();
                 for (DetailParameter dp : params) {
-                    DetailParameterType dpt  = dp.type;
+                    DetailParameterType dpt = dp.type;
 
                     for (String s : exists) {
                         if (s.equals(dpt.getName())) {
@@ -497,14 +471,15 @@ public class DetailsController implements IController {
             String result = m_model.addDetail(detail);
             if (result != null) {
                 JOptionPane.showMessageDialog(null, "Деталь добавлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
-                w.setDetailId(result);
+                w.setCurrentDetailId(result);
                 ni.setValue(detail.name);
             }
             else DialogUtility.showErrorIfExists();
         };
 
+        /* Обновление (редактирование) детали */
         Runnable edit_action = () -> {
-            String current_id = w.getDetailId();
+            String current_id = w.getCurrentDetail().id;
             if (current_id == null || current_id.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Выберите деталь для редактирования", "Информация", JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -520,13 +495,11 @@ public class DetailsController implements IController {
 
             if (detail.name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Наименование детали не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                w.fillLast();
                 return;
             }
 
             if (!ni.isExistsValue(detail.name)) {
                 JOptionPane.showMessageDialog(null, "Можно использовать наименование только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                w.fillLast();
                 return;
             }
 
@@ -535,29 +508,28 @@ public class DetailsController implements IController {
             for (IItem i : items) {
                 if (params == null) params = new ArrayList<>();
 
-                DetailParameterUI dp = (DetailParameterUI) i.getComponent();
-                DetailParameterType dpt = dp.getCurrentType();
+                Item item = (Item) i.getComponent();
 
-                String key = dp.getKey();
+                String key = item.getKey();
                 if (key.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Параметр не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (!dp.isRowExists(key)) {
-                    JOptionPane.showMessageDialog(null, "Значение параметра может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    w.fillLast();
+                if (!item.isRowExists(key)) {
+                    JOptionPane.showMessageDialog(null, "Параметр может быть только из списка", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                String value = dp.getValue();
+                String value = item.getValue();
                 if (value.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Значение параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
+                DetailParameterType dpt = w.getDetailParameterTypeByName(key);
                 if (dpt == null) {
-                    JOptionPane.showMessageDialog(null, "Тип параметра не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Параметр не найден", "Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -569,7 +541,6 @@ public class DetailsController implements IController {
                     }
                     catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                        w.fillLast();
                         return;
                     }
                 }
@@ -580,7 +551,6 @@ public class DetailsController implements IController {
                     }
                     catch (Exception e) {
                         JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, должно быть число с плавающей точкой", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                        w.fillLast();
                         return;
                     }
                 }
@@ -595,6 +565,12 @@ public class DetailsController implements IController {
             else DialogUtility.showErrorIfExists();
         };
 
+        w.addActivationWindowAction(update_detail_names);
+        w.addActivationWindowAction(update_detail_params_type);
+
+        w.addVisibleAction(update_detail_names);
+        w.addVisibleAction(update_detail_params_type);
+
         /* Добавление | Редактирование детали в БД */
         cb.addAction(() -> {
             if (w.isCreateMode()) add_action.run();
@@ -603,11 +579,13 @@ public class DetailsController implements IController {
         });
 
         /* Подгрузка детали с БД */
-        ub.addAction(() -> update_action.run());
+        ub.addAction(update_detail_action);
+        ub.addAction(update_detail_names);
+        ub.addAction(update_detail_params_type);
 
         /* Удаление детали */
         db.addAction(() -> {
-            String current_id = w.getDetailId();
+            String current_id = w.getCurrentDetail().id;
             if (current_id == null || current_id.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Выберите деталь для удаления", "Информация", JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -618,13 +596,11 @@ public class DetailsController implements IController {
                 return;
             }
 
-            if (!DialogUtility.showConfirmDialog()) {
-                return;
-            }
+            if (!DialogUtility.showConfirmDialog()) { return; }
 
             boolean result = m_model.deleteDetail(current_id);
             if (result) {
-                w.setDetailId("");
+                w.setCurrentDetail(null);
                 ni.setValue("");
                 dn.setText("");
                 di.getTextArea().setText("");
@@ -637,7 +613,7 @@ public class DetailsController implements IController {
 
         /* Кнопка редактировать */
         eb.addAction(() -> {
-            String current_id = w.getDetailId();
+            String current_id = w.getCurrentDetail().id;
             if (current_id == null || current_id.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Выберите деталь для редактирования", "Информация", JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -754,6 +730,16 @@ public class DetailsController implements IController {
                 JOptionPane.showMessageDialog(null, "Выберите тип параметра детали", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
+            ArrayList<String> refs = m_model.getDetailParameterTypeReferences(id);
+            if (refs == null) {
+                DialogUtility.showErrorIfExists();
+                return;
+            }
+            if (refs.size() > 0) {
+                JOptionPane.showMessageDialog(null, "Невозможно удалить тип параметра детали, т.к. на него уже ссылается параметр детали", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            String type_name = w.getTypeName();
             boolean result = m_model.deleteDetailParameterType(id);
             if (!result) {
                 DialogUtility.showErrorIfExists();
@@ -762,9 +748,10 @@ public class DetailsController implements IController {
             ni.setValue("");
             ai.setText("");
             t.getTableModel().removeRow(t.getTable().getSelectedRow());
-            JOptionPane.showMessageDialog(null, "Наименование детали удалено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
+            ni.removeData(type_name);
+            ni.updatePopupData();
+            JOptionPane.showMessageDialog(null, "Тип параметра детали удален", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
-
     }
 
     // ОКНО НАИМЕНОВАНИЙ ДЕТАЛЕЙ
@@ -876,6 +863,7 @@ public class DetailsController implements IController {
             String d_name = t.getStringFromSelectedRowColumn(1);
             t.getTableModel().removeRow(t.getTable().getSelectedRow());
             nl.removeData(d_name);
+            nl.updatePopupData();
             nl.setValue("");
             JOptionPane.showMessageDialog(null, "Наименование детали удалено", "Успешно", JOptionPane.INFORMATION_MESSAGE);
         });
