@@ -6,7 +6,9 @@ import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.ORecordLazySet;
 import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OElement;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import iplm.data.db.OrientDBDriver;
@@ -354,8 +356,7 @@ public class OrientDBDetailHandler {
         detail_element.setProperty(P.busy.s(), false);
         detail_element.setProperty(P.user_busy.s(), null);
         detail_element.setProperty(P.created_at.s(), DateTimeUtility.timestamp());
-        if (!detail.decimal_number.trim().isEmpty())
-            detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
+        if (!detail.decimal_number.trim().isEmpty()) detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
         else detail_element.setProperty(P.decimal_number.s(), null);
         detail_element.setProperty(P.name.s(), detail.name);
         detail_element.setProperty(P.description.s(), detail.description);
@@ -374,9 +375,8 @@ public class OrientDBDetailHandler {
         }
 
         // Создание детали
-        try {
-            detail_element.save();
-        } catch (Exception e) {
+        try { detail_element.save(); }
+        catch (Exception e) {
             OrientDBDriver.getInstance().setLastError(e.getMessage());
             return null;
         }
@@ -452,81 +452,109 @@ public class OrientDBDetailHandler {
 
         String result = null;
 
-        //            OElement detail_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(current_id));
-//
-//            boolean busy = detail_element.getProperty("busy");
-//            if (busy) {
-//                JOptionPane.showMessageDialog(null, "Деталь уже редактируется другим пользователем", "Информация", JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
         OElement detail_element = null;
-        try {
-            detail_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(detail.id));
-        } catch (Exception e) {
+        try { detail_element = OrientDBDriver.getInstance().getSession().load(new ORecordId(detail.id)); }
+        catch (Exception e) {
             OrientDBDriver.getInstance().setLastError(e.getMessage());
             return result;
         }
 
         detail_element.setProperty(P.busy.s(), false);
         detail_element.setProperty(P.user_busy.s(), null);
-//        detail_element.setProperty(P.created_at.s(), DateTimeUtility.timestamp());
-        detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
+        if (!detail.decimal_number.trim().isEmpty()) detail_element.setProperty(P.decimal_number.s(), detail.decimal_number);
+        else detail_element.setProperty(P.decimal_number.s(), null);
         detail_element.setProperty(P.name.s(), detail.name);
         detail_element.setProperty(P.description.s(), detail.description);
         detail_element.setProperty(P.updated_at.s(), DateTimeUtility.timestamp());
         detail_element.setProperty(P.deleted.s(), detail.deleted);
 
-        ArrayList<OElement> new_param_elements = null;
-        if (detail.params != null) {
-            for (DetailParameter p : detail.params) {
-                if (new_param_elements == null) new_param_elements = new ArrayList<>();
-                OElement parameter = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
-                parameter.setProperty(P.value.s(), p.value);
-                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
-                new_param_elements.add(parameter);
-            }
-        }
-
+        // Get last params ids
         ORecordLazySet lazy_set = detail_element.getProperty(P.params.s());
-        ArrayList<ORecordId> last_params_ids = null;
+        ArrayList<ORecordId> prev_params_ids = null;
         if (lazy_set != null && !lazy_set.isEmpty()) {
-            if (last_params_ids == null) last_params_ids = new ArrayList<>();
+            if (prev_params_ids == null) prev_params_ids = new ArrayList<>();
             Iterator<OIdentifiable> iterator = lazy_set.iterator();
             while (iterator.hasNext()) {
                 OIdentifiable element = iterator.next();
-                last_params_ids.add((ORecordId) element.getRecord().getIdentity());
+                prev_params_ids.add((ORecordId) element.getRecord().getIdentity());
             }
         }
 
+        // Get new parameters
+//        ArrayList<OElement> new_param_elements = null;
+//        if (detail.params != null) {
+//            for (DetailParameter p : detail.params) {
+//                if (new_param_elements == null) new_param_elements = new ArrayList<>();
+//                OElement parameter = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
+//                parameter.setProperty(P.detail_id.s(), new ORecordId(detail.id));
+//                parameter.setProperty(P.value.s(), p.value);
+//                parameter.setProperty(P.type.s(), new ORecordId(p.type.id));
+//                new_param_elements.add(parameter);
+//            }
+//        }
+
+        int diff = 0;
+        int prev_params_size = 0;
+        if (prev_params_ids != null) prev_params_size = prev_params_ids.size();
         try {
             OrientDBDriver.getInstance().getSession().begin();
 
-            if (last_params_ids != null) {
-                for (ORecordId ri : last_params_ids) {
-                    OrientDBDriver.getInstance().getSession().delete(new ORecordId(ri));
+            // Удаление лишних DetailParameter
+            if (detail.params != null && !detail.params.isEmpty()) {
+                diff = detail.params.size() - prev_params_size;
+                // удаляем diff параметров
+                if (diff < 0) {
+                    int module_diff = diff * -1;
+                    for (int i = 0; i < module_diff; i++) {
+                        int remove_index = prev_params_ids.size() - 1;
+                        String remove_rid = prev_params_ids.get(remove_index).toString();
+                        OrientDBDriver.getInstance().getSession().delete(new ORecordId(remove_rid));
+                        prev_params_ids.remove(remove_index);
+                        prev_params_size = prev_params_ids.size();
+                    }
+                }
+            }
+            else if (prev_params_size > 0) {
+                for (int i = 0; i < prev_params_size; i++) {
+                    String remove_rid = prev_params_ids.get(i).toString();
+                    OrientDBDriver.getInstance().getSession().delete(new ORecordId(remove_rid));
                 }
             }
 
             ArrayList<ORecordId> param_ids = new ArrayList<>();
-
-            if (new_param_elements != null) {
-                for (int i = 0; i < new_param_elements.size(); i++) {
-                    OElement p = new_param_elements.get(i);
-                    p.setProperty(P.detail_id.s(), new ORecordId(detail.id));
-                    // Создание параметра
-                    p.save();
-                    detail.params.get(i).id = p.getIdentity().toString();
-                    param_ids.add((ORecordId) p.getIdentity());
+            if (detail.params != null) {
+                int prev_counter = prev_params_size;
+                for (int i = 0; i < detail.params.size(); i++) {
+                    if (diff > 0) {
+                        OElement new_e = OrientDBDriver.getInstance().getSession().newInstance(C.detail_parameter.s());
+                        new_e.setProperty(P.detail_id.s(), new ORecordId(detail.id));
+                        new_e.setProperty(P.value.s(), detail.params.get(i).value);
+                        new_e.setProperty(P.type.s(), new ORecordId(detail.params.get(i).type.id));
+                        new_e.save();
+                        param_ids.add((ORecordId)new_e.getIdentity());
+                        --diff;
+                    }
+                    else {
+                        OElement prev_r = OrientDBDriver.getInstance().getSession().load(prev_params_ids.get(prev_counter-1));
+                        prev_r.setProperty(P.value.s(), detail.params.get(i).value);
+                        prev_r.setProperty(P.type.s(), new ORecordId(detail.params.get(i).type.id));
+                        prev_r.save();
+                        param_ids.add((ORecordId) prev_r.getIdentity());
+                        --prev_counter;
+                    }
                 }
-                detail_element.setProperty(P.params.s(), param_ids);
             }
+
             // Обновление детали (добавление связи с параметрами)
+            detail_element.setProperty(P.params.s(), param_ids);
             detail_element.save();
             result = detail.id;
             OrientDBDriver.getInstance().getSession().commit();
         } catch (Exception e) {
             OrientDBDriver.getInstance().getSession().rollback();
-            OrientDBDriver.getInstance().setLastError(e.getMessage());
+            String error = e.getMessage();
+            if (error == null) error = e.toString();
+            OrientDBDriver.getInstance().setLastError(error);
             result = null;
         }
         return result;
@@ -632,7 +660,7 @@ public class OrientDBDetailHandler {
             sb.append("*").append(n_request).append("*").append(" || ");
             sb.append(n_request).append("~");
             sb.append("'");
-            sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
+//            sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
             sb.append(") = true");
 
             if (request.indexOf('[') != -1) {
@@ -648,11 +676,30 @@ public class OrientDBDetailHandler {
             if (params_str != null && !params_str.isEmpty()) {
                 if (params_str.equals("!")) {
                     if (!first) sb.append(" AND ");
-                    sb.append(" params != [] and params != null");
+                    else first = false;
+
+                    sb.append(" params != [] and params != null and params != '' and params IS NOT NULL");
                 }
                 else {
                     String[] params = params_str.split(",");
                     for (String param : params) {
+                        char first_char = param.trim().charAt(0);
+                        if (first_char == '+' || first_char == '-') {
+                            if (!first) sb.append(" AND ");
+                            else first = false;
+
+                            String parameter_type_name = param.trim();
+                            sb.append(" params IN (");
+                            sb.append(" SELECT @rid FROM DetailParameter ");
+                            sb.append(" WHERE ");
+                            sb.append("type IN (SELECT @rid FROM DetailParameterType WHERE ");
+                            sb.append("SEARCH_CLASS(");
+                            sb.append("'");
+                            sb.append(parameter_type_name);
+                            sb.append("') = true))");
+                            continue;
+                        }
+
                         String[] key_val = param.trim().split("=");
                         if (key_val.length == 2) {
                             String key = key_val[0].trim();
@@ -891,7 +938,6 @@ public class OrientDBDetailHandler {
 
         return result;
     }
-
 }
 
 //    public boolean dropDetail(String id) {

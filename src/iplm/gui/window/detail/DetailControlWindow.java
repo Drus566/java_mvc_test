@@ -48,17 +48,29 @@ public class DetailControlWindow extends AWindow {
         return m_current_detail;
     }
     public void setCurrentDetail(Detail detail) { m_current_detail = detail; }
+    public void displayCurrentDetailLabel() {
+        Detail detail = getCurrentDetail();
+        String str_decimal_number = detail.decimal_number != null ? detail.decimal_number : "";
+        String str_id = detail.id != null ? detail.id : "";
+        m_select_detail_label.setText(str_id + "  " + str_decimal_number + "  " + detail.name);
+    }
+    public void clearCurrentDetailLabel() { m_select_detail_label.setText(""); }
     public void setCurrentDetailId(String id) { getCurrentDetail().id = id; }
     public void fillCurrentDetailGUI() {
-        m_detail_name_input.setValue(m_current_detail.name);
-        m_detail_decimal_number_input.setText(m_current_detail.decimal_number);
-        m_detail_description_input.getTextArea().setText(m_current_detail.description);
+        Detail detail = getCurrentDetail();
+        m_detail_name_input.setValue(detail.name);
+        m_detail_decimal_number_input.setText(detail.decimal_number);
+        m_detail_description_input.getTextArea().setText(detail.description);
         m_parameters_panel.removeItems();
-        if (m_current_detail.params != null) {
-            for (DetailParameter dp : m_current_detail.params) {
+        if (detail.params != null) {
+            for (DetailParameter dp : detail.params) {
                 Item item = new Item(160);
                 item.setKey(dp.type.name);
                 item.setValue((String) dp.value);
+                item.updateData(getDetailParameterTypeListStrings());
+                m_parameters_panel.addParameter(item);
+                m_parameters_panel.updateGUI();
+                updateGUI();
             }
         }
     }
@@ -85,7 +97,9 @@ public class DetailControlWindow extends AWindow {
 
     // TOP
     private JPanel m_top_panel;
-    // Индикатор выбрана ли деталь
+    // Децимальный номер выбранной детали
+    private DefaultLabel m_select_detail_decimal_number;
+    // Имя выбранной детали
     private DefaultLabel m_select_detail_label;
     // Обновить данные детали
     private UpdateButton m_update_btn;
@@ -176,7 +190,9 @@ public class DetailControlWindow extends AWindow {
 
         m_top_panel = new JPanel(new MigLayout("inset 4"));
         m_select_detail_label = new DefaultLabel("");
+        m_select_detail_decimal_number = new DefaultLabel("");
         FontUtility.multResize(m_select_detail_label, 1.5f);
+        FontUtility.multResize(m_select_detail_decimal_number, 1.5f);
 //        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
 
         buildModeBtnPanel();
@@ -217,16 +233,13 @@ public class DetailControlWindow extends AWindow {
 
         m_add_detail_btn.addAction(() -> doCreateMode());
         m_cancel_btn.addAction(() -> {
-            m_parameters_panel.fillLastItems();
-            fillLast();
+            fillCurrentDetailGUI();
             doReadMode();
             m_parameters_panel.updateGUI();
         });
     }
 
     private void buildBody() {
-        int name_input_list_panel_max_height = 260;
-
         m_body_panel = new JPanel(new MigLayout("inset 10"));
 
         m_detail_name_panel = new JPanel(new MigLayout("inset 0, gap rel -2"));
@@ -313,9 +326,12 @@ public class DetailControlWindow extends AWindow {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                m_parameters_panel.fillLastItems();
-                fillLast();
+//                m_parameters_panel.fillLastItems();
+//                fillLast();
                 doReadMode();
+                clearCurrentDetailLabel();
+                setCurrentDetail(null);
+                fillCurrentDetailGUI();
             }
 
             @Override

@@ -26,7 +26,7 @@ public class Item extends JPanel implements IItem {
     public String getKey() { return m_list.getText().trim(); }
     public String getValue() { return m_value.getText().trim(); }
 
-    public void setKey(String key) { m_list.addData(key); }
+    public void setKey(String key) { m_list.setValue(key); }
     public void setValue(String value) { m_value.setText(value); }
 
     public boolean isRowExists(String row) { return m_list.isDataExists(row); }

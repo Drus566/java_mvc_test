@@ -7,6 +7,8 @@ public class DetailParameter {
     public String id;
     /* Id детали */
     public String detail_id;
+    /* ID типа детали */
+    public String detail_parameter_type_id;
     /* Тип детали */
     public DetailParameterType type;
     /* Значение */

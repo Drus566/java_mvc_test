@@ -118,6 +118,7 @@ public class DetailsController implements IController {
             }
             WindowsManager.getInstance().showWindow("DetailControlWindow");
 //            dcw.getCurrentDetail();
+            dcw.clearCurrentDetailLabel();
             ni.setValue("");
             dni.setText("");
             di.getTextArea().setText("");
@@ -125,82 +126,82 @@ public class DetailsController implements IController {
             pp.updateGUI();
         });
 
-        sb.addTapAction(() -> {
-            // Максимальное количество для отображения из БД
-            int MAX_COUNT = 5;
-            // Максимальное количество символов
-            int MAX_TEXT_LENGTH = 100;
-
-            // Если слишком длинное сообщение, не обрабатываем его
-            String search_text = sb.getSearchText();
-            search_text = StringUtility.cutToChar(search_text, '[');
-
-            if (search_text.length() > MAX_TEXT_LENGTH) return;
-
-            // Очищаем панель
-            sp.removeLines();
-
-            // Если строка поиска не пустая
-            if (!search_text.isEmpty()) {
-                // Получаем детали без зависимостей
-                ArrayList<Detail> details = m_model.getDetails(search_text);
-                if (details != null) {
-                    for (Detail d : details) {
-                        if (MAX_COUNT <= 0) break;
-
-                        String preview = (d.decimal_number == null ? "" : d.decimal_number) + " " + d.name + " " + d.description;
-
-                        // Добавляем строку в панель поиска
-                        sp.addActualLine(d.id, preview, () -> {
-                            dcw.show();
-                            // Действие при клике по строке
-                            if (!dcw.isCreateMode() && !dcw.isEditMode()) {
-                                sp.setVisible(false);
-                                Detail detail = m_model.getDetailByIDWithDepends(d.id);
-                                if (detail != null)  {
-                                    ni.setValue(detail.name);
-                                    dni.setText(detail.decimal_number);
-                                    di.getTextArea().setText(detail.description);
-
-                                    pp.removeItems();
-                                    if (detail.params != null) {
-                                        for (DetailParameter dp : detail.params) {
-                                            int detail_parameter_panel_width = 160;
-                                            Item item = new Item(detail_parameter_panel_width);
-                                            item.updateData(dcw.getDetailParameterTypeListStrings());
-                                            pp.addParameter(item);
-                                        }
-                                    }
-                                    pp.updateGUI();
-                                    dcw.updateGUI();
-                                    dcw.setCurrentDetail(detail);
-                                    if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
-                                }
-                                else DialogUtility.showErrorIfExists();
-                            }
-                            else {
-                                DialogUtility.showDialog("Информация", "Деталь уже в режиме редактирования | создания", JOptionPane.INFORMATION_MESSAGE);
-//                                dcw.show();
-                            }
-                        });
-
-                        --MAX_COUNT;
-                    }
-                }
-
-                /* Find in cache */
-//                ArrayList<RequestHistory> request_history = StorageHistory.getInstance().search(StorageHistoryType.DETAILS, search_text);
-//                if (request_history != null) {
-//                    for (int i = 0; i < request_history.size(); i++) {
-//                        RequestHistory rh = request_history.get(i);
-//                        sp.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, m_details_view.getDetailsWindow());
+//        sb.addTapAction(() -> {
+//            // Максимальное количество для отображения из БД
+//            int MAX_COUNT = 5;
+//            // Максимальное количество символов
+//            int MAX_TEXT_LENGTH = 100;
+//
+//            // Если слишком длинное сообщение, не обрабатываем его
+//            String search_text = sb.getSearchText();
+//            search_text = StringUtility.cutToChar(search_text, '[');
+//
+//            if (search_text.length() > MAX_TEXT_LENGTH) return;
+//
+//            // Очищаем панель
+//            sp.removeLines();
+//
+//            // Если строка поиска не пустая
+//            if (!search_text.isEmpty()) {
+//                // Получаем детали без зависимостей
+//                ArrayList<Detail> details = m_model.getDetails(search_text);
+//                if (details != null) {
+//                    for (Detail d : details) {
+//                        if (MAX_COUNT <= 0) break;
+//
+//                        String preview = (d.decimal_number == null ? "" : d.decimal_number) + " " + d.name + " " + d.description;
+//
+//                        // Добавляем строку в панель поиска
+//                        sp.addActualLine(d.id, preview, () -> {
+//                            dcw.show();
+//                            // Действие при клике по строке
+//                            if (!dcw.isCreateMode() && !dcw.isEditMode()) {
+//                                sp.setVisible(false);
+//                                Detail detail = m_model.getDetailByIDWithDepends(d.id);
+//                                if (detail != null)  {
+//                                    ni.setValue(detail.name);
+//                                    dni.setText(detail.decimal_number);
+//                                    di.getTextArea().setText(detail.description);
+//
+//                                    pp.removeItems();
+//                                    if (detail.params != null) {
+//                                        for (DetailParameter dp : detail.params) {
+//                                            int detail_parameter_panel_width = 160;
+//                                            Item item = new Item(detail_parameter_panel_width);
+//                                            item.updateData(dcw.getDetailParameterTypeListStrings());
+//                                            pp.addParameter(item);
+//                                        }
+//                                    }
+//                                    pp.updateGUI();
+//                                    dcw.updateGUI();
+//                                    dcw.setCurrentDetail(detail);
+//                                    if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
+//                                }
+//                                else DialogUtility.showErrorIfExists();
+//                            }
+//                            else {
+//                                DialogUtility.showDialog("Информация", "Деталь уже в режиме редактирования | создания", JOptionPane.INFORMATION_MESSAGE);
+////                                dcw.show();
+//                            }
+//                        });
+//
+//                        --MAX_COUNT;
 //                    }
 //                }
-            }
-            // Обновляем панель
-            sp.updateLines();
-            sp.updateSize(sb.getWidth());
-        });
+//
+//                /* Find in cache */
+////                ArrayList<RequestHistory> request_history = StorageHistory.getInstance().search(StorageHistoryType.DETAILS, search_text);
+////                if (request_history != null) {
+////                    for (int i = 0; i < request_history.size(); i++) {
+////                        RequestHistory rh = request_history.get(i);
+////                        sp.addHistoryLine(rh.id, (String) rh.params.get("Query"), rh.type, m_details_view.getDetailsWindow());
+////                    }
+////                }
+//            }
+//            // Обновляем панель
+//            sp.updateLines();
+//            sp.updateSize(sb.getWidth());
+//        });
 
         Runnable enter_btn_action = () -> {
             String search_text = sb.getSearchText();
@@ -245,13 +246,16 @@ public class DetailsController implements IController {
                     for (DetailParameter dp : detail.params) {
                         int detail_parameter_panel_width = 160;
                         Item item = new Item(detail_parameter_panel_width);
-//                        item.updateData(dcw.getDetailParameterTypeListStrings());
+                        item.setValue((String) dp.value);
+                        item.setKey(dp.type.name);
+                        item.updateData(dcw.getDetailParameterTypeListStrings());
                         pp.addParameter(item);
                     }
                 }
                 pp.updateGUI();
                 dcw.updateGUI();
                 dcw.setCurrentDetail(detail);
+                dcw.displayCurrentDetailLabel();
                 if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
                 dcw.show();
             }
@@ -293,6 +297,7 @@ public class DetailsController implements IController {
                     pp.updateGUI();
                     dcw.updateGUI();
                     dcw.setCurrentDetail(detail);
+                    dcw.displayCurrentDetailLabel();
                     if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
                     dcw.show();
                 }
@@ -373,6 +378,7 @@ public class DetailsController implements IController {
                 Detail detail = m_model.getDetailByID(w.getCurrentDetail().id);
                 if (detail != null) {
                     w.setCurrentDetail(detail);
+                    w.displayCurrentDetailLabel();
                     w.fillCurrentDetailGUI();
                 }
                 else DialogUtility.showErrorIfExists();
@@ -471,10 +477,13 @@ public class DetailsController implements IController {
             String result = m_model.addDetail(detail);
             if (result != null) {
                 JOptionPane.showMessageDialog(null, "Деталь добавлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
-                w.setCurrentDetailId(result);
-                ni.setValue(detail.name);
+                w.setCurrentDetail(detail);
+                w.displayCurrentDetailLabel();
             }
-            else DialogUtility.showErrorIfExists();
+            else {
+                DialogUtility.showErrorIfExists();
+                w.displayCurrentDetailLabel();
+            }
         };
 
         /* Обновление (редактирование) детали */
@@ -555,14 +564,33 @@ public class DetailsController implements IController {
                     }
                 }
             }
+            // проверка одинаковых значений типов параметров
+            if (params != null && !params.isEmpty()) {
+                ArrayList<String> exists = new ArrayList<>();
+                for (DetailParameter dp : params) {
+                    DetailParameterType dpt = dp.type;
+
+                    for (String s : exists) {
+                        if (s.equals(dpt.getName())) {
+                            JOptionPane.showMessageDialog(null, "Нельзя добавлять два параметра одинакового типа", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                    exists.add(dpt.name);
+                }
+            }
             detail.params = params;
 
             String result = m_model.updateDetail(detail);
             if (result != null) {
                 JOptionPane.showMessageDialog(null, "Деталь обновлена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
-                ni.setValue(detail.name);
+                w.setCurrentDetail(detail);
+                w.displayCurrentDetailLabel();
             }
-            else DialogUtility.showErrorIfExists();
+            else {
+                DialogUtility.showErrorIfExists();
+                w.fillCurrentDetailGUI();
+            }
         };
 
         w.addActivationWindowAction(update_detail_names);
@@ -601,14 +629,19 @@ public class DetailsController implements IController {
             boolean result = m_model.deleteDetail(current_id);
             if (result) {
                 w.setCurrentDetail(null);
+                w.clearCurrentDetailLabel();
                 ni.setValue("");
                 dn.setText("");
                 di.getTextArea().setText("");
                 w.getParametersPanel().removeItems();
                 w.getParametersPanel().updateGUI();
+                w.displayCurrentDetailLabel();
                 JOptionPane.showMessageDialog(null, "Деталь удалена", "Успешно", JOptionPane.INFORMATION_MESSAGE);
             }
-            else DialogUtility.showErrorIfExists();
+            else  {
+                DialogUtility.showErrorIfExists();
+                w.fillCurrentDetailGUI();
+            }
         });
 
         /* Кнопка редактировать */

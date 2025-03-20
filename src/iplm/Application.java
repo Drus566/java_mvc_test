@@ -27,10 +27,6 @@ public class Application {
         OrientDBDriver.getInstance().initDetailClasses();
         OrientDBDriver.getInstance().initDetailData();
 
-        //        ThreadPoolWrapper threadPool = new ThreadPoolWrapper(
-//                2, 5, 60, TimeUnit.SECONDS
-//        );
-
         ThreadUtility.getInstance().init(5, 10, 5, TimeUnit.SECONDS);
         StorageHistory.getInstance().init();
         Resources.getInstance().init();
