@@ -17,11 +17,11 @@ import iplm.gui.textfield.RowSelectionList;
 import iplm.gui.textfield.SearchBar;
 import iplm.gui.window.detail.*;
 import iplm.managers.WindowsManager;
+import iplm.mvc.helpers.details.SearchQueryParserHelper;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
-import iplm.utility.StringUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -38,6 +38,8 @@ public class DetailsController implements IController {
     private final DetailParameterTypeControlView m_detail_parameter_type_control_view;
     private final DetailSettingsView m_detail_settings_view;
 
+    private SearchQueryParserHelper m_parser_helper;
+
     public DetailsController(DetailModel model,
                              DetailsView detail_view,
                              DetailControlView detail_control_view,
@@ -50,6 +52,8 @@ public class DetailsController implements IController {
         m_detail_name_control_view = detail_name_control_view;
         m_detail_parameter_type_control_view = detail_parameter_type_control_view;
         m_detail_settings_view = detail_settings_view;
+
+        m_parser_helper = new SearchQueryParserHelper();
     }
 
     // ОКНО НАСТРОЕК ДЕТАЛЕЙ
@@ -206,6 +210,12 @@ public class DetailsController implements IController {
         Runnable enter_btn_action = () -> {
             String search_text = sb.getSearchText();
             w.setLastRequest(search_text);
+
+//            if (m_parser_helper.isValidQuery(search_text)) search_text = m_parser_helper.escapeQuery(search_text);
+//            else {
+//                DialogUtility.showDialog("Ошибка", "Некорректный запрос", JOptionPane.INFORMATION_MESSAGE);
+//                return;
+//            }
 
             ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
@@ -375,7 +385,7 @@ public class DetailsController implements IController {
         /* Подгрузка всех параметров и полей деталей */
         Runnable update_detail_action = () -> {
             if (!w.getCurrentDetail().id.isEmpty()) {
-                Detail detail = m_model.getDetailByID(w.getCurrentDetail().id);
+                Detail detail = m_model.getDetailByIDWithDepends(w.getCurrentDetail().id);
                 if (detail != null) {
                     w.setCurrentDetail(detail);
                     w.displayCurrentDetailLabel();

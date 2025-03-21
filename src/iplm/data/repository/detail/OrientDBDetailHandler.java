@@ -652,6 +652,7 @@ public class OrientDBDetailHandler {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT FROM Detail WHERE ");
 
+        // СТРОКА ЗАПРОСА ДО ПАРАМЕТРОВ
         if (!n_request.isEmpty()) {
             sb.append("SEARCH_CLASS(");
             sb.append("'");
@@ -660,7 +661,6 @@ public class OrientDBDetailHandler {
             sb.append("*").append(n_request).append("*").append(" || ");
             sb.append(n_request).append("~");
             sb.append("'");
-//            sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
             sb.append(") = true");
 
             if (request.indexOf('[') != -1) {
@@ -670,21 +670,23 @@ public class OrientDBDetailHandler {
 
         boolean first = true;
 
-        // Есть ли запрос с параметрами
+        // ЕСЛИ ЕСТЬ ПАРАМЕТРЫ
         if (request.contains("[")) {
             String params_str = StringUtility.getBetweenChars(request, '[', ']').trim();
             if (params_str != null && !params_str.isEmpty()) {
+                // ДЕТАЛИ ТОЛЬКО С ПАРАМЕТРАМИ
                 if (params_str.equals("!")) {
                     if (!first) sb.append(" AND ");
                     else first = false;
-
                     sb.append(" params != [] and params != null and params != '' and params IS NOT NULL");
                 }
                 else {
                     String[] params = params_str.split(",");
                     for (String param : params) {
+
+                        // ЕСЛИ ПАРАМЕТР ТИПА [+длина]
                         char first_char = param.trim().charAt(0);
-                        if (first_char == '+' || first_char == '-') {
+                        if (first_char == '+') {
                             if (!first) sb.append(" AND ");
                             else first = false;
 
@@ -700,6 +702,7 @@ public class OrientDBDetailHandler {
                             continue;
                         }
 
+                        // ЕСЛИ ПАРАМЕТР ТИПА [p1="xxx"]
                         String[] key_val = param.trim().split("=");
                         if (key_val.length == 2) {
                             String key = key_val[0].trim();
@@ -709,11 +712,16 @@ public class OrientDBDetailHandler {
                             boolean is_string = val.indexOf("\"") == -1 ? false : true;
 
                             String dec_str = val;
-                            int range_val = -1;
+                            float range_val = -1;
                             String range_str = StringUtility.getBetweenChars(val, '(', ')');
+                            char range_symbol = ' ';
                             if (range_str != null) {
+                                if (range_str.charAt(0) == '+' || range_str.charAt(0) == '-') {
+                                    range_symbol = range_str.charAt(0);
+                                    range_str = range_str.substring(1);
+                                }
                                 try {
-                                    range_val = Integer.parseInt(range_str);
+                                    range_val = Float.parseFloat(range_str);
                                     dec_str = StringUtility.cutToChar(val, '(');
                                 }
                                 catch(Exception e) {}
@@ -726,56 +734,90 @@ public class OrientDBDetailHandler {
                             sb.append(" SELECT @rid FROM DetailParameter ");
                             sb.append(" WHERE ");
                             sb.append("type IN (SELECT @rid FROM DetailParameterType WHERE ");
+                            // ПОИСК ПО ИМЕНИ ТИПА ПАРАМЕТРА
                             sb.append("SEARCH_CLASS(");
                             sb.append("'");
                             sb.append(key).append(" || ");
                             sb.append(key).append("*").append(" || ");
-                            sb.append("*").append(key).append("*").append(" || ");
-                            sb.append(key).append("~");
+                            sb.append("*").append(key).append("*");
+                            // sb.append(key).append("~");
                             sb.append("'");
-//                        if (n_request.isEmpty()) sb.append(", { \"sort\": [{ 'field': 'е', reverse:false, type:'STRING' }]}");
                             sb.append(") = true)");
 
-
+                            // ЕСЛИ ЗНАЧЕНИЕ ПАРАМЕТРА ЭТО СТРОКА
+//                            if (is_string) {
+//                                String str_val = val.replace("\"", "");
+//                                sb.append("AND SEARCH_CLASS(");
+//                                sb.append("'");
+//                                sb.append(str_val).append(" || ");
+//                                sb.append(str_val).append("*").append(" || ");
+//                                sb.append("*").append(str_val).append("*").append(" || ");
+//                                sb.append(str_val).append("~");
+//                            }
                             if (is_string) {
                                 String str_val = val.replace("\"", "");
-//                            sb.append(" AND SEARCH_CLASS('value:");
+
+                                int space_index = str_val.lastIndexOf(' ');
+                                if (space_index != -1) {
+                                    String digits_str = str_val.substring(space_index);
+                                    StringUtility.cutToChar(digits_str, '(');
+                                    float dec_val = 0;
+                                    try {
+                                        int dec_val_i = Integer.parseInt(digits_str, 10);
+                                        dec_val = (float)dec_val_i;
+                                    }
+                                    catch (Exception e) {
+                                        try { dec_val = Float.parseFloat(digits_str); }
+                                        catch (Exception ee) {}
+                                    }
+                                    if (is_range) {
+                                        float min = dec_val - range_val;
+                                        float max = dec_val + range_val;
+                                        if (range_symbol == '-') max = dec_val;
+                                        else if (range_symbol == '+') min = dec_val;
+                                        float round_min = (float) Math.round(min * 10) / 10;
+                                        float round_max = (float) Math.round(max * 10) / 10;
+                                        sb.append("AND SEARCH_CLASS(");
+                                        sb.append("'");
+                                        sb.append("[").append(round_min).append(" TO ");
+                                        sb.append(round_max).append("]");
+                                        sb.append("'");
+                                        sb.append(") = true ");
+                                    }
+                                }
+                                String words = StringUtility.cutToIndex(str_val, space_index);
+
                                 sb.append("AND SEARCH_CLASS(");
                                 sb.append("'");
-                                sb.append(str_val).append(" || ");
-                                sb.append(str_val).append("*").append(" || ");
-                                sb.append("*").append(str_val).append("*").append(" || ");
-                                sb.append(str_val).append("~");
-//                            sb.append("'");
-//                            sb.append(", { \"sort\": [{ 'field': 'name', reverse:false, type:'STRING' }]}");
-//                            sb.append(") = true)");
+                                sb.append(words).append(" || ");
+                                sb.append(words).append("*").append(" || ");
+                                sb.append("*").append(words).append("*").append(" || ");
+                                sb.append(words).append("~");
                             }
+
+                            // ЕСЛИ ЗНАЧЕНИЕ ПАРАМЕТРА ЭТО ЧИСЛО
                             else {
+                                float dec_val = 0;
                                 sb.append(" AND SEARCH_CLASS('value:");
                                 try {
-                                    int i = Integer.parseInt(dec_str, 10);
-
-                                    if (is_range) {
-                                        int min = i - range_val;
-                                        int max = i + range_val;
-                                        sb.append("[").append(min).append(" TO ");
-                                        sb.append(max).append("]");
-                                    }
-                                    else sb.append(val);
+                                    int dec_val_i = Integer.parseInt(dec_str, 10);
+                                    dec_val = (float)dec_val_i;
                                 }
                                 catch (Exception e) {
-                                    try {
-                                        float f = Float.parseFloat(dec_str);
-                                        if (is_range) {
-                                            int min = (int) (f - range_val);
-                                            int max = (int) (f + range_val);
-                                            sb.append("[").append(min).append(" TO ");
-                                            sb.append(max).append("]");
-                                        }
-                                        else sb.append(val);
-                                    }
+                                    try { dec_val = Float.parseFloat(dec_str); }
                                     catch (Exception ee) {}
                                 }
+                                if (is_range) {
+                                    float min = dec_val - range_val;
+                                    float max = dec_val + range_val;
+                                    if (range_symbol == '-') max = dec_val;
+                                    else if (range_symbol == '+') min = dec_val;
+                                    float round_min = (float) Math.round(min * 10) / 10;
+                                    float round_max = (float) Math.round(max * 10) / 10;
+                                    sb.append("[").append(round_min).append(" TO ");
+                                    sb.append(round_max).append("]");
+                                }
+                                else sb.append(val);
                             }
                             sb.append("') = true)");
                         }

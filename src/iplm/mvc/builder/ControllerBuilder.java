@@ -10,7 +10,7 @@ import iplm.mvc.controllers.IController;
 import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 
-public class    ControllerBuilder {
+public class ControllerBuilder {
     public IController build(ControllerComponent component, ModelsManager models_manager, ViewsManager views_manager) {
         IController result = null;
 
