@@ -754,17 +754,23 @@ public class OrientDBDetailHandler {
 //                                sb.append("*").append(str_val).append("*").append(" || ");
 //                                sb.append(str_val).append("~");
 //                            }
+
+                            String words;
                             if (is_string) {
-                                String str_val = val.replace("\"", "");
+                                String str_val = val.replace("\"", "").trim();
+                                words = str_val;
+                                boolean is_int = false;
 
                                 int space_index = str_val.lastIndexOf(' ');
                                 if (space_index != -1) {
                                     String digits_str = str_val.substring(space_index);
-                                    StringUtility.cutToChar(digits_str, '(');
+                                    digits_str = StringUtility.cutToChar(digits_str, '(');
+                                    digits_str = digits_str.trim();
                                     float dec_val = 0;
                                     try {
                                         int dec_val_i = Integer.parseInt(digits_str, 10);
                                         dec_val = (float)dec_val_i;
+                                        is_int = true;
                                     }
                                     catch (Exception e) {
                                         try { dec_val = Float.parseFloat(digits_str); }
@@ -784,9 +790,19 @@ public class OrientDBDetailHandler {
                                         sb.append("'");
                                         sb.append(") = true ");
                                     }
+                                    else {
+                                        sb.append("AND SEARCH_CLASS(");
+                                        sb.append("'");
+                                        if (is_int) {
+                                            int i_val = (int)dec_val;
+                                            sb.append(i_val);
+                                        }
+                                        else { sb.append(dec_val); }
+                                        sb.append("'");
+                                        sb.append(") = true ");
+                                    }
+                                    words = StringUtility.cutToIndex(str_val, space_index);
                                 }
-                                String words = StringUtility.cutToIndex(str_val, space_index);
-
                                 sb.append("AND SEARCH_CLASS(");
                                 sb.append("'");
                                 sb.append(words).append(" || ");

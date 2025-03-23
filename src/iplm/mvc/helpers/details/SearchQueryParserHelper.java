@@ -6,9 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SearchQueryParserHelper {
-    Pattern strong_param = Pattern.compile("^\\+[a-zA-Z0-9\\.]+$");
-    Pattern param_name = Pattern.compile("^[a-zA-Z0-9\\.]+$");
-    Pattern param_string_value = Pattern.compile("^\"[a-zA-Z0-9\\.]+\"$");
+    Pattern strong_param = Pattern.compile("^\\+[а-яА-Яa-zA-Z0-9\\.]+$");
+    Pattern param_name = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
+    Pattern param_string_value = Pattern.compile("^\"[а-яА-Яa-zA-Z0-9\\. ]+\"$");
 
 
     public SearchQueryParserHelper() {}
@@ -94,7 +94,7 @@ public class SearchQueryParserHelper {
                 }
                 if (!result) return result;
             }
-            // [материал="золото",длина=5.3(3)]
+            // [материал="золото",длина=5.3(3),материал1="золото 4.3(1.2)"]
             else {
                 boolean result = true;
                 String[] p_list = params.split(",");
@@ -119,10 +119,54 @@ public class SearchQueryParserHelper {
 
                     // Если это строка
                     if (value.trim().charAt(0) == '\"') {
-                        matcher = param_string_value.matcher(value);
-                        if (!matcher.matches()) {
+                        String str = StringUtility.getBetweenChars(value, '"', '"');
+                        if (str == null || str.trim().isEmpty()) {
                             result = false;
                             break;
+                        }
+                        int last_space = str.trim().lastIndexOf(' ');
+                        if (last_space != -1) {
+                            String dec_part = str.substring(last_space).trim();
+                            String dec = StringUtility.cutToChar(dec_part, '(');
+
+                            try {
+                                Float.parseFloat(dec);
+                                String dec_range = StringUtility.getBetweenChars(dec_part, '(', ')');
+                                if (dec_range != null) {
+                                    // Если количество символов скобок много
+                                    if (StringUtility.getCountSymbols(dec_range, ')') > 1 || StringUtility.getCountSymbols(dec_range, '(') > 1) {
+                                        result = false;
+                                        break;
+                                    }
+                                    // Если есть открывающая скобка, то должна быть закрывающая
+                                    int ch1 = dec_range.indexOf('(');
+                                    if (ch1 != -1) {
+                                        int ch2 = dec_range.lastIndexOf(')');
+                                        if (!(ch2 != -1 && ch1 != -1 && ch1 < ch2)) {
+                                            result = false;
+                                            break;
+                                        }
+                                    }
+                                    // Если есть закрывающая, но нет открывающей
+                                    if (ch1 == -1 && dec_range.lastIndexOf(')') != -1) {
+                                        result = false;
+                                        break;
+                                    }
+
+                                    try { Float.parseFloat(dec_range); }
+                                    catch (Exception e) {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            catch (Exception e) {
+                                matcher = param_string_value.matcher(value.trim());
+                                if (!matcher.matches()) {
+                                    result = false;
+                                    break;
+                                }
+                            }
                         }
                     }
                     // Если это число

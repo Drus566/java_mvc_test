@@ -211,11 +211,11 @@ public class DetailsController implements IController {
             String search_text = sb.getSearchText();
             w.setLastRequest(search_text);
 
-//            if (m_parser_helper.isValidQuery(search_text)) search_text = m_parser_helper.escapeQuery(search_text);
-//            else {
-//                DialogUtility.showDialog("Ошибка", "Некорректный запрос", JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
+            if (m_parser_helper.isValidQuery(search_text)) search_text = m_parser_helper.escapeQuery(search_text);
+            else {
+                DialogUtility.showDialog("Ошибка", "Некорректный запрос", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
             ArrayList<Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
@@ -281,8 +281,6 @@ public class DetailsController implements IController {
 
                 sp.setVisible(false);
 
-
-
                 Detail detail = m_model.getDetailByIDWithDepends(id);
                 if (detail != null)  {
                     // true open pdf
@@ -290,24 +288,9 @@ public class DetailsController implements IController {
                     boolean opened = m_model.openDetailPdf(detail_fullname);
                     if (!opened) opened = m_model.openDetailDir(detail_fullname);
                     if (opened) return;
-
-                    ni.setValue(detail.name);
-                    dni.setText(detail.decimal_number);
-                    di.getTextArea().setText(detail.description);
-
-                    pp.removeItems();
-                    if (detail.params != null) {
-                        for (DetailParameter dp : detail.params) {
-                            int detail_parameter_panel_width = 160;
-                            Item item = new Item(detail_parameter_panel_width);
-                            item.updateData(dcw.getDetailParameterTypeListStrings());
-                            pp.addParameter(item);
-                        }
-                    }
-                    pp.updateGUI();
-                    dcw.updateGUI();
                     dcw.setCurrentDetail(detail);
                     dcw.displayCurrentDetailLabel();
+                    dcw.fillCurrentDetailGUI();
                     if (!dcw.isCreateMode() && !dcw.isEditMode()) dcw.doReadMode();
                     dcw.show();
                 }
@@ -375,9 +358,11 @@ public class DetailsController implements IController {
             if (result != null) {
                 dpt_list.clear();
                 for (DetailParameterType dpt : result) {
-                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
+//                    dpt_list.add(new DetailParameterType(dpt.id, dpt.name, dpt.alias, dpt.type));
+                    dpt_list.add(dpt);
                 }
                 w.updateParametersPanel();
+                w.doReadMode();
             }
             else DialogUtility.showErrorIfExists();
         };
