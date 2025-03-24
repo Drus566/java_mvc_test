@@ -1,23 +1,22 @@
 package iplm.mvc.models;
 
+import com.orientechnologies.common.exception.OException;
+import com.orientechnologies.orient.core.record.OElement;
 import iplm.data.config.Config;
+import iplm.data.db.OrientDBDriver;
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
-import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
 import iplm.data.service.DetailService;
-import iplm.mvc.helpers.details.SearchQueryParserHelper;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
-import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class DetailModel implements IModel, IObservable<Detail> {
     private List<IObserver<Detail>> m_observers = new ArrayList<>();
@@ -66,6 +65,84 @@ public class DetailModel implements IModel, IObservable<Detail> {
             }
         }
         return false;
+    }
+
+    // получем все детали, получаем все имена
+    public boolean syncDetailDir() {
+        if (m_details_path == null || m_details_path.isEmpty()) {
+            DialogUtility.showErrorDialog("Путь к детали не указан");
+            return false;
+        }
+
+        ArrayList<Detail> exists_details = getAllDetails();
+        if (exists_details == null) {
+            DialogUtility.showErrorDialog("Ошибка получения существующих деталей");
+            return false;
+        }
+
+        ArrayList<DetailName> exists_names = getDetailNames();
+        if (exists_names == null) {
+            DialogUtility.showErrorDialog("Ошибка получения существующих наименований деталей");
+            return false;
+        }
+
+        HashSet<String> new_names = new HashSet<>();
+        HashMap<String, String> new_details = new HashMap();
+        ArrayList<String> all_names = FilesystemUtility.getAllDirsNamesInDir(m_details_path);
+        for (String n : all_names) {
+            String[] parts = n.split(" - ");
+            if (parts != null && parts.length > 1) {
+                String decimal_number = parts[0].trim();
+                String name = parts[1].trim();
+
+                new_names.add(name);
+                new_details.put(decimal_number, name);
+            }
+        }
+
+        for (String name : new_names) {
+            boolean exists = false;
+            for (DetailName exist_name : exists_names) {
+                if (exist_name.name.equals(name)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists && addDetailName(name) == null) {
+                DialogUtility.showErrorIfExists();
+                return false;
+            }
+        }
+
+        for (Map.Entry<String, String> entry : new_details.entrySet()) {
+            String decimal_number = entry.getKey();
+            String name = entry.getValue();
+
+            boolean exists = false;
+            for (Detail d : exists_details) {
+                if (d.decimal_number.equals(decimal_number)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                Detail new_detail = new Detail();
+                new_detail.busy = false;
+                new_detail.user_busy = null;
+                new_detail.decimal_number = decimal_number;
+                new_detail.deleted = false;
+                new_detail.name = name;
+                new_detail.params = null;
+
+                if (addDetail(new_detail) == null) {
+                    DialogUtility.showErrorIfExists();
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 //    public boolean deleteDetailDir() {

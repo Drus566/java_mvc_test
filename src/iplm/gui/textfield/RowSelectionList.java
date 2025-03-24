@@ -29,6 +29,8 @@ public class RowSelectionList extends JTextField implements IRowListPopupListene
         data.add(value);
         setText(value);
         selected_row = value;
+        setCaretPosition(0);
+        setToolTipText(getText());
         method = false;
     }
 

@@ -67,6 +67,7 @@ public class DetailsController implements IController {
         SearchButton sb = w.getSearchButton();
         InputText sdpf = w.getSelectDirPathField();
         JFileChooser fc = w.getSelectDirPanel();
+        UpdateButton sync = w.getUpdateButton();
 
         String details_path = m_model.getDetailsPath();
         if (details_path != null && !details_path.isEmpty()) sdpf.setText(details_path);
@@ -97,6 +98,10 @@ public class DetailsController implements IController {
             m_model.setDetailsPath(path);
             DialogUtility.showDialog("Успешно", "Установлен путь к папки детали", JOptionPane.INFORMATION_MESSAGE);
             Config.getInstance().writeSVNPath(path);
+        });
+
+        sync.addAction(() -> {
+            if (m_model.syncDetailDir()) DialogUtility.showDialog("Успешно", "Успешная синхронизация", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 

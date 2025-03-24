@@ -170,7 +170,7 @@ public class OrientDBDetailHandler {
             return null;
         }
 
-        ArrayList<DetailName> result = null;
+        ArrayList<DetailName> result = new ArrayList<>();
         String query = "SELECT * FROM ?";
 
         try {
@@ -178,15 +178,16 @@ public class OrientDBDetailHandler {
             OResultSet rs = OrientDBDriver.getInstance().getSession().command(query, C.detail_name.s());
 
             while (rs.hasNext()) {
-                if (result == null) result = new ArrayList<>();
                 OResult item = rs.next();
                 DetailName dn = new DetailName();
                 dn.id = item.getProperty(P.rid.s()).toString();
                 dn.name = item.getProperty(P.name.s()).toString();
                 result.add(dn);
             }
-        } catch (OException e) {
+        }
+        catch (OException e) {
             OrientDBDriver.getInstance().setLastError(e.getMessage());
+            result = null;
         }
 
         return result;
