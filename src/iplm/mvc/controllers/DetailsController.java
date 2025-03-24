@@ -22,12 +22,15 @@ import iplm.mvc.models.DetailModel;
 import iplm.mvc.views.detail.*;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
+import iplm.utility.StringUtility;
 
 import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DetailsController implements IController {
@@ -121,7 +124,6 @@ public class DetailsController implements IController {
                 return;
             }
             WindowsManager.getInstance().showWindow("DetailControlWindow");
-//            dcw.getCurrentDetail();
             dcw.clearCurrentDetailLabel();
             ni.setValue("");
             dni.setText("");
@@ -429,7 +431,15 @@ public class DetailsController implements IController {
                     return;
                 }
 
-                if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) params.add(new DetailParameter(value, dpt));
+                if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) {
+                    Pattern param_string_value = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
+                    Matcher matcher = param_string_value.matcher(value);
+                    if (!matcher.matches()) {
+                        JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, доступные символы для строки (а-я А-Я a-z A-Z 0-9 . <пробел>)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    params.add(new DetailParameter(value, dpt));
+                }
                 else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.DEC.s())) {
                     try {
                         int num = Integer.parseInt(value);
@@ -537,7 +547,15 @@ public class DetailsController implements IController {
                     return;
                 }
 
-                if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) params.add(new DetailParameter(value, dpt));
+                if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.STRING.s())) {
+                    Pattern param_string_value = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
+                    Matcher matcher = param_string_value.matcher(value);
+                    if (!matcher.matches()) {
+                        JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, доступные символы для строки (а-я А-Я a-z A-Z 0-9 . <пробел>)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    params.add(new DetailParameter(value, dpt));
+                }
                 else if (dpt.type.equalsIgnoreCase(DetailParameterType.Type.DEC.s())) {
                     try {
                         int num = Integer.parseInt(value);
@@ -661,6 +679,7 @@ public class DetailsController implements IController {
         RowSelectionList ni = w.getNameInput();
         JComboBox vt = w.getValueType();
         DefaultTable t = w.getTable();
+        Pattern param_name = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
 
         /* Подгрузка всех типов параметров деталей при появлении окна */
         w.addVisibleAction(() -> {
@@ -710,6 +729,22 @@ public class DetailsController implements IController {
                 return;
             }
 
+            Matcher matcher = param_name.matcher(new_name);
+            if (!matcher.matches()) {
+                JOptionPane.showMessageDialog(null, "Некорректное наименования типа параметра детали, доступные символы для строки (а-я А-Я a-z A-Z 0-9 . <пробел>)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (StringUtility.containOnlySymbol(new_name, '.')) {
+                JOptionPane.showMessageDialog(null, "Некорректное наименование типа параметра детали", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!new_name.isEmpty() && !ai.getText().trim().isEmpty() && new_name.equals(ai.getText().trim()) ) {
+                JOptionPane.showMessageDialog(null, "Наименование типа параметра не должно быть равно псевдониму", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             DetailParameterType dpt = new DetailParameterType();
             dpt.name = new_name;
             dpt.alias = ai.getText().trim();
@@ -739,6 +774,23 @@ public class DetailsController implements IController {
                 JOptionPane.showMessageDialog(null, "Имя не может быть пустым", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            Matcher matcher = param_name.matcher(new_name);
+            if (!matcher.matches()) {
+                JOptionPane.showMessageDialog(null, "Некорректное значение параметра детали, доступные символы для строки (а-я А-Я a-z A-Z 0-9 . <пробел>)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (StringUtility.containOnlySymbol(new_name, '.')) {
+                JOptionPane.showMessageDialog(null, "Некорректное наименование типа параметра детали", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!new_name.isEmpty() && !ai.getText().trim().isEmpty() && new_name.equals(ai.getName().trim()) ) {
+                JOptionPane.showMessageDialog(null, "Наименование типа параметра не должно быть равно псевдониму", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             id = m_model.updateDetailParameterType(new DetailParameterType(id, new_name, ai.getText().trim(), (String) vt.getSelectedItem()));
             if (id == null) {
                 DialogUtility.showErrorIfExists();

@@ -117,6 +117,7 @@ public class OrientDBDriver {
             queries.add("CREATE INDEX Detail.decimal_number ON Detail (decimal_number) UNIQUE METADATA { \"ignoreNullValues\": true }");
             queries.add("CREATE INDEX DetailName.name ON DetailName (name) UNIQUE");
             queries.add("CREATE INDEX DetailParameterType.name ON DetailParameterType (name) UNIQUE");
+            queries.add("CREATE INDEX DetailParameterType.alias ON DetailParameterType (alias) UNIQUE");
 
             queries.add("CREATE INDEX Detail.all_search ON Detail(name, decimal_number, description) FULLTEXT ENGINE LUCENE METADATA {\"analyzer\": \"org.apache.lucene.analysis.ru.RussianAnalyzer\", \"indexRadix\": true, \"ignoreChars\": \"\", \"separatorChars\": \"\", \"minWordLength\": 1, \"allowLeadingWildcard\":true }");
             queries.add("CREATE INDEX DetailParameter.all_search ON DetailParameter(value) FULLTEXT ENGINE LUCENE METADATA {\"allowLeadingWildcard\":true }");

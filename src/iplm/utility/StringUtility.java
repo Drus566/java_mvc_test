@@ -10,6 +10,17 @@ public class StringUtility {
         return result;
     }
 
+    public static boolean containOnlySymbol(String text, char c) {
+        boolean result = true;
+        for (char cc : text.toCharArray()) {
+            if (cc != c) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
     public static String cutToLastChar(String text, char c) {
         String result = text;
         int index = text.lastIndexOf(c);

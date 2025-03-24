@@ -7,9 +7,8 @@ import java.util.regex.Pattern;
 
 public class SearchQueryParserHelper {
     Pattern strong_param = Pattern.compile("^\\+[а-яА-Яa-zA-Z0-9\\.]+$");
-    Pattern param_name = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
     Pattern param_string_value = Pattern.compile("^\"[а-яА-Яa-zA-Z0-9\\. ]+\"$");
-
+    Pattern param_name = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
 
     public SearchQueryParserHelper() {}
     // + - не трогаем, главное чтобы не было 2 подряд
@@ -25,7 +24,7 @@ public class SearchQueryParserHelper {
 //    шпилька[материал="золото",длина=5.3(3)] - деталь в имени, описании, дец. номере есть слово "шпилька" и у нее есть хотя бы один параметр.
 //    шпилька[+материал,+длина] - детали под названием "шпилька", в которых обязательно должны быть указанные параметры - материал, длина
 //[Длина=2(+2.33)] - поиск длины равной 2 с допуском в +2.3 т.к. значения округляются до десятых, итого идет поиск в диапазоне [2 - 4.3]
-//            [Длина=2(-1.6)] - поиск длины равной 2 с допуском -1.6 т.е. в диапазоне с [1.4 - 2]
+//            [Длина=2(-1.6)] - поиск длины равной 2 с допуском -1.6 т.е. в диапазоне с [0.4 - 2]
 //
 //    Пример поиска дубликатов на все детали
 //[длина=20(200),высота=20(30)]
@@ -111,122 +110,105 @@ public class SearchQueryParserHelper {
                     String key = kv[0].trim();
                     String value = kv[1].trim();
 
-                    Matcher matcher = param_name.matcher(key);
-                    if (!matcher.matches()) {
+//                    Matcher matcher = param_name.matcher(key);
+//                    if (!matcher.matches()) {
+//                        result = false;
+//                        break;
+//                    }
+
+                    if (!isValidParameterName(key)) {
                         result = false;
                         break;
                     }
 
                     // Если это строка
-                    if (value.trim().charAt(0) == '\"') {
-                        String str = StringUtility.getBetweenChars(value, '"', '"');
-                        if (str == null || str.trim().isEmpty()) {
-                            result = false;
-                            break;
-                        }
-                        int last_space = str.trim().lastIndexOf(' ');
-                        if (last_space != -1) {
-                            String dec_part = str.substring(last_space).trim();
-                            String dec = StringUtility.cutToChar(dec_part, '(');
-
-                            try {
-                                Float.parseFloat(dec);
-                                String dec_range = StringUtility.getBetweenChars(dec_part, '(', ')');
-                                if (dec_range != null) {
-                                    // Если количество символов скобок много
-                                    if (StringUtility.getCountSymbols(dec_range, ')') > 1 || StringUtility.getCountSymbols(dec_range, '(') > 1) {
-                                        result = false;
-                                        break;
-                                    }
-                                    // Если есть открывающая скобка, то должна быть закрывающая
-                                    int ch1 = dec_range.indexOf('(');
-                                    if (ch1 != -1) {
-                                        int ch2 = dec_range.lastIndexOf(')');
-                                        if (!(ch2 != -1 && ch1 != -1 && ch1 < ch2)) {
-                                            result = false;
-                                            break;
-                                        }
-                                    }
-                                    // Если есть закрывающая, но нет открывающей
-                                    if (ch1 == -1 && dec_range.lastIndexOf(')') != -1) {
-                                        result = false;
-                                        break;
-                                    }
-
-                                    try { Float.parseFloat(dec_range); }
-                                    catch (Exception e) {
-                                        result = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            catch (Exception e) {
-                                matcher = param_string_value.matcher(value.trim());
-                                if (!matcher.matches()) {
-                                    result = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    if (value.trim().charAt(0) == '\"') result = isValidParameterStringValue(value);
                     // Если это число
-                    else {
-                        boolean brackets = false;
-
-                        // Если количество символов скобок много
-                        if (StringUtility.getCountSymbols(value, ')') > 1 || StringUtility.getCountSymbols(query, '(') > 1) {
-                            result = false;
-                            break;
-                        }
-                        // Если есть открывающая скобка, то должна быть закрывающая
-                        int ch1 = value.indexOf('(');
-                        if (ch1 != -1) {
-                            int ch2 = value.lastIndexOf(')');
-                            if (ch2 != -1 && ch1 != -1 && ch1 < ch2) brackets = true;
-                            else {
-                                result = false;
-                                break;
-                            }
-                        }
-                        // Если есть закрывающая, но нет открывающей
-                        if (ch1 == -1 && value.lastIndexOf(')') != -1) {
-                            result = false;
-                            break;
-                        }
-
-                        if (brackets) {
-                            String in_brackets = StringUtility.getBetweenChars(value, '(', ')');
-                            if (in_brackets == null || in_brackets.isEmpty()) {
-                                result = false;
-                                break;
-                            }
-
-                            // пытаемся парсить float
-                            try { Float.parseFloat(in_brackets); }
-                            catch (Exception e) {
-                                result = false;
-                                break;
-                            }
-
-                            String v = StringUtility.cutToChar(value, '(');
-                            // пытаемся парсить float
-                            try { Float.parseFloat(v); }
-                            catch (Exception e) {
-                                result = false;
-                                break;
-                            }
-                        }
-                        else {
-                            // пытаемся парсить float
-                            try { Float.parseFloat(value); }
-                            catch (Exception e) {
-                                result = false;
-                                break;
-                            }
-                        }
-                    }
+                    else result = isValidParameterDecValue(value);
                 }
                 if (!result) return result;
+            }
+        }
+        return true;
+    }
+
+    public boolean isValidParameterName(String name) {
+        boolean result = true;
+        Matcher matcher = param_name.matcher(name);
+        if (!matcher.matches()) { result = false; }
+        return result;
+    }
+
+    public boolean isValidParameterDecValue(String value) {
+        boolean brackets = false;
+
+        // Если количество символов скобок много
+        if (StringUtility.getCountSymbols(value, ')') > 1 || StringUtility.getCountSymbols(value, '(') > 1) {
+            return false;
+        }
+        // Если есть открывающая скобка, то должна быть закрывающая
+        int ch1 = value.indexOf('(');
+        if (ch1 != -1) {
+            int ch2 = value.lastIndexOf(')');
+            if (ch2 != -1 && ch1 != -1 && ch1 < ch2) brackets = true;
+            else return false;
+        }
+        // Если есть закрывающая, но нет открывающей
+        if (ch1 == -1 && value.lastIndexOf(')') != -1) return false;
+
+        if (brackets) {
+            String in_brackets = StringUtility.getBetweenChars(value, '(', ')');
+            if (in_brackets == null || in_brackets.isEmpty()) return false;
+
+            // пытаемся парсить float
+            try { Float.parseFloat(in_brackets); }
+            catch (Exception e) { return false; }
+
+            String v = StringUtility.cutToChar(value, '(');
+            // пытаемся парсить float
+            try { Float.parseFloat(v); }
+            catch (Exception e) { return false; }
+        }
+        else {
+            // пытаемся парсить float
+            try { Float.parseFloat(value); }
+            catch (Exception e) { return false; }
+        }
+        return true;
+    }
+
+    public boolean isValidParameterStringValue(String value) {
+        String str = StringUtility.getBetweenChars(value, '"', '"');
+        if (str == null || str.trim().isEmpty()) return false;
+        int last_space = str.trim().lastIndexOf(' ');
+        if (last_space != -1) {
+            String dec_part = str.substring(last_space).trim();
+            String dec = StringUtility.cutToChar(dec_part, '(');
+
+            try {
+                Float.parseFloat(dec);
+                String dec_range = StringUtility.getBetweenChars(dec_part, '(', ')');
+                if (dec_range != null) {
+                    // Если количество символов скобок много
+                    if (StringUtility.getCountSymbols(dec_range, ')') > 1 || StringUtility.getCountSymbols(dec_range, '(') > 1) {
+                        return false;
+                    }
+                    // Если есть открывающая скобка, то должна быть закрывающая
+                    int ch1 = dec_range.indexOf('(');
+                    if (ch1 != -1) {
+                        int ch2 = dec_range.lastIndexOf(')');
+                        if (!(ch2 != -1 && ch1 != -1 && ch1 < ch2)) return false;
+                    }
+                    // Если есть закрывающая, но нет открывающей
+                    if (ch1 == -1 && dec_range.lastIndexOf(')') != -1) return false;
+
+                    try { Float.parseFloat(dec_range); }
+                    catch (Exception e) { return false; }
+                }
+            }
+            catch (Exception e) {
+                Matcher matcher = param_string_value.matcher(value.trim());
+                if (!matcher.matches()) return false;
             }
         }
         return true;

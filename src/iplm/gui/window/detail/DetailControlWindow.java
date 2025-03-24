@@ -55,7 +55,6 @@ public class DetailControlWindow extends AWindow {
         m_select_detail_label.setText(str_id + "  " + str_decimal_number + "  " + detail.name);
     }
     public void clearCurrentDetailLabel() { m_select_detail_label.setText(""); }
-    public void setCurrentDetailId(String id) { getCurrentDetail().id = id; }
     public void fillCurrentDetailGUI() {
         Detail detail = getCurrentDetail();
         m_detail_name_input.setValue(detail.name);
@@ -184,21 +183,15 @@ public class DetailControlWindow extends AWindow {
     public ArrayList<IItem> getParameterPanelItems() { return m_parameters_panel.getItems(); }
 
     private void buildTop() {
-        Color background_detail = Color.white;
-        Color border_detail = new Color(217, 217, 217);
-        int size_icon = 64;
-
         m_top_panel = new JPanel(new MigLayout("inset 4"));
         m_select_detail_label = new DefaultLabel("");
         m_select_detail_decimal_number = new DefaultLabel("");
         FontUtility.multResize(m_select_detail_label, 1.5f);
         FontUtility.multResize(m_select_detail_decimal_number, 1.5f);
-//        m_detail_icon = new RoundIconLabel("detail.svg", background_detail, border_detail, size_icon);
 
         buildModeBtnPanel();
 
         m_top_panel.add(m_select_detail_label, "al center, wrap");
-//        m_top_panel.add(m_detail_icon);
         m_top_panel.add(m_detail_control_btn_panel, "wrap");
     }
 
@@ -292,18 +285,6 @@ public class DetailControlWindow extends AWindow {
         });
     }
 
-    private void rememberLast() {
-        last_name = m_detail_name_input.getValue();
-        last_decimal_number = m_detail_decimal_number_input.getText();
-        last_description = m_detail_description_input.getTextArea().getText();
-    }
-
-    public void fillLast() {
-        m_detail_name_input.setValue(last_name);
-        m_detail_decimal_number_input.setText(last_decimal_number);
-        m_detail_description_input.getTextArea().setText(last_description);
-    }
-
     public DetailControlWindow() {
         build();
         afterBuild();
@@ -384,8 +365,6 @@ public class DetailControlWindow extends AWindow {
             m_create_mode = false;
             m_detail_control_btn_panel.showPanel(SwitchPanels.WRITE_MODE.s());
             m_detail_parameter_control_panel.showPanel(SwitchPanels.WRITE_MODE.s());
-//            m_parameters_panel.rememberItems();
-//            rememberLast();
         }
     }
 
@@ -401,8 +380,6 @@ public class DetailControlWindow extends AWindow {
             m_create_mode = true;
             m_detail_control_btn_panel.showPanel(SwitchPanels.WRITE_MODE.s());
             m_detail_parameter_control_panel.showPanel(SwitchPanels.WRITE_MODE.s());
-//            m_parameters_panel.rememberItems();
-//            rememberLast();
         }
     }
 

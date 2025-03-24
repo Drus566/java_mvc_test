@@ -4,14 +4,16 @@ import iplm.data.config.Config;
 import iplm.data.repository.RepositoryType;
 import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
+import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
 import iplm.interfaces.observer.IObservable;
 import iplm.interfaces.observer.IObserver;
 import iplm.data.service.DetailService;
+import iplm.mvc.helpers.details.SearchQueryParserHelper;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
 
-import java.io.File;
+import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
