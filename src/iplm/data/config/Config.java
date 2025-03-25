@@ -1,7 +1,9 @@
 package iplm.data.config;
 
+import iplm.Application;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
+import javassist.tools.rmi.AppletServer;
 import org.ini4j.Wini;
 
 import java.io.File;
@@ -14,7 +16,7 @@ DetailPath=C:\Baza\Details
 
 public class Config {
     private static Config INSTANCE;
-    private static final String config_path = "resources/config/config.ini";
+    private static String config_path = Application.CONFIG_PATH;
 
     public Config() { }
 

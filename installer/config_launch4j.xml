@@ -2,46 +2,28 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <obj>w32api/crt2.o</obj>
-  <obj>head/guihead.o</obj>
-  <obj>head/head.o</obj>
-  <lib>w32api/libmingw32.a</lib>
-  <lib>w32api/libmingwex.a</lib>
-  <lib>w32api/libgcc.a</lib>
-  <lib>w32api/libmsvcrt.a</lib>
-  <lib>w32api/libmoldname.a</lib>
-  <lib>w32api/libkernel32.a</lib>
-  <lib>w32api/libuser32.a</lib>
-  <lib>w32api/libadvapi32.a</lib>
-  <lib>w32api/libshell32.a</lib>
-  <jar>D:\Workplace\Projects\jsoftwaredb\installer\unnamed.jar</jar>
-  <outfile>D:\Workplace\Projects\jsoftwaredb\installer\Учет ФПО КПО.exe</outfile>
+  <jar>C:\Users\LykovA\Desktop\TEMPBUFFER\t1\installer\unnamed.jar</jar>
+  <outfile>C:\Users\LykovA\Desktop\TEMPBUFFER\t1\installer\Поиск деталей.exe</outfile>
   <errTitle></errTitle>
   <cmdLine>-Dflatlaf.uiScale </cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
-  <downloadUrl>https://sourceforge.net/projects/javaclientmsiinstallers/files/Java%208%20Update%20211/</downloadUrl>
+  <downloadUrl></downloadUrl>
   <supportUrl></supportUrl>
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>D:\Workplace\Projects\jsoftwaredb\installer\logo.ico</icon>
-  <var>Path=%Path%;%EXEDIR%/dll</var>
-  <classPath>
-    <mainClass>ru.invertor.jsoftwaredb.Application</mainClass>
-    <cp>jsoftwaredb.jar</cp>
-  </classPath>
+  <icon>C:\Users\LykovA\Desktop\TEMPBUFFER\t1\installer\logo.ico</icon>
   <jre>
     <path>%EXEDIR%/bin/jre</path>
     <requiresJdk>false</requiresJdk>
     <requires64Bit>false</requires64Bit>
-    <minVersion>1.8.0_0</minVersion>
-    <maxVersion>1.8.0_401</maxVersion>
-    <opt>-Djava.library.path=./dll</opt>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
   </jre>
   <messages>
     <startupErr>STARTUP ERROR: An error occurred while starting the application.</startupErr>
-    <jreNotFoundErr>JNI ERROR: This application requires a Java Runtime Environment.</jreNotFoundErr>
+    <jreNotFoundErr>JRE ERROR: This application requires a Java Runtime Environment.</jreNotFoundErr>
     <jreVersionErr>JRE VERSION ERROR: This application requires a Java Runtime Environment</jreVersionErr>
     <launcherErr>LAUNCHER ERROR: The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.</launcherErr>
     <instanceAlreadyExistsMsg>An application instance is already running.</instanceAlreadyExistsMsg>
