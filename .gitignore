@@ -6,6 +6,7 @@ logs/
 JSoftwareDB.s3db
 База данных.db
 *.db
+config/database.ini
 
 installer/jsoftwaredb/*
 installer/*.jar

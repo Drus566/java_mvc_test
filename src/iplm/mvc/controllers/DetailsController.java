@@ -86,7 +86,11 @@ public class DetailsController implements IController {
             fc.setDialogTitle("Выбор директории");
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fc.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) JOptionPane.showMessageDialog(null, fc.getSelectedFile());
+            if (result == JFileChooser.APPROVE_OPTION) {
+                JOptionPane.showMessageDialog(null, fc.getSelectedFile());
+                Config.getInstance().writeSVNPath(fc.getSelectedFile().toString());
+                sdpf.setText(fc.getSelectedFile().toString());
+            }
         });
 
         sdpf.addPresAction(() -> {
@@ -220,7 +224,7 @@ public class DetailsController implements IController {
 
             if (m_parser_helper.isValidQuery(search_text)) search_text = m_parser_helper.escapeQuery(search_text);
             else {
-                DialogUtility.showDialog("Ошибка", "Некорректный запрос", JOptionPane.INFORMATION_MESSAGE);
+                DialogUtility.showDialog("Ошибка", "Некорректный запрос\n" + m_parser_helper.getExampleRequestsString(), JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
 

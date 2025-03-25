@@ -4,6 +4,7 @@ import iplm.data.db.OrientDBDriver;
 import iplm.data.history.StorageHistory;
 import iplm.managers.ApplicationManager;
 import iplm.style.Style;
+import iplm.utility.CryptoUtility;
 import iplm.utility.ThreadUtility;
 
 import java.util.concurrent.TimeUnit;
@@ -23,9 +24,11 @@ public class Application {
     }
 
     public Application() {
+        String hash = CryptoUtility.toHash("bah1Quequ4");
+        System.out.println(hash);
 //        OrientDBDriver.getInstance().init("remote:172.25.143.106", "root", "root", "debug", "root", "root");
         OrientDBDriver.getInstance().init("remote:doc.sbp-invertor.ru", "root", "root", "debug", "root", "root");
-        OrientDBDriver.getInstance().initDetailClasses();
+//        OrientDBDriver.getInstance().initDetailClasses();
 //        OrientDBDriver.getInstance().initDetailData();
 
         ThreadUtility.getInstance().init(5, 10, 5, TimeUnit.SECONDS);

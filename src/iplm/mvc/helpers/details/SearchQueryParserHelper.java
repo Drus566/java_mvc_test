@@ -10,6 +10,22 @@ public class SearchQueryParserHelper {
     Pattern param_string_value = Pattern.compile("^\"[а-яА-Яa-zA-Z0-9\\. ]+\"$");
     Pattern param_name = Pattern.compile("^[а-яА-Яa-zA-Z0-9\\. ]+$");
 
+    public String getExampleRequestsString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nПримеры запросов:\n");
+        sb.append("\n[Материал=\"сталь\",длина=3(2)]");
+        sb.append("\n[!]");
+        sb.append("\nнапр[!]");
+        sb.append("\nпластина[]");
+        sb.append("\nшпилька[материал=\"сталь\",длина=5.3(3)]");
+        sb.append("\nшпилька[+материал,+длина]");
+        sb.append("\n[Длина=2(+2.3)]");
+        sb.append("\n[Длина=2(-1.6)]");
+        sb.append("\n[Материал=сталь 3.2(0.5)]");
+        sb.append("\n[Материал=сталь 5(+2)]");
+        return sb.toString();
+    }
+
     public SearchQueryParserHelper() {}
     // + - не трогаем, главное чтобы не было 2 подряд
     // \'
@@ -30,7 +46,7 @@ public class SearchQueryParserHelper {
 //[длина=20(200),высота=20(30)]
 
 //    private final char[] spec_symbols = { '!', '^', '{', '}', '[', ']', ':', '~', '"' };
-    private final char[] spec_symbols = { '!', '^', '{', '}', ':', '~', '"', '+', '-' };
+    private final char[] spec_symbols = { '!', '^', '{', '}', ':', '~', '"', '+', '-', '(',')' };
     private final char[] n_spec_symbols = { '\'', '\\' };
 
     public String escapeQuery(String query) {
