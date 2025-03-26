@@ -1,12 +1,11 @@
 package iplm.utility;
 
 import javax.crypto.*;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 public class CryptoUtility {
@@ -15,14 +14,30 @@ public class CryptoUtility {
     /* Алгоритм шифрования */
     private static final String ALGO = "AES";
 
+    public static String toHashV2(String text) {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        int iterations = 65536;
+        PBEKeySpec spec = new PBEKeySpec(text.toCharArray(), salt, iterations, 256);
+        SecretKeyFactory factory = null;
+        try { factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256"); }
+        catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
+
+        byte[] hash = new byte[0];
+        try { hash = factory.generateSecret(spec).getEncoded(); }
+        catch (InvalidKeySpecException e) { e.printStackTrace(); }
+        String saltBase64 = Base64.getEncoder().encodeToString(salt);
+        String hashBase64 = Base64.getEncoder().encodeToString(hash);
+
+        return String.format("{PBKDF2WithHmacSHA256}%s:%s:%d", hashBase64, saltBase64, iterations);
+    }
     /* Преобразование строки пароля в хэш для хранения в БД */
     public static String toHash(String text) {
         MessageDigest message_digest = null;
-        try {
-            message_digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        try { message_digest = MessageDigest.getInstance("SHA-256"); }
+        catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
         byte[] hash = message_digest.digest(text.getBytes());
         String encoded_hash = Base64.getEncoder().encodeToString(hash);
         return encoded_hash.substring(0, MAX_LENGTH_HASH);

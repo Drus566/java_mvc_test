@@ -3,6 +3,7 @@ package iplm.data.db;
 import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.db.*;
 import com.orientechnologies.orient.core.record.OElement;
+import iplm.data.config.DatabaseConfig;
 import iplm.utility.DateTimeUtility;
 import iplm.utility.FilesystemUtility;
 
@@ -41,6 +42,19 @@ public class OrientDBDriver {
         try {
             m_db = new OrientDB(address, username, password, OrientDBConfig.defaultConfig());
             m_session = m_db.open(db_name, db_username, db_password);
+        }
+        catch (Exception e) { JOptionPane.showMessageDialog(null, e.getMessage()); }
+    }
+
+    public void initFromConfig() {
+        try {
+            m_db = new OrientDB(DatabaseConfig.getInstance().readProductionServerAddress(),
+                                DatabaseConfig.getInstance().readProductionServerLogin(),
+                                DatabaseConfig.getInstance().readProductionServerPass(),
+                                OrientDBConfig.defaultConfig());
+            m_session = m_db.open(DatabaseConfig.getInstance().readProductionDBName(),
+                                  DatabaseConfig.getInstance().readProductionDBLogin(),
+                                  DatabaseConfig.getInstance().readProductionDBPass());
         }
         catch (Exception e) { JOptionPane.showMessageDialog(null, e.getMessage()); }
     }

@@ -1,11 +1,7 @@
 package iplm.mvc.models;
 
-import com.orientechnologies.common.exception.OException;
-import com.orientechnologies.orient.core.record.OElement;
-import iplm.data.config.Config;
-import iplm.data.db.OrientDBDriver;
+import iplm.data.config.DetailConfig;
 import iplm.data.repository.RepositoryType;
-import iplm.data.types.Detail;
 import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameterType;
 import iplm.interfaces.observer.IObservable;
@@ -18,8 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class DetailModel implements IModel, IObservable<Detail> {
-    private List<IObserver<Detail>> m_observers = new ArrayList<>();
+public class DetailModel implements IModel, IObservable<iplm.data.types.Detail> {
+    private List<IObserver<iplm.data.types.Detail>> m_observers = new ArrayList<>();
     private DetailService m_service;
     private String m_details_path;
     private final String m_svn_repo_path = "База";
@@ -74,7 +70,7 @@ public class DetailModel implements IModel, IObservable<Detail> {
             return false;
         }
 
-        ArrayList<Detail> exists_details = getAllDetails();
+        ArrayList<iplm.data.types.Detail> exists_details = getAllDetails();
         if (exists_details == null) {
             DialogUtility.showErrorDialog("Ошибка получения существующих деталей");
             return false;
@@ -120,7 +116,7 @@ public class DetailModel implements IModel, IObservable<Detail> {
             String name = entry.getValue();
 
             boolean exists = false;
-            for (Detail d : exists_details) {
+            for (iplm.data.types.Detail d : exists_details) {
                 if (d.decimal_number.equals(decimal_number)) {
                     exists = true;
                     break;
@@ -128,7 +124,7 @@ public class DetailModel implements IModel, IObservable<Detail> {
             }
 
             if (!exists) {
-                Detail new_detail = new Detail();
+                iplm.data.types.Detail new_detail = new iplm.data.types.Detail();
                 new_detail.busy = false;
                 new_detail.user_busy = null;
                 new_detail.decimal_number = decimal_number;
@@ -183,7 +179,7 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public DetailModel() {
         m_service = new DetailService(RepositoryType.ORIENTDB);
         /* Подгружаем путь к деталям из конфига */
-        setDetailsPath(Config.getInstance().readSVNPath());
+        setDetailsPath(DetailConfig.getInstance().readSVNPath());
     }
 
     public String addDetailName(String name) { return m_service.addDetailName(name); }
@@ -197,15 +193,15 @@ public class DetailModel implements IModel, IObservable<Detail> {
     public ArrayList<DetailParameterType> getDetailParameterTypes() { return m_service.getDetailParameterTypes(); }
     public ArrayList<String> getDetailParameterTypeReferences(String detail_parameter_type_rid) { return m_service.getDetailParameterTypeReferences(detail_parameter_type_rid); }
 
-    public String addDetail(Detail detail) { return m_service.addDetail(detail); }
-    public String updateDetail(Detail detail) { return m_service.updateDetail(detail); }
+    public String addDetail(iplm.data.types.Detail detail) { return m_service.addDetail(detail); }
+    public String updateDetail(iplm.data.types.Detail detail) { return m_service.updateDetail(detail); }
     public boolean deleteDetail(String id) { return m_service.deleteDetail(id); }
-    public ArrayList<Detail> getAllDetails() { return m_service.getAllDetails(false); }
-    public ArrayList<Detail> getAllDetailsWithDepends() { return m_service.getAllDetails(true); }
-    public ArrayList<Detail> getDetails(String request) { return m_service.getDetails(request, false); }
-    public ArrayList<Detail> getDetailsWithDepends(String request) { return m_service.getDetails(request, true); }
-    public Detail getDetailByID(String id) { return m_service.getDetailByID(id, false); }
-    public Detail getDetailByIDWithDepends(String id) { return m_service.getDetailByID(id, true); }
+    public ArrayList<iplm.data.types.Detail> getAllDetails() { return m_service.getAllDetails(false); }
+    public ArrayList<iplm.data.types.Detail> getAllDetailsWithDepends() { return m_service.getAllDetails(true); }
+    public ArrayList<iplm.data.types.Detail> getDetails(String request) { return m_service.getDetails(request, false); }
+    public ArrayList<iplm.data.types.Detail> getDetailsWithDepends(String request) { return m_service.getDetails(request, true); }
+    public iplm.data.types.Detail getDetailByID(String id) { return m_service.getDetailByID(id, false); }
+    public iplm.data.types.Detail getDetailByIDWithDepends(String id) { return m_service.getDetailByID(id, true); }
 
 //    public ArrayList<Detail> getAll() { return m_service.getAll(); }
 //
@@ -229,10 +225,10 @@ public class DetailModel implements IModel, IObservable<Detail> {
 //    public boolean rebuildIndex() { return m_service.rebuildIndex(); }
 
     @Override
-    public void addObserver(IObserver<Detail> observer) { m_observers.add(observer); }
+    public void addObserver(IObserver<iplm.data.types.Detail> observer) { m_observers.add(observer); }
 
     @Override
-    public void removeObserver(IObserver<Detail> observer) {
+    public void removeObserver(IObserver<iplm.data.types.Detail> observer) {
         m_observers.remove(observer);
     }
 

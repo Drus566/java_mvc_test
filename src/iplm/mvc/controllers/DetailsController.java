@@ -1,7 +1,6 @@
 package iplm.mvc.controllers;
 
-import iplm.data.config.Config;
-import iplm.data.types.Detail;
+import iplm.data.config.DetailConfig;
 import iplm.data.types.DetailName;
 import iplm.data.types.DetailParameter;
 import iplm.data.types.DetailParameterType;
@@ -78,7 +77,7 @@ public class DetailsController implements IController {
             if (m_model.scanDetailDir()) {
                 sdpf.setText(m_model.getDetailsPath());
                 DialogUtility.showDialog("Успешно", "Директория найдена: " + sdpf.getText(), JOptionPane.INFORMATION_MESSAGE);
-                Config.getInstance().writeSVNPath(m_model.getDetailsPath());
+                DetailConfig.getInstance().writeSVNPath(m_model.getDetailsPath());
             }
         });
 
@@ -88,7 +87,7 @@ public class DetailsController implements IController {
             int result = fc.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 JOptionPane.showMessageDialog(null, fc.getSelectedFile());
-                Config.getInstance().writeSVNPath(fc.getSelectedFile().toString());
+                DetailConfig.getInstance().writeSVNPath(fc.getSelectedFile().toString());
                 sdpf.setText(fc.getSelectedFile().toString());
             }
         });
@@ -101,7 +100,7 @@ public class DetailsController implements IController {
             }
             m_model.setDetailsPath(path);
             DialogUtility.showDialog("Успешно", "Установлен путь к папки детали", JOptionPane.INFORMATION_MESSAGE);
-            Config.getInstance().writeSVNPath(path);
+            DetailConfig.getInstance().writeSVNPath(path);
         });
 
         sync.addAction(() -> {
@@ -228,7 +227,7 @@ public class DetailsController implements IController {
                 return;
             }
 
-            ArrayList<Detail> details;
+            ArrayList<iplm.data.types.Detail> details;
             if (!search_text.isEmpty()) details = m_model.getDetailsWithDepends(search_text);
             else details = m_model.getAllDetailsWithDepends();
 
@@ -256,7 +255,7 @@ public class DetailsController implements IController {
         JMenuItem to_detail_control_window = new JMenuItem("Управление деталью");
         to_detail_control_window.addActionListener(e -> {
             String id = t.getStringFromSelectedRowColumn(0);
-            Detail detail = m_model.getDetailByIDWithDepends(id);
+            iplm.data.types.Detail detail = m_model.getDetailByIDWithDepends(id);
             if (detail != null)  {
                 ni.setValue(detail.name);
                 dni.setText(detail.decimal_number);
@@ -292,7 +291,7 @@ public class DetailsController implements IController {
 
                 sp.setVisible(false);
 
-                Detail detail = m_model.getDetailByIDWithDepends(id);
+                iplm.data.types.Detail detail = m_model.getDetailByIDWithDepends(id);
                 if (detail != null)  {
                     // true open pdf
                     String detail_fullname = detail.decimal_number + " - " + detail.name;
@@ -381,7 +380,7 @@ public class DetailsController implements IController {
         /* Подгрузка всех параметров и полей деталей */
         Runnable update_detail_action = () -> {
             if (!w.getCurrentDetail().id.isEmpty()) {
-                Detail detail = m_model.getDetailByIDWithDepends(w.getCurrentDetail().id);
+                iplm.data.types.Detail detail = m_model.getDetailByIDWithDepends(w.getCurrentDetail().id);
                 if (detail != null) {
                     w.setCurrentDetail(detail);
                     w.displayCurrentDetailLabel();
@@ -394,7 +393,7 @@ public class DetailsController implements IController {
 
         /* Добавление детали */
         Runnable add_action = () -> {
-            Detail detail = new Detail();
+            iplm.data.types.Detail detail = new iplm.data.types.Detail();
             ArrayList<DetailParameter> params = null;
 
             detail.name = ni.getText().trim();
@@ -508,7 +507,7 @@ public class DetailsController implements IController {
                 return;
             }
 
-            Detail detail = new Detail();
+            iplm.data.types.Detail detail = new iplm.data.types.Detail();
             detail.id = current_id;
             ArrayList<DetailParameter> params = null;
 

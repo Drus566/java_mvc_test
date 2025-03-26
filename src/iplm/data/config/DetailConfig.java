@@ -3,7 +3,6 @@ package iplm.data.config;
 import iplm.Application;
 import iplm.utility.DialogUtility;
 import iplm.utility.FilesystemUtility;
-import javassist.tools.rmi.AppletServer;
 import org.ini4j.Wini;
 
 import java.io.File;
@@ -14,11 +13,11 @@ import java.io.IOException;
 DetailPath=C:\Baza\Details
 *  */
 
-public class Config {
-    private static Config INSTANCE;
-    private static String config_path = Application.CONFIG_PATH;
+public class DetailConfig {
+    private static DetailConfig INSTANCE;
+    private static String config_path = Application.CONFIG_DETAIL_PATH;
 
-    public Config() { }
+    public DetailConfig() { }
 
     public boolean writeSVNPath(String path) {
         Wini ini = openConfig();
@@ -52,8 +51,8 @@ public class Config {
         return ini;
     }
 
-    public static synchronized Config getInstance() {
-        if (INSTANCE == null) INSTANCE = new Config();
+    public static synchronized DetailConfig getInstance() {
+        if (INSTANCE == null) INSTANCE = new DetailConfig();
         return INSTANCE;
     }
 }
